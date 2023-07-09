@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>9</zoom_level>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>657</x>
+      <y>666</y>
+      <w>216</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>OUTSIDE</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>666</x>
+      <y>369</y>
+      <w>207</w>
+      <h>81</h>
+    </coordinates>
+    <panel_attributes>INSIDE</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>693</x>
+      <y>441</y>
+      <w>90</w>
+      <h>243</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+open(idx)
+open
+</panel_attributes>
+    <additional_attributes>10.0;250.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>819</x>
+      <y>441</y>
+      <w>90</w>
+      <h>243</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+close(idx)
+complete
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;250.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>711</x>
+      <y>279</y>
+      <w>135</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+open(idx)
+open
+</panel_attributes>
+    <additional_attributes>130.0;100.0;130.0;20.0;10.0;20.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>702</x>
+      <y>720</y>
+      <w>135</w>
+      <h>99</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+close(idx)
+close
+</panel_attributes>
+    <additional_attributes>130.0;10.0;130.0;70.0;10.0;70.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>954</x>
+      <y>702</y>
+      <w>153</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+endOfLine(idx)
+endOfLine
+</panel_attributes>
+    <additional_attributes>10.0;20.0;150.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>1089</x>
+      <y>693</y>
+      <w>216</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>TERMINATOR</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>423</x>
+      <y>225</y>
+      <w>540</w>
+      <h>621</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>261</x>
+      <y>621</y>
+      <w>117</w>
+      <h>162</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+move(char)
+move(char)</panel_attributes>
+    <additional_attributes>110.0;10.0;10.0;10.0;10.0;160.0;110.0;160.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>513</x>
+      <y>378</y>
+      <w>171</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+apply()
+applyInside(self)</panel_attributes>
+    <additional_attributes>170.0;10.0;10.0;10.0;10.0;60.0;170.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>504</x>
+      <y>666</y>
+      <w>171</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+apply()
+applyOutside(self)</panel_attributes>
+    <additional_attributes>170.0;10.0;10.0;10.0;10.0;60.0;170.0;60.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1098</x>
+      <y>585</y>
+      <w>207</w>
+      <h>126</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+apply()
+apply_endOfLine(self)</panel_attributes>
+    <additional_attributes>10.0;120.0;10.0;20.0;210.0;20.0;210.0;120.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>360</x>
+      <y>189</y>
+      <w>981</w>
+      <h>729</h>
+    </coordinates>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>684</x>
+      <y>693</y>
+      <w>18</w>
+      <h>18</h>
+    </coordinates>
+    <panel_attributes>type=initial</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
