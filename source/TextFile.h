@@ -21,8 +21,10 @@ struct TextFile {
         auto end()  {
                 return lines.end();
         }
+        bool load(char const *path, bool error);
+        bool first_character_in_line(size_t idx) const;
+        bool last_character_in_line(size_t idx) const;
 };
 
-bool TextFile_load(TextFile &self, char const *path, bool error);
 
 #endif 

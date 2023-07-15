@@ -9,7 +9,7 @@ TEST(TextFile, load) {
         path.append("/../../unitTests/Example.txt");
         TextFile txt;
         bool error = false;
-        error = TextFile_load(txt, path.c_str(), error);
+        error = txt.load(path.c_str(), error);
         ASSERT_FALSE(error);
         EXPECT_EQ(txt.file.size(), 71);
         EXPECT_EQ(txt.lines.size(), 5);
@@ -27,7 +27,7 @@ TEST(TextFile, error) {
         path.append("/../../unitTests/Example.txt");
         TextFile txt;
         bool error = true;
-        error = TextFile_load(txt, path.c_str(), error);
+        error = txt.load(path.c_str(), error);
         EXPECT_TRUE(error);
         EXPECT_EQ(txt.file.size(), 0);
         EXPECT_EQ(txt.lines.size(), 0);

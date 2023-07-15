@@ -66,39 +66,16 @@ void Brace_action_move(char chr) {
         gold.copy += chr;
 }
 
-static bool iflast(TextFile &txt, size_t idx) {
-        size_t end = txt.lines[txt.lines.size() - 1].end;
-        for (size_t i = idx + 1; i < end; i++) {
-                if (txt.file[i] == '\n') {
-                        return true;
-                } else if (txt.file[i] != ' ') {
-                        return false;
-                }
-        }
-        return true;
-}
-
 void Brace_action_applyInside(Brace &brace) {
-        if (iflast(gold.txt, brace.txt_idx)) {
+        if (gold.txt.last_character_in_line(brace.txt_idx)) {
                 gold.copy += "{";
         } else {
                 gold.copy += "{\n";
         }
 }
 
-static bool iffirst(TextFile &txt, size_t idx) {
-        for (size_t i = idx - 1; i >= 0; i--) {
-                if (txt.file[i] == '\n') {
-                        return true;
-                } else if (txt.file[i] != ' ') {
-                        return false;
-                }
-        }
-        return true;
-}
-
 void Brace_action_applyOutside(Brace &brace) {
-        if (iffirst(gold.txt, brace.txt_idx)) {
+        if (gold.txt.first_character_in_line(brace.txt_idx)) {
                 gold.copy += "}";
         } else {
                 gold.copy += "\n}";
@@ -111,8 +88,8 @@ void Brace_action_applyEndOfLine(Brace &brace) {
 
 int main(int argc, char* argv[]) {
         bool error = (argc < 2);
-        error = TextFile_load(gold.txt, argv[1], error);
-
+        error = gold.txt.load(argv[1], error);
+#if(0)
     if (__cplusplus == 202101L) std::cout << "C++23";
     else if (__cplusplus == 202002L) std::cout << "C++20";
     else if (__cplusplus == 201703L) std::cout << "C++17";
@@ -121,6 +98,7 @@ int main(int argc, char* argv[]) {
     else if (__cplusplus == 199711L) std::cout << "C++98";
     else std::cout << "pre-standard C++." << __cplusplus;
     std::cout << "\n";
+#endif
 
         for (auto const &line : gold.txt) {
                 gold.brace_stack.reset();
