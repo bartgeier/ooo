@@ -7,38 +7,7 @@
 #include <iostream>
 #include <ranges>
 #include "TextFile.h"
-
-
-struct BraceStack {
-        std::vector<Brace> v;
-        void push() {
-                v.push_back(v.back());
-        }
-        void pop() {
-                v.pop_back();
-        }
-        Brace& operator[](size_t i) {
-                return v[i];
-        }
-        size_t size() {
-                return v.size();
-        }
-        void reset() {
-                v.resize(1);
-                Brace_reset(v[0]);
-        }
-        Brace& last() {
-                return v.back();
-        }
-        auto begin() {
-                return v.begin();
-        }
-        auto end() {
-                return v.end();
-        }
-};
-
-
+#include "BraceStack.h"
 
 struct Gold {
         TextFile txt;
@@ -89,16 +58,6 @@ void Brace_action_applyEndOfLine(Brace &brace) {
 int main(int argc, char* argv[]) {
         bool error = (argc < 2);
         error = gold.txt.load(argv[1], error);
-#if(0)
-    if (__cplusplus == 202101L) std::cout << "C++23";
-    else if (__cplusplus == 202002L) std::cout << "C++20";
-    else if (__cplusplus == 201703L) std::cout << "C++17";
-    else if (__cplusplus == 201402L) std::cout << "C++14";
-    else if (__cplusplus == 201103L) std::cout << "C++11";
-    else if (__cplusplus == 199711L) std::cout << "C++98";
-    else std::cout << "pre-standard C++." << __cplusplus;
-    std::cout << "\n";
-#endif
 
         for (auto const &line : gold.txt) {
                 gold.brace_stack.reset();
@@ -117,7 +76,7 @@ int main(int argc, char* argv[]) {
                         }
                 }
                 Brace_event_endOfLine(gold.brace_stack.last(), line.end);
-                
+
                 size_t A = line.start;
                 for (auto &brace : gold.brace_stack) { 
                         /* move character into copy */
@@ -135,8 +94,21 @@ int main(int argc, char* argv[]) {
                 std::cout << line.start << ' ' << line.end << '\n';
         }
         std::cout << gold.copy;
-        for (int i: std::ranges::iota_view{1, 10}) {
-                std::cout << i << std::endl;
-        }
         return 0;
 }
+
+#if(0)
+if (__cplusplus == 202101L) std::cout << "C++23";
+else if (__cplusplus == 202002L) std::cout << "C++20";
+else if (__cplusplus == 201703L) std::cout << "C++17";
+else if (__cplusplus == 201402L) std::cout << "C++14";
+else if (__cplusplus == 201103L) std::cout << "C++11";
+else if (__cplusplus == 199711L) std::cout << "C++98";
+else std::cout << "pre-standard C++." << __cplusplus;
+
+std::cout << "\n";
+for (int i: std::ranges::iota_view{1, 10}) {
+        std::cout << i << std::endl;
+}
+
+#endif

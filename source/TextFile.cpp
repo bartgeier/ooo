@@ -11,8 +11,10 @@ bool TextFile::load(char const *path, bool error) {
         if (!file.is_open()) {
                 return true;
         }
-        this->file = std::string((std::istreambuf_iterator<char>(file)),
-                                (std::istreambuf_iterator<char>()));
+        this->file = std::string(
+                        (std::istreambuf_iterator<char>(file)),
+                        (std::istreambuf_iterator<char>())
+        );
         file.close();
         size_t start = 0;
         for (size_t end = 0; end < this->file.size(); end++) {
@@ -24,24 +26,26 @@ bool TextFile::load(char const *path, bool error) {
         return false;
 }
 
+/* return true if file[idx] is the first visible character in the line */
 bool TextFile::first_character_in_line(size_t idx) const {
         for (size_t i = idx; i-- > 0;) {
                 if (file[i] == '\n') {
                         return true;
                 } 
-                if (file[i] != ' ') {
+                if (file[i] != ' ' & file[i] != '\t') {
                         return false;
                 }
         }
         return true;
 }
 
+/* return true if file[idx] is the last visible character in the line */
 bool TextFile::last_character_in_line(size_t idx) const {
         for (size_t i = idx; ++i < file.size();) {
                 if (file[i] == '\n') {
                         return true;
                 }
-                if (file[i] != ' ') {
+                if (file[i] != ' ' & file[i] != '\t') {
                         return false;
                 }
         }

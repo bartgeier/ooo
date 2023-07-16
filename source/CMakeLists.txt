@@ -3,6 +3,8 @@ add_library(textfile
         TextFile.cpp
         Brace.h
         Brace.cpp
+        BraceStack.h
+        BraceStack.cpp
 )
 
 add_executable(mainApp main.cpp)
