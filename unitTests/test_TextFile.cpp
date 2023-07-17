@@ -54,5 +54,5 @@ TEST(TextFile, last_character_in_line) {
         error = txt.load(path.c_str(), error);
         ASSERT_FALSE(error);
         EXPECT_FALSE(txt.last_character_in_line(txt.lines[5].start + 9));
-        EXPECT_TRUE(txt.last_character_in_line(txt.lines[5].start + 11));
+        EXPECT_TRUE(txt.last_character_in_line(txt.lines[5].start + 10));
 }

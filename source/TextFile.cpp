@@ -28,6 +28,7 @@ bool TextFile::load(char const *path, bool error) {
 
 /* return true if file[idx] is the first visible character in the line */
 bool TextFile::first_character_in_line(size_t idx) const {
+        assert(file[idx] != ' ' & file[idx] != '\t');
         for (size_t i = idx; i-- > 0;) {
                 if (file[i] == '\n') {
                         return true;
@@ -41,6 +42,7 @@ bool TextFile::first_character_in_line(size_t idx) const {
 
 /* return true if file[idx] is the last visible character in the line */
 bool TextFile::last_character_in_line(size_t idx) const {
+        assert(file[idx] != ' ' & file[idx] != '\t');
         for (size_t i = idx; ++i < file.size();) {
                 if (file[i] == '\n') {
                         return true;

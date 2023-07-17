@@ -12,6 +12,7 @@ namespace BRACE {
         struct Brace {
                 States state;
                 size_t txt_idx;
+                size_t curlyIdx;
         };
 };
 
