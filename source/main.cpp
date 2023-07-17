@@ -61,7 +61,6 @@ int main(int argc, char* argv[]) {
 
         for (auto const &line : gold.txt) {
                 gold.brace_stack.reset();
-                // for (int chr_idx : std::views::iota(line.start, line.end)) {
                 for (size_t chr_idx = line.start; chr_idx < line.end; chr_idx++) {
                         switch (gold.txt[chr_idx]) {
                         case '{':

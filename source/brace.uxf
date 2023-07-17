@@ -131,28 +131,28 @@ move(char)</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>513</x>
+      <x>486</x>
       <y>378</y>
-      <w>171</w>
+      <w>198</w>
       <h>72</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
-apply()
-applyInside(self)</panel_attributes>
-    <additional_attributes>170.0;10.0;10.0;10.0;10.0;60.0;170.0;60.0</additional_attributes>
+apply(chr[2] T)
+applyInside(self, T[0])</panel_attributes>
+    <additional_attributes>200.0;10.0;10.0;10.0;10.0;60.0;200.0;60.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>504</x>
+      <x>468</x>
       <y>666</y>
-      <w>171</w>
+      <w>207</w>
       <h>72</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
-apply()
-applyOutside(self)</panel_attributes>
-    <additional_attributes>170.0;10.0;10.0;10.0;10.0;60.0;170.0;60.0</additional_attributes>
+apply(hr[2] T)
+applyOutside(self, T[1)</panel_attributes>
+    <additional_attributes>210.0;10.0;10.0;10.0;10.0;60.0;210.0;60.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
