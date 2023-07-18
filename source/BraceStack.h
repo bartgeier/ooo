@@ -4,8 +4,9 @@
 #include "Brace.h"
 #include <vector>
 
-struct BraceStack {
+class BraceStack {
         std::vector<Brace> v;
+public:
         void push();
         void pop();
         Brace& operator[](size_t i);

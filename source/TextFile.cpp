@@ -26,10 +26,38 @@ bool TextFile::load(char const *path, bool error) {
         return false;
 }
 
+TextFile::operator char const*() {
+        return file.c_str();
+}
+
+std::vector<TextFile::Line>::iterator TextFile::begin()  {
+        return lines.begin();
+}
+
+std::vector<TextFile::Line>::iterator TextFile::end()  {
+        return lines.end();
+}
+
+char& TextFile::operator[](size_t chr_idx) {
+        return file[chr_idx];
+}
+
+size_t TextFile::size() {
+        return this->file.size();
+}
+
+size_t TextFile::numOfLines() {
+        return this->lines.size();
+}
+
+TextFile::Line &TextFile::line(size_t line_idx) {
+        return lines[line_idx];
+}
+
 /* return true if file[idx] is the first visible character in the line */
-bool TextFile::first_character_in_line(size_t idx) const {
-        assert(file[idx] != ' ' & file[idx] != '\t');
-        for (size_t i = idx; i-- > 0;) {
+bool TextFile::first_character_in_line(size_t char_idx) const {
+        assert(file[char_idx] != ' ' & file[char_idx] != '\t');
+        for (size_t i = char_idx; i-- > 0;) {
                 if (file[i] == '\n') {
                         return true;
                 } 
@@ -41,9 +69,9 @@ bool TextFile::first_character_in_line(size_t idx) const {
 }
 
 /* return true if file[idx] is the last visible character in the line */
-bool TextFile::last_character_in_line(size_t idx) const {
-        assert(file[idx] != ' ' & file[idx] != '\t');
-        for (size_t i = idx; ++i < file.size();) {
+bool TextFile::last_character_in_line(size_t char_idx) const {
+        assert(file[char_idx] != ' ' & file[char_idx] != '\t');
+        for (size_t i = char_idx; ++i < file.size();) {
                 if (file[i] == '\n') {
                         return true;
                 }

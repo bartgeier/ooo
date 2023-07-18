@@ -88,7 +88,9 @@ int main(int argc, char* argv[]) {
                 }
         }
 
-        std::cout << gold.txt.file;
+        // std::cout << gold.txt.file;
+        std::cout << gold.txt;
+        //https://www.learncpp.com/cpp-tutorial/overloading-the-io-operators/
         for (auto const &line : gold.txt) {
                 std::cout << line.start << ' ' << line.end << '\n';
         }
