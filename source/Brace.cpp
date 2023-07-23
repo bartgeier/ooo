@@ -68,13 +68,14 @@ void Brace_event_move(Brace &m, char chr) {
         }
 }
 
-void Brace_event_apply(Brace &m) {
+/* brace_char "{}" or "()" or "<>" or "[]" */
+void Brace_event_apply(Brace &m, char const brace_char[2]) {
         switch(m.state) {
         case OUTSIDE:
-                Brace_action_applyOutside(m);
+                Brace_action_applyOutside(m, brace_char[1]);
                 break;
         case INSIDE:
-                Brace_action_applyInside(m);
+                Brace_action_applyInside(m, brace_char[0]);
                 break;
         case TERMINATOR:
                 Brace_action_applyEndOfLine(m);

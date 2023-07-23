@@ -35,20 +35,18 @@ void Brace_action_move(char chr) {
         gold.copy += chr;
 }
 
-void Brace_action_applyInside(Brace &brace) {
-        if (gold.txt.last_character_in_line(brace.txt_idx)) {
-                gold.copy += "{";
-        } else {
-                gold.copy += "{\n";
+void Brace_action_applyInside(Brace &brace, char const brace_char) {
+        gold.copy += brace_char; // '{', '(', '<', '['
+        if (!gold.txt.last_character_in_line(brace.txt_idx)) {
+                gold.copy += "\n";
         }
 }
 
-void Brace_action_applyOutside(Brace &brace) {
-        if (gold.txt.first_character_in_line(brace.txt_idx)) {
-                gold.copy += "}";
-        } else {
-                gold.copy += "\n}";
+void Brace_action_applyOutside(Brace &brace, char const brace_char) {
+        if (!gold.txt.first_character_in_line(brace.txt_idx)) {
+                gold.copy += "\n";
         }
+        gold.copy += brace_char; // '}', ')', '>', ']'
 }
 
 void Brace_action_applyEndOfLine(Brace &brace) {
@@ -83,7 +81,7 @@ int main(int argc, char* argv[]) {
                         for (size_t chr_idx = A; chr_idx < B; chr_idx++) {
                                 Brace_event_move(brace, gold.txt[chr_idx]);
                         }
-                        Brace_event_apply(brace);
+                        Brace_event_apply(brace, "{}");
                         A = B + 1;
                 }
         }

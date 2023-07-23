@@ -2,7 +2,7 @@ add_executable(testrunner
         gtest-main.cpp 
         test_hello.cpp 
         test_TextFile.cpp
-        test_Open.cpp
+        test_Brace.cpp
 )
 
 target_include_directories(testrunner

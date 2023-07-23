@@ -11,8 +11,14 @@ static struct Flag {
         bool complete;
         bool endOfLine;
         char move;
-        size_t applyInside;
-        size_t applyOutside;
+        struct s1 {
+                size_t idx;
+                char brace_char;
+        } applyInside;
+        struct s2 {
+                size_t idx;
+                char brace_char;
+        } applyOutside;
         size_t applyEndofLine;
 } flag;
 
@@ -37,12 +43,14 @@ void Brace_action_move(char chr) {
         flag.move = chr;
 }
 
-void Brace_action_applyInside(Brace &brace) {
-        flag.applyInside = brace.txt_idx;
+void Brace_action_applyInside(Brace &brace, char const brace_char) {
+        flag.applyInside.idx = brace.txt_idx;
+        flag.applyInside.brace_char = brace_char;
 }
 
-void Brace_action_applyOutside(Brace &brace) {
-        flag.applyOutside = brace.txt_idx;
+void Brace_action_applyOutside(Brace &brace, char const brace_char) {
+        flag.applyOutside.idx = brace.txt_idx;
+        flag.applyOutside.brace_char = brace_char;
 }
 
 void Brace_action_applyEndOfLine(Brace &brace) {
@@ -147,22 +155,27 @@ TEST(Brace, apply) {
         BRACE::Brace x;
         x.state = INSIDE;
         x.txt_idx = 1;
-        flag.applyInside = 0;
-        Brace_event_apply(x);
+        flag.applyInside.idx = 0;
+        flag.applyInside.brace_char = '0';
+        Brace_event_apply(x, "{}");
         EXPECT_EQ(x.state, INSIDE);
-        EXPECT_EQ(flag.applyInside, 1);
+        EXPECT_EQ(flag.applyInside.idx, 1);
+        EXPECT_EQ(flag.applyInside.brace_char, '{');
 
         x.state = OUTSIDE;
         x.txt_idx = 2;
-        flag.applyOutside = 0;
-        Brace_event_apply(x);
+        flag.applyOutside.idx = 0;
+        flag.applyInside.brace_char = '0';
+        Brace_event_apply(x, "()");
         EXPECT_EQ(x.state, OUTSIDE);
-        EXPECT_EQ(flag.applyOutside, 2);
+        EXPECT_EQ(flag.applyOutside.idx, 2);
+        EXPECT_EQ(flag.applyOutside.brace_char, ')');
 
         x.state = TERMINATOR;
         x.txt_idx = 3;
         flag.applyEndofLine = 0;
-        Brace_event_apply(x);
+        flag.applyInside.brace_char = '0';
+        Brace_event_apply(x, "{}");
         EXPECT_EQ(x.state, TERMINATOR);
         EXPECT_EQ(flag.applyEndofLine, 3);
 }
