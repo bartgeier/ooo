@@ -9,7 +9,6 @@ static struct Flag {
         bool open;
         bool close;
         bool complete;
-        bool endOfLine;
         char move;
         struct s1 {
                 size_t idx;
@@ -33,10 +32,6 @@ void Brace_action_close() {
 
 void Brace_action_complete() {
         flag.complete = true;
-}
-
-void Brace_action_endOfLine() {
-        flag.endOfLine = true;
 }
 
 void Brace_action_move(char chr) {
@@ -113,21 +108,17 @@ TEST(Brace, close) {
 
 TEST(Brace, endOfLine) {
         BRACE::Brace x;
-        flag.endOfLine = false;
         x.state = OUTSIDE;
         x.txt_idx = 99; 
         Brace_event_endOfLine(x, 5);
         EXPECT_EQ(x.state, TERMINATOR);
         EXPECT_EQ(x.txt_idx, 5);
-        EXPECT_TRUE(flag.endOfLine);
 
-        flag.endOfLine = false;
         x.state = INSIDE;
-        x.txt_idx = 99; 
+        x.txt_idx = 999; 
         Brace_event_endOfLine(x, 7);
         EXPECT_EQ(x.state, TERMINATOR);
         EXPECT_EQ(x.txt_idx, 7);
-        EXPECT_TRUE(flag.endOfLine);
 }
 
 TEST(Brace, move) {

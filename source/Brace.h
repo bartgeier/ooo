@@ -28,7 +28,6 @@ void Brace_event_apply(Brace &m, char const type[2]);
 void Brace_action_open();
 void Brace_action_close();
 void Brace_action_complete();
-void Brace_action_endOfLine();
 
 void Brace_action_move(char chr);
 void Brace_action_applyInside(Brace &brace, char const brace_char);

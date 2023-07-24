@@ -51,7 +51,6 @@ void Brace_event_endOfLine(Brace &m, size_t idx) {
         case OUTSIDE:
         case INSIDE:
                 set(m, TERMINATOR, idx);
-                Brace_action_endOfLine();
                 break;
         case TERMINATOR:
                 break;

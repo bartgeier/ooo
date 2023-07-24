@@ -27,10 +27,6 @@ void Brace_action_complete() {
          gold.brace_stack.pop();
 }
 
-void Brace_action_endOfLine() {
-
-}
-
 void Brace_action_move(char chr) {
         gold.copy += chr;
 }
