@@ -18,11 +18,11 @@ static struct Flag {
                 size_t idx;
                 char brace_char;
         } applyOutside;
-        size_t applyEndofLine;
+        bool applyEndofLine;
 } flag;
 
 /* stubs */
-void Brace_action_open() {
+void Brace_action_open(BraceStack &stack) {
         flag.open = true;
 }
 
@@ -34,27 +34,27 @@ void Brace_action_complete() {
         flag.complete = true;
 }
 
-void Brace_action_move(char chr) {
+void Brace_action_applyChar(char chr) {
         flag.move = chr;
 }
 
-void Brace_action_applyInside(Brace &brace, char const brace_char) {
-        flag.applyInside.idx = brace.txt_idx;
+void Brace_action_applyInside(char const brace_char, size_t const chr_idx) {
         flag.applyInside.brace_char = brace_char;
+        flag.applyInside.idx = chr_idx;
 }
 
-void Brace_action_applyOutside(Brace &brace, char const brace_char) {
-        flag.applyOutside.idx = brace.txt_idx;
+void Brace_action_applyOutside(char const brace_char, size_t const chr_idx) {
         flag.applyOutside.brace_char = brace_char;
+        flag.applyOutside.idx = chr_idx;
 }
 
-void Brace_action_applyEndOfLine(Brace &brace) {
-        flag.applyEndofLine = brace.txt_idx;
+void Brace_action_applyEndOfLine() {
+        flag.applyEndofLine = true;
 }
 
 
 TEST(Brace, reset) {
-        BRACE::Brace x;
+        Brace x;
         x.state = INSIDE;
         Brace_reset(x);
         EXPECT_EQ(x.state, OUTSIDE);
@@ -69,83 +69,84 @@ TEST(Brace, reset) {
 }
 
 TEST(Brace, open) {
-        BRACE::Brace x;
+        BraceStack stack;
+        Brace x;
         flag.open = false;
         x.state = OUTSIDE;
-        x.txt_idx = 99; 
-        Brace_event_open(x, 5);
+        x.chr_idx = 99; 
+        Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, INSIDE);
-        EXPECT_EQ(x.txt_idx, 5);
+        EXPECT_EQ(x.chr_idx, 5);
         EXPECT_TRUE(flag.open);
 
         flag.open = false;
         x.state = INSIDE;
-        x.txt_idx = 99; 
-        Brace_event_open(x, 5);
+        x.chr_idx = 99; 
+        Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, INSIDE);
-        EXPECT_EQ(x.txt_idx, 5);
+        EXPECT_EQ(x.chr_idx, 5);
         EXPECT_TRUE(flag.open);
 }
 
 TEST(Brace, close) {
-        BRACE::Brace x;
+        Brace x;
         flag.close = false;
         x.state = OUTSIDE;
-        x.txt_idx = 99; 
+        x.chr_idx = 99; 
         Brace_event_close(x, 5);
         EXPECT_EQ(x.state, OUTSIDE);
-        EXPECT_EQ(x.txt_idx, 5);
+        EXPECT_EQ(x.chr_idx, 5);
         EXPECT_TRUE(flag.close);
 
         flag.complete = false;
         x.state = INSIDE;
-        x.txt_idx = 99; 
+        x.chr_idx = 99; 
         Brace_event_close(x, 5);
         EXPECT_EQ(x.state, OUTSIDE);
-        EXPECT_EQ(x.txt_idx, 5);
+        EXPECT_EQ(x.chr_idx, 5);
         EXPECT_TRUE(flag.complete);
 }
 
 TEST(Brace, endOfLine) {
-        BRACE::Brace x;
+        Brace x;
         x.state = OUTSIDE;
-        x.txt_idx = 99; 
+        x.chr_idx = 99; 
         Brace_event_endOfLine(x, 5);
         EXPECT_EQ(x.state, TERMINATOR);
-        EXPECT_EQ(x.txt_idx, 5);
+        EXPECT_EQ(x.chr_idx, 5);
 
         x.state = INSIDE;
-        x.txt_idx = 999; 
+        x.chr_idx = 999; 
         Brace_event_endOfLine(x, 7);
         EXPECT_EQ(x.state, TERMINATOR);
-        EXPECT_EQ(x.txt_idx, 7);
+        EXPECT_EQ(x.chr_idx, 7);
 }
 
 TEST(Brace, move) {
-        BRACE::Brace x;
+        Brace x;
         x.state = INSIDE;
         flag.move = '0';
-        Brace_event_move(x, 'X');
+        Brace_event_applyChar(x, 'X');
         EXPECT_EQ(x.state, INSIDE);
         EXPECT_EQ(flag.move, 'X');
 
         x.state = OUTSIDE;
         flag.move = '0';
-        Brace_event_move(x, 'Y');
+        Brace_event_applyChar(x, 'Y');
         EXPECT_EQ(x.state, OUTSIDE);
         EXPECT_EQ(flag.move, 'Y');
 
         x.state = TERMINATOR;
         flag.move = '0';
-        Brace_event_move(x, 'Z');
+        Brace_event_applyChar(x, 'Z');
         EXPECT_EQ(x.state, TERMINATOR);
         EXPECT_EQ(flag.move, 'Z');
 }
 
 TEST(Brace, apply) {
-        BRACE::Brace x;
+        Brace x;
         x.state = INSIDE;
-        x.txt_idx = 1;
+        x.chr_idx = 1;
         flag.applyInside.idx = 0;
         flag.applyInside.brace_char = '0';
         Brace_event_apply(x, "{}");
@@ -154,7 +155,7 @@ TEST(Brace, apply) {
         EXPECT_EQ(flag.applyInside.brace_char, '{');
 
         x.state = OUTSIDE;
-        x.txt_idx = 2;
+        x.chr_idx = 2;
         flag.applyOutside.idx = 0;
         flag.applyInside.brace_char = '0';
         Brace_event_apply(x, "()");
@@ -163,10 +164,10 @@ TEST(Brace, apply) {
         EXPECT_EQ(flag.applyOutside.brace_char, ')');
 
         x.state = TERMINATOR;
-        x.txt_idx = 3;
-        flag.applyEndofLine = 0;
+        x.chr_idx = 3;
+        flag.applyEndofLine = false;
         flag.applyInside.brace_char = '0';
         Brace_event_apply(x, "{}");
         EXPECT_EQ(x.state, TERMINATOR);
-        EXPECT_EQ(flag.applyEndofLine, 3);
+        EXPECT_TRUE(flag.applyEndofLine);
 }

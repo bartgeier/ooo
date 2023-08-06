@@ -7,7 +7,6 @@
 #include <iostream>
 #include <ranges>
 #include "TextFile.h"
-#include "BraceStack.h"
 
 struct Gold {
         TextFile txt;
@@ -15,8 +14,8 @@ struct Gold {
         std::string copy;
 } gold;
 
-void Brace_action_open() {
-         gold.brace_stack.push();
+void Brace_action_open(BraceStack &stack) {
+         stack.push();
 }
 
 void Brace_action_close() {
@@ -27,25 +26,25 @@ void Brace_action_complete() {
          gold.brace_stack.pop();
 }
 
-void Brace_action_move(char chr) {
+void Brace_action_applyChar(char chr) {
         gold.copy += chr;
 }
 
-void Brace_action_applyInside(Brace &brace, char const brace_char) {
+void Brace_action_applyInside(char const brace_char, size_t const chr_idx) {
         gold.copy += brace_char; // '{', '(', '<', '['
-        if (!gold.txt.last_character_in_line(brace.txt_idx)) {
+        if (!gold.txt.last_character_in_line(chr_idx)) {
                 gold.copy += "\n";
         }
 }
 
-void Brace_action_applyOutside(Brace &brace, char const brace_char) {
-        if (!gold.txt.first_character_in_line(brace.txt_idx)) {
+void Brace_action_applyOutside(char const brace_char, size_t const chr_idx) {
+        if (!gold.txt.first_character_in_line(chr_idx)) {
                 gold.copy += "\n";
         }
         gold.copy += brace_char; // '}', ')', '>', ']'
 }
 
-void Brace_action_applyEndOfLine(Brace &brace) {
+void Brace_action_applyEndOfLine() {
         gold.copy += "\n";
 }
 
@@ -58,7 +57,11 @@ int main(int argc, char* argv[]) {
                 for (size_t chr_idx = line.start; chr_idx < line.end; chr_idx++) {
                         switch (gold.txt[chr_idx]) {
                         case '{':
-                                Brace_event_open(gold.brace_stack.last(), chr_idx);
+                                Brace_event_open(
+                                        gold.brace_stack.last(), 
+                                        chr_idx,
+                                        gold.brace_stack
+                                );
                                 break;
                         case '}':
                                 Brace_event_close(gold.brace_stack.last(), chr_idx);
@@ -72,10 +75,11 @@ int main(int argc, char* argv[]) {
 
                 size_t A = line.start;
                 for (auto &brace : gold.brace_stack) { 
-                        /* move character into copy */
-                        size_t const B = brace.txt_idx;
+                        /* apply characters from txt and Braces from stack, */ 
+                        /* and move them into copy */
+                        size_t const B = brace.chr_idx;
                         for (size_t chr_idx = A; chr_idx < B; chr_idx++) {
-                                Brace_event_move(brace, gold.txt[chr_idx]);
+                                Brace_event_applyChar(brace, gold.txt[chr_idx]);
                         }
                         Brace_event_apply(brace, "{}");
                         A = B + 1;

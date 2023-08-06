@@ -9,22 +9,22 @@ static void set(Brace &m, States const state) {
 
 static void set(Brace &m, States const state, size_t idx) {
         m.state = state;
-        m.txt_idx = idx;
+        m.chr_idx = idx;
 }
 
 void Brace_reset(Brace &m) {
         m.state = OUTSIDE;
 }
 
-void Brace_event_open(Brace &m, size_t idx) {
+void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
         switch (m.state) {
         case OUTSIDE:
                 set(m, INSIDE , idx);
-                Brace_action_open();
+                Brace_action_open(stack);
                 break;
         case INSIDE:
                 set(m, INSIDE, idx);
-                Brace_action_open();
+                Brace_action_open(stack);
                 break;
         case TERMINATOR:
                 break;
@@ -57,12 +57,12 @@ void Brace_event_endOfLine(Brace &m, size_t idx) {
         }
 }
 
-void Brace_event_move(Brace &m, char chr) {
+void Brace_event_applyChar(Brace &m, char chr) {
         switch(m.state) {
         case OUTSIDE:
         case INSIDE:
-        case TERMINATOR:
-                Brace_action_move(chr);
+                case TERMINATOR:
+                Brace_action_applyChar(chr);
                 break;
         }
 }
@@ -71,13 +71,13 @@ void Brace_event_move(Brace &m, char chr) {
 void Brace_event_apply(Brace &m, char const brace_char[2]) {
         switch(m.state) {
         case OUTSIDE:
-                Brace_action_applyOutside(m, brace_char[1]);
+                Brace_action_applyOutside(brace_char[1], m.chr_idx);
                 break;
         case INSIDE:
-                Brace_action_applyInside(m, brace_char[0]);
+                Brace_action_applyInside(brace_char[0], m.chr_idx);
                 break;
         case TERMINATOR:
-                Brace_action_applyEndOfLine(m);
+                Brace_action_applyEndOfLine();
                 break;
         }
 }
