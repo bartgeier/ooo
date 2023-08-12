@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include <cstddef>
-#include "Brace.h"
+#include "Brace_functions.h"
 
 using namespace BRACE;
 
@@ -26,11 +26,11 @@ void Brace_action_open(BraceStack &stack) {
         flag.open = true;
 }
 
-void Brace_action_close() {
+void Brace_action_close(BraceStack &stack) {
         flag.close = true;
 }
 
-void Brace_action_complete() {
+void Brace_action_complete(BraceStack &stack) {
         flag.complete = true;
 }
 
@@ -89,11 +89,12 @@ TEST(Brace, open) {
 }
 
 TEST(Brace, close) {
+        BraceStack stack;
         Brace x;
         flag.close = false;
         x.state = OUTSIDE;
         x.chr_idx = 99; 
-        Brace_event_close(x, 5);
+        Brace_event_close(x, 5, stack);
         EXPECT_EQ(x.state, OUTSIDE);
         EXPECT_EQ(x.chr_idx, 5);
         EXPECT_TRUE(flag.close);
@@ -101,7 +102,7 @@ TEST(Brace, close) {
         flag.complete = false;
         x.state = INSIDE;
         x.chr_idx = 99; 
-        Brace_event_close(x, 5);
+        Brace_event_close(x, 5, stack);
         EXPECT_EQ(x.state, OUTSIDE);
         EXPECT_EQ(x.chr_idx, 5);
         EXPECT_TRUE(flag.complete);

@@ -1,12 +1,12 @@
-#include "Brace.h"
+#include "Brace_functions.h"
 #include <cstddef>
 
 using namespace BRACE;
 
 static void set(Brace &m, States const state) {
         m.state = state;
-}
 
+}
 static void set(Brace &m, States const state, size_t idx) {
         m.state = state;
         m.chr_idx = idx;
@@ -31,15 +31,15 @@ void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
         }
 }
 
-void Brace_event_close(Brace &m, size_t idx) {
+void Brace_event_close(Brace &m, size_t idx, BraceStack &stack) {
         switch (m.state) {
         case OUTSIDE:
                 set(m, OUTSIDE , idx);
-                Brace_action_close();
+                Brace_action_close(stack);
                 break;
         case INSIDE:
                 set(m, OUTSIDE, idx);
-                Brace_action_complete();
+                Brace_action_complete(stack);
                 break;
         case TERMINATOR:
                 break;

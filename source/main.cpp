@@ -1,99 +1,19 @@
-#include "Brace.h"
-#include <cstddef>
-#include <fstream>
-#include <iterator>
-#include <string>
-#include <algorithm>
-#include <iostream>
-#include <ranges>
-#include "TextFile.h"
+#include "Job.h"
+#include "Gold.h"
+#include "Brace_pass.h"
 
-struct Gold {
-        TextFile txt;
-        BraceStack brace_stack;
-        std::string copy;
-} gold;
+std::vector<Gold> golds;
 
-void Brace_action_open(BraceStack &stack) {
-         stack.push();
-}
+//main::job::task::process
 
-void Brace_action_close() {
-         gold.brace_stack.push();
-}
-
-void Brace_action_complete() {
-         gold.brace_stack.pop();
-}
-
-void Brace_action_applyChar(char chr) {
-        gold.copy += chr;
-}
-
-void Brace_action_applyInside(char const brace_char, size_t const chr_idx) {
-        gold.copy += brace_char; // '{', '(', '<', '['
-        if (!gold.txt.last_character_in_line(chr_idx)) {
-                gold.copy += "\n";
-        }
-}
-
-void Brace_action_applyOutside(char const brace_char, size_t const chr_idx) {
-        if (!gold.txt.first_character_in_line(chr_idx)) {
-                gold.copy += "\n";
-        }
-        gold.copy += brace_char; // '}', ')', '>', ']'
-}
-
-void Brace_action_applyEndOfLine() {
-        gold.copy += "\n";
-}
 
 int main(int argc, char* argv[]) {
         bool error = (argc < 2);
-        error = gold.txt.load(argv[1], error);
-
-        for (auto const &line : gold.txt) {
-                gold.brace_stack.reset();
-                for (size_t chr_idx = line.start; chr_idx < line.end; chr_idx++) {
-                        switch (gold.txt[chr_idx]) {
-                        case '{':
-                                Brace_event_open(
-                                        gold.brace_stack.last(), 
-                                        chr_idx,
-                                        gold.brace_stack
-                                );
-                                break;
-                        case '}':
-                                Brace_event_close(gold.brace_stack.last(), chr_idx);
-                                break;
-                        default:
-                                /* nothing */
-                                break;
-                        }
-                }
-                Brace_event_endOfLine(gold.brace_stack.last(), line.end);
-
-                size_t A = line.start;
-                for (auto &brace : gold.brace_stack) { 
-                        /* apply characters from txt and Braces from stack, */ 
-                        /* and move them into copy */
-                        size_t const B = brace.chr_idx;
-                        for (size_t chr_idx = A; chr_idx < B; chr_idx++) {
-                                Brace_event_applyChar(brace, gold.txt[chr_idx]);
-                        }
-                        Brace_event_apply(brace, "{}");
-                        A = B + 1;
-                }
-        }
-
-        // std::cout << gold.txt.file;
-        std::cout << gold.txt;
-        //https://www.learncpp.com/cpp-tutorial/overloading-the-io-operators/
-        for (auto const &line : gold.txt) {
-                std::cout << line.start << ' ' << line.end << '\n';
-        }
-        std::cout << gold.copy;
-        return 0;
+        Gold gold;
+        golds.push_back(gold);
+        error = golds[0].txt.load(argv[1], error);
+        
+        return Job_main(golds[0]);
 }
 
 #if(0)
