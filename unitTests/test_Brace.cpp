@@ -1,11 +1,15 @@
 #include "gtest/gtest.h"
 #include <cstddef>
 #include "Brace_functions.h"
+#include "Brace_types.h"
 
 using namespace BRACE;
 
 
 static struct Flag {
+        States state;
+        BraceStack *stack;
+        size_t idx;
         bool open;
         bool close;
         bool complete;
@@ -22,7 +26,10 @@ static struct Flag {
 } flag;
 
 /* stubs */
-void Brace_action_open(BraceStack &stack) {
+void Brace_action_open(BRACE::States const state, size_t const idx, BraceStack &stack) {
+        flag.state = state;
+        flag.idx = idx;
+        flag.stack = &stack;
         flag.open = true;
 }
 
@@ -71,21 +78,63 @@ TEST(Brace, reset) {
 TEST(Brace, open) {
         BraceStack stack;
         Brace x;
-        flag.open = false;
-        x.state = OUTSIDE;
+        x.state = INIT;
         x.chr_idx = 99; 
+        flag.open = false;
         Brace_event_open(x, 5, stack);
-        EXPECT_EQ(x.state, INSIDE);
+        EXPECT_EQ(x.state, LAST);
         EXPECT_EQ(x.chr_idx, 5);
-        EXPECT_TRUE(flag.open);
+        EXPECT_FALSE(flag.open);
 
-        flag.open = false;
-        x.state = INSIDE;
+        x.state = IDLE ;
         x.chr_idx = 99; 
+        flag.open = false;
         Brace_event_open(x, 5, stack);
-        EXPECT_EQ(x.state, INSIDE);
+        EXPECT_EQ(x.state, LAST);
         EXPECT_EQ(x.chr_idx, 5);
+        EXPECT_FALSE(flag.open);
+
+        x.state = FIRST;
+        x.chr_idx = 99; 
+        flag.open = false;
+        flag.state = INIT;
+        flag.idx = 3333;
+        flag.stack = nullptr;
+        Brace_event_open(x, 5, stack);
+        EXPECT_EQ(x.state, FIRST);
+        EXPECT_EQ(x.chr_idx, 99);
         EXPECT_TRUE(flag.open);
+        EXPECT_EQ(flag.state, LAST);
+        EXPECT_EQ(flag.idx, 5);
+        EXPECT_EQ(flag.stack, &stack);
+
+        x.state = NOT_FIRST;
+        x.chr_idx = 99; 
+        flag.open = false;
+        flag.state = INIT;
+        flag.idx = 3333;
+        flag.stack = nullptr;
+        Brace_event_open(x, 5, stack);
+        EXPECT_EQ(x.state, NOT_FIRST);
+        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_TRUE(flag.open);
+        EXPECT_EQ(flag.state, LAST);
+        EXPECT_EQ(flag.idx, 5);
+        EXPECT_EQ(flag.stack, &stack);
+
+        x.state = LAST;
+        x.chr_idx = 99; 
+        flag.open = false;
+        flag.state = INIT;
+        flag.idx = 3333;
+        flag.stack = nullptr;
+        Brace_event_open(x, 5, stack);
+        EXPECT_EQ(x.state, NOT_FIRST);
+        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_TRUE(flag.open);
+        EXPECT_EQ(flag.state, LAST);
+        EXPECT_EQ(flag.idx, 5);
+        EXPECT_EQ(flag.stack, &stack);
 }
 
 TEST(Brace, close) {

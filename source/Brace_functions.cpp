@@ -18,13 +18,17 @@ void Brace_reset(Brace &m) {
 
 void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
         switch (m.state) {
-        case OUTSIDE:
-                set(m, INSIDE , idx);
-                Brace_action_open(stack);
+        case INIT:
+        case IDLE:
+                set(m, LAST , idx);
                 break;
-        case INSIDE:
-                set(m, INSIDE, idx);
-                Brace_action_open(stack);
+        case FIRST:
+        case NOT_FIRST:
+                Brace_action_open(LAST, idx, stack);
+                break;
+        case LAST:
+                break;
+        case NOT_LAST:
                 break;
         case TERMINATOR:
                 break;
@@ -33,6 +37,20 @@ void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
 
 void Brace_event_close(Brace &m, size_t idx, BraceStack &stack) {
         switch (m.state) {
+        case INIT:
+                break;
+        case IDLE:
+                break;
+        case FIRST:
+                break;
+        case NOT_FIRST:
+                break;
+        case LAST:
+                break;
+        case NOT_LAST:
+                break;
+        case TERMINATOR:
+                break;
         case OUTSIDE:
                 set(m, OUTSIDE , idx);
                 Brace_action_close(stack);
@@ -41,24 +59,46 @@ void Brace_event_close(Brace &m, size_t idx, BraceStack &stack) {
                 set(m, OUTSIDE, idx);
                 Brace_action_complete(stack);
                 break;
-        case TERMINATOR:
-                break;
         }
 }
 
 void Brace_event_endOfLine(Brace &m, size_t idx) {
         switch(m.state) {
+        case INIT:
+                break;
+        case IDLE:
+                break;
+        case FIRST:
+                break;
+        case NOT_FIRST:
+                break;
+        case LAST:
+                break;
+        case NOT_LAST:
+                break;
+        case TERMINATOR:
+                break;
         case OUTSIDE:
         case INSIDE:
                 set(m, TERMINATOR, idx);
-                break;
-        case TERMINATOR:
                 break;
         }
 }
 
 void Brace_event_applyChar(Brace &m, char chr, std::string &copy) {
         switch(m.state) {
+        case INIT:
+                break;
+        case IDLE:
+                break;
+        case FIRST:
+                break;
+        case NOT_FIRST:
+                break;
+        case LAST:
+                break;
+        case NOT_LAST:
+                break;
         case OUTSIDE:
         case INSIDE:
         case TERMINATOR:
@@ -70,14 +110,26 @@ void Brace_event_applyChar(Brace &m, char chr, std::string &copy) {
 /* brace_char "{}" or "()" or "<>" or "[]" */
 void Brace_event_apply(Brace &m, char const brace_char[2], Gold &gold) {
         switch(m.state) {
+        case INIT:
+                break;
+        case IDLE:
+                break;
+        case FIRST:
+                break;
+        case NOT_FIRST:
+                break;
+        case LAST:
+                break;
+        case NOT_LAST:
+                break;
+        case TERMINATOR:
+                Brace_action_applyEndOfLine(gold);
+                break;
         case OUTSIDE:
                 Brace_action_applyOutside(brace_char[1], m.chr_idx, gold);
                 break;
         case INSIDE:
                 Brace_action_applyInside(brace_char[0], m.chr_idx, gold);
-                break;
-        case TERMINATOR:
-                Brace_action_applyEndOfLine(gold);
                 break;
         }
 }

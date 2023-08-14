@@ -6,9 +6,16 @@
 
 namespace BRACE {
         enum States {    /* visible because unittests */
+                INIT,
+                IDLE,
+                FIRST,
+                NOT_FIRST,
+                LAST,
+                NOT_LAST,
+                TERMINATOR,
+
                 OUTSIDE,
                 INSIDE,
-                TERMINATOR
         };
 };
 

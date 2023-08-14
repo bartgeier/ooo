@@ -11,7 +11,7 @@ void Brace_event_endOfLine(Brace &m, size_t idx);
 void Brace_event_applyChar(Brace &m, char chr, std::string &copy);
 void Brace_event_apply(Brace &m, char const type[2], Gold &gold);
 
-void Brace_action_open(BraceStack &stack);
+void Brace_action_open(BRACE::States const state, size_t const idx, BraceStack &stack);
 void Brace_action_close(BraceStack &stack);
 void Brace_action_complete(BraceStack &stack);
 

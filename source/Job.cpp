@@ -8,7 +8,7 @@
 #include <ranges>
 
 
-void Brace_action_open(BraceStack &stack) {
+void Brace_action_open(BRACE::States const state, size_t const idx, BraceStack &stack) {
          stack.push();
 }
 
