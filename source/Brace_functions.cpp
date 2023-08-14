@@ -57,27 +57,27 @@ void Brace_event_endOfLine(Brace &m, size_t idx) {
         }
 }
 
-void Brace_event_applyChar(Brace &m, char chr) {
+void Brace_event_applyChar(Brace &m, char chr, std::string &copy) {
         switch(m.state) {
         case OUTSIDE:
         case INSIDE:
-                case TERMINATOR:
-                Brace_action_applyChar(chr);
+        case TERMINATOR:
+                Brace_action_applyChar(chr, copy);
                 break;
         }
 }
 
 /* brace_char "{}" or "()" or "<>" or "[]" */
-void Brace_event_apply(Brace &m, char const brace_char[2]) {
+void Brace_event_apply(Brace &m, char const brace_char[2], Gold &gold) {
         switch(m.state) {
         case OUTSIDE:
-                Brace_action_applyOutside(brace_char[1], m.chr_idx);
+                Brace_action_applyOutside(brace_char[1], m.chr_idx, gold);
                 break;
         case INSIDE:
-                Brace_action_applyInside(brace_char[0], m.chr_idx);
+                Brace_action_applyInside(brace_char[0], m.chr_idx, gold);
                 break;
         case TERMINATOR:
-                Brace_action_applyEndOfLine();
+                Brace_action_applyEndOfLine(gold);
                 break;
         }
 }

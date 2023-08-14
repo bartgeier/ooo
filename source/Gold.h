@@ -1,11 +1,11 @@
 #ifndef GOLD_H
 #define GOLD_H
 
-#include "Brace_pass.h"
-#include <vector>
+#include <string>
+#include "TextFile.h"
+#include "Brace_types.h"
 
 struct Gold {
-        std::vector<Brace_pass> brace_passes;
         TextFile txt;
         BraceStack brace_stack;
         std::string copy;
