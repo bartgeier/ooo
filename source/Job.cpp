@@ -8,15 +8,11 @@
 #include <ranges>
 
 
-void Brace_action_open(BRACE::States const state, size_t const idx, BraceStack &stack) {
+void Brace_action_clone(BRACE::States const state, size_t const idx, BraceStack &stack) {
          stack.push();
 }
 
-void Brace_action_close(BraceStack &stack) {
-         stack.push();
-}
-
-void Brace_action_complete(BraceStack &stack) {
+void Brace_action_deleteMe(BraceStack &stack) {
          stack.pop();
 }
 

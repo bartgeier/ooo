@@ -24,13 +24,17 @@ void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
                 break;
         case FIRST:
         case NOT_FIRST:
-                Brace_action_open(LAST, idx, stack);
+                Brace_action_clone(LAST, idx, stack);
                 break;
         case LAST:
+                Brace_action_clone(LAST, idx, stack);
+                set(m, NOT_LAST);
                 break;
         case NOT_LAST:
+                Brace_action_clone(LAST, idx, stack);
                 break;
         case TERMINATOR:
+                /* nothing */
                 break;
         }
 }
@@ -38,26 +42,20 @@ void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
 void Brace_event_close(Brace &m, size_t idx, BraceStack &stack) {
         switch (m.state) {
         case INIT:
+                set(m, FIRST, idx);
                 break;
         case IDLE:
+                set(m, NOT_FIRST, idx);
                 break;
         case FIRST:
-                break;
         case NOT_FIRST:
+                Brace_action_clone(NOT_FIRST, idx, stack);
                 break;
         case LAST:
-                break;
         case NOT_LAST:
+                Brace_action_deleteMe(stack);
                 break;
         case TERMINATOR:
-                break;
-        case OUTSIDE:
-                set(m, OUTSIDE , idx);
-                Brace_action_close(stack);
-                break;
-        case INSIDE:
-                set(m, OUTSIDE, idx);
-                Brace_action_complete(stack);
                 break;
         }
 }

@@ -10,9 +10,8 @@ static struct Flag {
         States state;
         BraceStack *stack;
         size_t idx;
-        bool open;
-        bool close;
-        bool complete;
+        bool clone;
+        bool deleteMe;
         char move;
         struct s1 {
                 size_t idx;
@@ -26,19 +25,16 @@ static struct Flag {
 } flag;
 
 /* stubs */
-void Brace_action_open(BRACE::States const state, size_t const idx, BraceStack &stack) {
+void Brace_action_clone(BRACE::States const state, size_t const idx, BraceStack &stack) {
         flag.state = state;
         flag.idx = idx;
         flag.stack = &stack;
-        flag.open = true;
+        flag.clone = true;
 }
 
-void Brace_action_close(BraceStack &stack) {
-        flag.close = true;
-}
-
-void Brace_action_complete(BraceStack &stack) {
-        flag.complete = true;
+void Brace_action_deleteMe(BraceStack &stack) {
+        flag.stack = &stack;
+        flag.deleteMe = true;
 }
 
 void Brace_action_applyChar(char chr, std::string &copy) {
@@ -80,58 +76,72 @@ TEST(Brace, open) {
         Brace x;
         x.state = INIT;
         x.chr_idx = 99; 
-        flag.open = false;
+        flag.clone = false;
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, LAST);
         EXPECT_EQ(x.chr_idx, 5);
-        EXPECT_FALSE(flag.open);
+        EXPECT_FALSE(flag.clone);
 
         x.state = IDLE ;
         x.chr_idx = 99; 
-        flag.open = false;
+        flag.clone = false;
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, LAST);
         EXPECT_EQ(x.chr_idx, 5);
-        EXPECT_FALSE(flag.open);
+        EXPECT_FALSE(flag.clone);
 
         x.state = FIRST;
         x.chr_idx = 99; 
-        flag.open = false;
+        flag.clone = false;
         flag.state = INIT;
         flag.idx = 3333;
         flag.stack = nullptr;
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, FIRST);
         EXPECT_EQ(x.chr_idx, 99);
-        EXPECT_TRUE(flag.open);
+        EXPECT_TRUE(flag.clone);
         EXPECT_EQ(flag.state, LAST);
         EXPECT_EQ(flag.idx, 5);
         EXPECT_EQ(flag.stack, &stack);
 
         x.state = NOT_FIRST;
         x.chr_idx = 99; 
-        flag.open = false;
+        flag.clone = false;
         flag.state = INIT;
         flag.idx = 3333;
         flag.stack = nullptr;
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, NOT_FIRST);
         EXPECT_EQ(x.chr_idx, 99);
-        EXPECT_TRUE(flag.open);
+        EXPECT_TRUE(flag.clone);
         EXPECT_EQ(flag.state, LAST);
         EXPECT_EQ(flag.idx, 5);
         EXPECT_EQ(flag.stack, &stack);
 
         x.state = LAST;
         x.chr_idx = 99; 
-        flag.open = false;
+        flag.clone = false;
         flag.state = INIT;
         flag.idx = 3333;
         flag.stack = nullptr;
         Brace_event_open(x, 5, stack);
-        EXPECT_EQ(x.state, NOT_FIRST);
+        EXPECT_EQ(x.state, NOT_LAST);
         EXPECT_EQ(x.chr_idx, 99);
-        EXPECT_TRUE(flag.open);
+        EXPECT_TRUE(flag.clone);
+        EXPECT_EQ(flag.state, LAST);
+        EXPECT_EQ(flag.idx, 5);
+        EXPECT_EQ(flag.stack, &stack);
+
+        x.state = NOT_LAST;
+        x.chr_idx = 99; 
+        flag.clone = false;
+        flag.state = INIT;
+        flag.idx = 3333;
+        flag.stack = nullptr;
+        Brace_event_open(x, 5, stack);
+        EXPECT_EQ(x.state, NOT_LAST);
+        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_TRUE(flag.clone);
         EXPECT_EQ(flag.state, LAST);
         EXPECT_EQ(flag.idx, 5);
         EXPECT_EQ(flag.stack, &stack);
@@ -140,21 +150,67 @@ TEST(Brace, open) {
 TEST(Brace, close) {
         BraceStack stack;
         Brace x;
-        flag.close = false;
-        x.state = OUTSIDE;
+        x.state = INIT;
         x.chr_idx = 99; 
+        flag.clone = false;
         Brace_event_close(x, 5, stack);
-        EXPECT_EQ(x.state, OUTSIDE);
+        EXPECT_EQ(x.state, FIRST);
         EXPECT_EQ(x.chr_idx, 5);
-        EXPECT_TRUE(flag.close);
+        EXPECT_FALSE(flag.clone);
 
-        flag.complete = false;
-        x.state = INSIDE;
+        x.state = IDLE;
         x.chr_idx = 99; 
+        flag.clone = false;
         Brace_event_close(x, 5, stack);
-        EXPECT_EQ(x.state, OUTSIDE);
+        EXPECT_EQ(x.state, NOT_FIRST);
         EXPECT_EQ(x.chr_idx, 5);
-        EXPECT_TRUE(flag.complete);
+        EXPECT_FALSE(flag.clone);
+
+        x.state = FIRST;
+        x.chr_idx = 99; 
+        flag.clone = false;
+        flag.state = INIT;
+        flag.idx = 3333;
+        flag.stack = nullptr;
+        Brace_event_close(x, 5, stack);
+        EXPECT_EQ(x.state, FIRST);
+        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_TRUE(flag.clone);
+        EXPECT_EQ(flag.state, NOT_FIRST);
+        EXPECT_EQ(flag.idx, 5);
+        EXPECT_EQ(flag.stack, &stack);
+
+        x.state = NOT_FIRST;
+        x.chr_idx = 99; 
+        flag.clone = false;
+        flag.state = INIT;
+        flag.idx = 3333;
+        flag.stack = nullptr;
+        Brace_event_close(x, 5, stack);
+        EXPECT_EQ(x.state, NOT_FIRST);
+        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_TRUE(flag.clone);
+        EXPECT_EQ(flag.state, NOT_FIRST);
+        EXPECT_EQ(flag.idx, 5);
+        EXPECT_EQ(flag.stack, &stack);
+
+        x.state = LAST;
+        x.chr_idx = 99; 
+        flag.clone = false;
+        flag.deleteMe = false;
+        flag.stack = nullptr;
+        Brace_event_close(x, 5, stack);
+        EXPECT_TRUE(flag.deleteMe);
+        EXPECT_FALSE(flag.clone);
+
+        x.state = NOT_LAST;
+        x.chr_idx = 99; 
+        flag.clone = false;
+        flag.deleteMe = false;
+        flag.stack = nullptr;
+        Brace_event_close(x, 5, stack);
+        EXPECT_TRUE(flag.deleteMe);
+        EXPECT_FALSE(flag.clone);
 }
 
 TEST(Brace, endOfLine) {
