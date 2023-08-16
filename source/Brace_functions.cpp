@@ -1,5 +1,6 @@
 #include "Brace_functions.h"
 #include <cstddef>
+#include <assert.h>
 
 using namespace BRACE;
 
@@ -34,7 +35,7 @@ void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
                 Brace_action_clone(LAST, idx, stack);
                 break;
         case TERMINATOR:
-                /* nothing */
+                assert(false);
                 break;
         }
 }
@@ -56,29 +57,25 @@ void Brace_event_close(Brace &m, size_t idx, BraceStack &stack) {
                 Brace_action_deleteMe(stack);
                 break;
         case TERMINATOR:
+                assert(false);
                 break;
         }
 }
 
-void Brace_event_endOfLine(Brace &m, size_t idx) {
+void Brace_event_endOfLine(Brace &m, size_t idx, BraceStack &stack) {
         switch(m.state) {
         case INIT:
-                break;
         case IDLE:
+                set(m, TERMINATOR, idx);
                 break;
         case FIRST:
-                break;
         case NOT_FIRST:
-                break;
         case LAST:
-                break;
         case NOT_LAST:
+                Brace_action_clone(TERMINATOR, idx, stack);
                 break;
         case TERMINATOR:
-                break;
-        case OUTSIDE:
-        case INSIDE:
-                set(m, TERMINATOR, idx);
+                assert(false);
                 break;
         }
 }
@@ -97,8 +94,6 @@ void Brace_event_applyChar(Brace &m, char chr, std::string &copy) {
                 break;
         case NOT_LAST:
                 break;
-        case OUTSIDE:
-        case INSIDE:
         case TERMINATOR:
                 Brace_action_applyChar(chr, copy);
                 break;

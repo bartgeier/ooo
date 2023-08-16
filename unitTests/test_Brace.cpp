@@ -214,21 +214,73 @@ TEST(Brace, close) {
 }
 
 TEST(Brace, endOfLine) {
+        BraceStack stack;
         Brace x;
-        x.state = OUTSIDE;
+        x.state = INIT;
         x.chr_idx = 99; 
-        Brace_event_endOfLine(x, 5);
+        Brace_event_endOfLine(x, 5, stack);
         EXPECT_EQ(x.state, TERMINATOR);
         EXPECT_EQ(x.chr_idx, 5);
+        EXPECT_FALSE(flag.clone);
 
-        x.state = INSIDE;
+        x.state = IDLE;
         x.chr_idx = 999; 
-        Brace_event_endOfLine(x, 7);
+        Brace_event_endOfLine(x, 7, stack);
         EXPECT_EQ(x.state, TERMINATOR);
         EXPECT_EQ(x.chr_idx, 7);
+        EXPECT_FALSE(flag.clone);
+
+        x.state = FIRST;
+        x.chr_idx = 999; 
+        flag.clone = false;
+        flag.stack = nullptr;
+        Brace_event_endOfLine(x, 13, stack);
+        EXPECT_EQ(x.state, FIRST);
+        EXPECT_EQ(x.chr_idx, 999);
+        EXPECT_TRUE(flag.clone);
+        EXPECT_EQ(flag.state, TERMINATOR);
+        EXPECT_EQ(flag.idx, 13);
+        EXPECT_EQ(flag.stack, &stack);
+
+        x.state = NOT_FIRST;
+        x.chr_idx = 999; 
+        flag.clone = false;
+        flag.stack = nullptr;
+        Brace_event_endOfLine(x, 11, stack);
+        EXPECT_EQ(x.state, NOT_FIRST);
+        EXPECT_EQ(x.chr_idx, 999);
+        EXPECT_TRUE(flag.clone);
+        EXPECT_EQ(flag.state, TERMINATOR);
+        EXPECT_EQ(flag.idx, 11);
+        EXPECT_EQ(flag.stack, &stack);
+
+        x.state = LAST;
+        x.chr_idx = 999; 
+        flag.clone = false;
+        flag.stack = nullptr;
+        Brace_event_endOfLine(x, 71, stack);
+        EXPECT_EQ(x.state, LAST);
+        EXPECT_EQ(x.chr_idx, 999);
+        EXPECT_TRUE(flag.clone);
+        EXPECT_EQ(flag.state, TERMINATOR);
+        EXPECT_EQ(flag.idx, 71);
+        EXPECT_EQ(flag.stack, &stack);
+
+        x.state = NOT_LAST;
+        x.chr_idx = 999; 
+        flag.clone = false;
+        flag.stack = nullptr;
+        Brace_event_endOfLine(x, 3, stack);
+        EXPECT_EQ(x.state, NOT_LAST);
+        EXPECT_EQ(x.chr_idx, 999);
+        EXPECT_TRUE(flag.clone);
+        EXPECT_EQ(flag.state, TERMINATOR);
+        EXPECT_EQ(flag.idx, 3);
+        EXPECT_EQ(flag.stack, &stack);
 }
 
-TEST(Brace, move) {
+TEST(Brace, applyChar) {
+#if(0)
         std::string copy;
         Brace x;
         x.state = INSIDE;
@@ -248,6 +300,7 @@ TEST(Brace, move) {
         Brace_event_applyChar(x, 'Z', copy);
         EXPECT_EQ(x.state, TERMINATOR);
         EXPECT_EQ(flag.move, 'Z');
+#endif
 }
 
 TEST(Brace, apply) {

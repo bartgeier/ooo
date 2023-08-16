@@ -62,7 +62,11 @@ int Job_main(Gold &gold) {
                                 break;
                         }
                 }
-                Brace_event_endOfLine(gold.brace_stack.last(), line.end);
+                Brace_event_endOfLine(
+                        gold.brace_stack.last(),
+                        line.end,
+                        gold.brace_stack
+                );
 
                 size_t A = line.start;
                 for (auto &brace : gold.brace_stack) { 
@@ -70,7 +74,11 @@ int Job_main(Gold &gold) {
                         /* and move them into copy */
                         size_t const B = brace.chr_idx;
                         for (size_t chr_idx = A; chr_idx < B; chr_idx++) {
-                                Brace_event_applyChar(brace, gold.txt[chr_idx], gold.copy);
+                                Brace_event_applyChar(
+                                        brace,
+                                        gold.txt[chr_idx],
+                                        gold.copy
+                                );
                         }
                         Brace_event_apply(brace, "{}", gold);
                         A = B + 1;
