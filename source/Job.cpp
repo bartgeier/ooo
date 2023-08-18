@@ -20,22 +20,22 @@ void Brace_action_applyChar(char chr, std::string &copy) {
         copy += chr;
 }
 
-void Brace_action_applyInside(char const brace_char, size_t const chr_idx, Gold &gold) {
-        gold.copy += brace_char; // '{', '(', '<', '['
-        if (!gold.txt.last_character_in_line(chr_idx)) {
-                gold.copy += "\n";
-        }
+void Brace_action_applyInside(char const brace_char, size_t const chr_idx, std::string &copy) {
+        copy += brace_char; // '{', '(', '<', '['
+        //if (!gold.txt.last_character_in_line(chr_idx)) {
+                copy += "\n";
+        //}
 }
 
-void Brace_action_applyOutside(char const brace_char, size_t const chr_idx, Gold &gold) {
-        if (!gold.txt.first_character_in_line(chr_idx)) {
-                gold.copy += "\n";
-        }
-        gold.copy += brace_char; // '}', ')', '>', ']'
+void Brace_action_applyOutside(char const brace_char, size_t const chr_idx, std::string &copy) {
+       // if (!gold.txt.first_character_in_line(chr_idx)) {
+                copy += "\n";
+        //}
+        copy += brace_char; // '}', ')', '>', ']'
 }
 
-void Brace_action_applyEndOfLine(Gold &gold) {
-        gold.copy += "\n";
+void Brace_action_applyEndOfLine(std::string &copy) {
+        copy += "\n";
 }
 
 int Job_main(Gold &gold) {
@@ -80,7 +80,7 @@ int Job_main(Gold &gold) {
                                         gold.copy
                                 );
                         }
-                        Brace_event_apply(brace, "{}", gold);
+                        Brace_event_apply(brace, "{}", gold.copy);
                         A = B + 1;
                 }
         }

@@ -12,14 +12,19 @@ static struct Flag {
         size_t idx;
         bool clone;
         bool deleteMe;
-        char move;
+        struct s0 {
+                char chr;
+                std::string *copy;
+        }applyChar;
         struct s1 {
                 size_t idx;
                 char brace_char;
+                std::string *copy;
         } applyInside;
         struct s2 {
                 size_t idx;
                 char brace_char;
+                std::string *copy;
         } applyOutside;
         bool applyEndofLine;
 } flag;
@@ -38,20 +43,23 @@ void Brace_action_deleteMe(BraceStack &stack) {
 }
 
 void Brace_action_applyChar(char chr, std::string &copy) {
-        flag.move = chr;
+        flag.applyChar.chr = chr;
+        flag.applyChar.copy = &copy;
 }
 
-void Brace_action_applyInside(char const brace_char, size_t const chr_idx, Gold &gold) {
+void Brace_action_applyInside(char const brace_char, size_t const chr_idx, std::string &copy) {
         flag.applyInside.brace_char = brace_char;
         flag.applyInside.idx = chr_idx;
+        flag.applyInside.copy = &copy;
 }
 
-void Brace_action_applyOutside(char const brace_char, size_t const chr_idx, Gold &gold) {
+void Brace_action_applyOutside(char const brace_char, size_t const chr_idx, std::string &copy) {
         flag.applyOutside.brace_char = brace_char;
         flag.applyOutside.idx = chr_idx;
+        flag.applyOutside.copy = &copy;
 }
 
-void Brace_action_applyEndOfLine(Gold &gold) {
+void Brace_action_applyEndOfLine(std::string &copy) {
         flag.applyEndofLine = true;
 }
 
@@ -280,47 +288,78 @@ TEST(Brace, endOfLine) {
 }
 
 TEST(Brace, applyChar) {
-#if(0)
         std::string copy;
         Brace x;
-        x.state = INSIDE;
-        flag.move = '0';
+        x.state = FIRST;
+        flag.applyChar.chr = '0';
+        flag.applyChar.copy = nullptr;
         Brace_event_applyChar(x, 'X', copy);
-        EXPECT_EQ(x.state, INSIDE);
-        EXPECT_EQ(flag.move, 'X');
+        EXPECT_EQ(x.state, FIRST);
+        EXPECT_EQ(flag.applyChar.chr, 'X');
+        EXPECT_EQ(flag.applyChar.copy, &copy);
 
-        x.state = OUTSIDE;
-        flag.move = '0';
+        x.state = NOT_FIRST;
+        flag.applyChar.chr = '0';
+        flag.applyChar.copy = nullptr;
         Brace_event_applyChar(x, 'Y', copy);
-        EXPECT_EQ(x.state, OUTSIDE);
-        EXPECT_EQ(flag.move, 'Y');
+        EXPECT_EQ(x.state, NOT_FIRST);
+        EXPECT_EQ(flag.applyChar.chr, 'Y');
+        EXPECT_EQ(flag.applyChar.copy, &copy);
+
+        x.state = LAST;
+        flag.applyChar.chr = '0';
+        flag.applyChar.copy = nullptr;
+        Brace_event_applyChar(x, 'Z', copy);
+        EXPECT_EQ(x.state, LAST);
+        EXPECT_EQ(flag.applyChar.chr, 'Z');
+        EXPECT_EQ(flag.applyChar.copy, &copy);
+
+        x.state = NOT_LAST;
+        flag.applyChar.chr = '0';
+        flag.applyChar.copy = nullptr;
+        Brace_event_applyChar(x, 'A', copy);
+        EXPECT_EQ(x.state, NOT_LAST);
+        EXPECT_EQ(flag.applyChar.chr, 'A');
+        EXPECT_EQ(flag.applyChar.copy, &copy);
 
         x.state = TERMINATOR;
-        flag.move = '0';
-        Brace_event_applyChar(x, 'Z', copy);
+        flag.applyChar.chr = '0';
+        flag.applyChar.copy = nullptr;
+        Brace_event_applyChar(x, 'T', copy);
         EXPECT_EQ(x.state, TERMINATOR);
-        EXPECT_EQ(flag.move, 'Z');
-#endif
+        EXPECT_EQ(flag.applyChar.chr, 'T');
+        EXPECT_EQ(flag.applyChar.copy, &copy);
 }
 
 TEST(Brace, apply) {
-        Gold gold;
+        std::string copy;
         Brace x;
-        x.state = INSIDE;
+        x.state = FIRST;
         x.chr_idx = 1;
         flag.applyInside.idx = 0;
         flag.applyInside.brace_char = '0';
-        Brace_event_apply(x, "{}", gold);
-        EXPECT_EQ(x.state, INSIDE);
+        Brace_event_apply(x, "{}", copy);
+        EXPECT_EQ(x.state, FIRST);
+        EXPECT_EQ(flag.applyInside.idx, 0);
+        EXPECT_EQ(flag.applyInside.brace_char, '{');
+        EXPECT_EQ(flag.applyInside.copy, &copy);
+
+        x.state = NOT_FIRST;
+        x.chr_idx = 1;
+        flag.applyInside.idx = 0;
+        flag.applyInside.brace_char = '0';
+        Brace_event_apply(x, "{}", copy);
+        EXPECT_EQ(x.state, NOT_FIRST);
         EXPECT_EQ(flag.applyInside.idx, 1);
         EXPECT_EQ(flag.applyInside.brace_char, '{');
+        EXPECT_EQ(flag.applyInside.copy, &copy);
 
-        x.state = OUTSIDE;
+        x.state = LAST;
         x.chr_idx = 2;
         flag.applyOutside.idx = 0;
         flag.applyInside.brace_char = '0';
-        Brace_event_apply(x, "()", gold);
-        EXPECT_EQ(x.state, OUTSIDE);
+        Brace_event_apply(x, "()", copy);
+        EXPECT_EQ(x.state, LAST);
         EXPECT_EQ(flag.applyOutside.idx, 2);
         EXPECT_EQ(flag.applyOutside.brace_char, ')');
 
@@ -328,7 +367,7 @@ TEST(Brace, apply) {
         x.chr_idx = 3;
         flag.applyEndofLine = false;
         flag.applyInside.brace_char = '0';
-        Brace_event_apply(x, "{}", gold);
+        Brace_event_apply(x, "{}", copy);
         EXPECT_EQ(x.state, TERMINATOR);
         EXPECT_TRUE(flag.applyEndofLine);
 }
