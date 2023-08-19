@@ -5,6 +5,11 @@ void BraceStack::push() {
         v.push_back(v.back());
 }
 
+void BraceStack::push(BRACE::States const state, size_t const idx) {
+        push();
+        Brace_set(v.back(), state, idx);
+}
+
 void BraceStack::pop() {
         v.pop_back();
 }

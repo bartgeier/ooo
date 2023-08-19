@@ -12,10 +12,7 @@ namespace BRACE {
                 NOT_FIRST,
                 LAST,
                 NOT_LAST,
-                TERMINATOR,
-
-                OUTSIDE,
-                INSIDE,
+                TERMINATOR
         };
 };
 
@@ -28,6 +25,7 @@ class BraceStack {
         std::vector<Brace> v;
 public:
         void push();
+        void push(BRACE::States const state, size_t const idx);
         void pop();
         Brace& operator[](size_t i);
         size_t size();
