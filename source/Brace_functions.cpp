@@ -17,9 +17,12 @@ void Brace_reset(Brace &m) {
         m.state = INIT;
 }
 
+void Brace_set(Brace &m, States const state) {
+        set(m, state);
+}
+
 void Brace_set(Brace &m, States const state, size_t idx) {
-        m.state = state;
-        m.chr_idx = idx;
+        set(m, state, idx);
 }
 
 void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
@@ -65,6 +68,29 @@ void Brace_event_close(Brace &m, size_t idx, BraceStack &stack) {
                 assert(false);
                 break;
         }
+}
+
+void Brace_event_nonBrace(Brace &m) {
+        switch(m.state) {
+        case INIT:
+                set(m, IDLE);
+                break;
+        case IDLE:
+                break;
+        case FIRST:
+                break;
+        case NOT_FIRST:
+                break;
+        case LAST:
+                set(m, NOT_LAST);
+                break;
+        case NOT_LAST:
+                break;
+        case TERMINATOR:
+                assert(false);
+                break;
+        }
+
 }
 
 void Brace_event_endOfLine(Brace &m, size_t idx, BraceStack &stack) {

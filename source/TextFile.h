@@ -16,9 +16,8 @@ public:
         bool load(char const *path, bool error);
         std::vector<Line>::iterator begin();
         std::vector<Line>::iterator end();
-        bool first_character_in_line(size_t chr_idx) const;
-        bool last_character_in_line(size_t chr_idx) const;
         operator char const*(); //is used for std::cout << textFile
+
 /* for unittests */
         char& operator[](size_t chr_idx);
         size_t size();

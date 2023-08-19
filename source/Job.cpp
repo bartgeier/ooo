@@ -9,11 +9,15 @@
 
 
 void Brace_action_clone(BRACE::States const state, size_t const idx, BraceStack &stack) {
-         stack.push();
+         stack.push(state, idx);
 }
 
 void Brace_action_deleteMe(BraceStack &stack) {
-         stack.pop();
+        if (stack.size() > 1) {
+                stack.pop();
+        } else {
+                Brace_set(stack.last(), BRACE::IDLE);
+        };
 }
 
 void Brace_action_applyChar(char chr, std::string &copy) {
@@ -24,11 +28,20 @@ void Brace_action_applyEndOfLine(std::string &copy) {
         copy += "\n";
 }
 
+
+static char comment(bool &comment, char const chr) {
+        if (chr == '\'' or chr == '\"') {
+                comment = !comment;
+        }
+        return comment ? 'x' : chr;
+}
+
 int Job_main(Gold &gold) {
+        bool inComment = false;
         for (auto const &line : gold.txt) {
                 gold.brace_stack.reset();
                 for (size_t chr_idx = line.start; chr_idx < line.end; chr_idx++) {
-                        switch (gold.txt[chr_idx]) {
+                        switch (comment(inComment, gold.txt[chr_idx])) {
                         case '{':
                                 Brace_event_open(
                                         gold.brace_stack.last(), 
@@ -43,8 +56,11 @@ int Job_main(Gold &gold) {
                                         gold.brace_stack
                                 );
                                 break;
-                        default:
+                        case ' ':
                                 /* nothing */
+                                break;
+                        default:
+                                Brace_event_nonBrace(gold.brace_stack.last());
                                 break;
                         }
                 }

@@ -53,31 +53,3 @@ size_t TextFile::numOfLines() {
 TextFile::Line &TextFile::line(size_t line_idx) {
         return lines[line_idx];
 }
-
-/* return true if file[idx] is the first visible character in the line */
-bool TextFile::first_character_in_line(size_t char_idx) const {
-        assert(file[char_idx] != ' ' & file[char_idx] != '\t');
-        for (size_t i = char_idx; i-- > 0;) {
-                if (file[i] == '\n') {
-                        return true;
-                } 
-                if (file[i] != ' ' & file[i] != '\t') {
-                        return false;
-                }
-        }
-        return true;
-}
-
-/* return true if file[idx] is the last visible character in the line */
-bool TextFile::last_character_in_line(size_t char_idx) const {
-        assert(file[char_idx] != ' ' & file[char_idx] != '\t');
-        for (size_t i = char_idx; ++i < file.size();) {
-                if (file[i] == '\n') {
-                        return true;
-                }
-                if (file[i] != ' ' & file[i] != '\t') {
-                        return false;
-                }
-        }
-        return true;
-}
