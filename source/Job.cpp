@@ -28,20 +28,36 @@ void Brace_action_applyEndOfLine(std::string &copy) {
         copy += "\n";
 }
 
-
-static char comment(bool &comment, char const chr) {
-        if (chr == '\'' or chr == '\"') {
-                comment = !comment;
+/* off = 0 return chr         */
+/* otherwise return 'x'       */ 
+/* as a placeholder character for example {,},(,),[,],<,> */
+/* turn's off the stack tracking */
+static char track(char  &off, char const chr) {
+        if (off == 0) {
+                switch (chr) {
+                case '\'':
+                        off = '\'';
+                        return 'x';
+                case '"':
+                        off = '"';
+                        return 'x';
+                default:
+                        return chr;
+                }
+        } 
+        if (off == chr) {
+                off = 0;
+                return chr;
         }
-        return comment ? 'x' : chr;
+        return 'x';
 }
 
 int Job_main(Gold &gold) {
-        bool inComment = false;
+        char off = 0;
         for (auto const &line : gold.txt) {
                 gold.brace_stack.reset();
                 for (size_t chr_idx = line.start; chr_idx < line.end; chr_idx++) {
-                        switch (comment(inComment, gold.txt[chr_idx])) {
+                        switch (track(off, gold.txt[chr_idx])) {
                         case '{':
                                 Brace_event_open(
                                         gold.brace_stack.last(), 
