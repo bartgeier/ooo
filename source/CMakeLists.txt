@@ -10,6 +10,8 @@ add_library(textfile
         Brace_pass.h
         Brace_pass.cpp
         BraceStack.cpp
+        TrackSwitch.h
+        TrackSwitch.cpp
 )
 
 add_executable(mainApp main.cpp)

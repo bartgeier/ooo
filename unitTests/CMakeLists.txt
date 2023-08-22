@@ -3,6 +3,7 @@ add_executable(testrunner
         test_hello.cpp 
         test_TextFile.cpp
         test_Brace.cpp
+        test_TrackSwitch.cpp
 )
 
 target_include_directories(testrunner
