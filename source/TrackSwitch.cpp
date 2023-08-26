@@ -1,11 +1,178 @@
 #include "TrackSwitch.h"
+#include <assert.h>
 
 using namespace TRACKSWITCH;
 
-void TrackSwitch_reset(TrackSwitch &m) {
+static void set(TrackSwitch &m, States state) {
+        m.state = state;
+}
+
+void TrackSwitch_init(TrackSwitch &m) {
         m.state = INIT;
 }
 
-char TrackSwitch_event(TrackSwitch &m, char chr) {
-        return chr;
+void TrackSwitch_reset(TrackSwitch &m) {
+        TrackSwitch_init(m);
+}
+
+static char apostroph(TrackSwitch &m) {
+        switch (m.state) {
+        case INIT:
+        case SLASH:
+                set(m, CHAR);
+                return '\'';
+        case CHAR:
+                set(m, INIT);
+                return '\'';
+        case STRING:
+        case LINE_COMMENT:
+        case BLOCK_COMMENT:
+        case ASTERISK:
+        case ESC_CHAR:
+        case ESC_STRING:
+                return 'x';
+        }
+        assert(false);
+}
+
+static char quotation_marks(TrackSwitch &m) {
+        switch (m.state) {
+        case INIT:
+        case SLASH:
+                set(m, STRING);
+                return '"';
+        case STRING:
+                set(m, INIT);
+                return '"';
+        case CHAR:
+        case LINE_COMMENT:
+        case BLOCK_COMMENT:
+        case ASTERISK:
+        case ESC_CHAR:
+        case ESC_STRING:
+                return 'x';
+        }
+        assert(false);
+}
+
+static char slash(TrackSwitch &m) {
+        switch (m.state) {
+        case INIT:
+                set(m, SLASH);
+                return '/';
+        case SLASH:
+                set(m, LINE_COMMENT);
+                return '/';
+        case CHAR:
+                set(m, ESC_CHAR);
+                return 'x';
+        case STRING:
+                set(m, ESC_STRING);
+                return 'x';
+        case LINE_COMMENT:
+        case BLOCK_COMMENT:
+                return 'x';
+        case ASTERISK:
+                set(m, INIT);
+                return '/';
+        case ESC_CHAR:
+                set(m, CHAR);
+                return 'x';
+        case ESC_STRING:
+                set(m, STRING);
+                return 'x';
+        }
+        assert(false);
+}
+
+static char asterisk(TrackSwitch &m) {
+        switch (m.state) {
+        case INIT:
+                return '*';
+        case SLASH:
+                set(m, BLOCK_COMMENT);
+                return '*';
+        case CHAR:
+        case STRING:
+        case LINE_COMMENT:
+                return 'x';
+        case BLOCK_COMMENT:
+                set(m, ASTERISK);
+                return 'x';
+        case ASTERISK:
+                return 'x';
+        case ESC_CHAR:
+                set(m, CHAR);
+                return 'x';
+        case ESC_STRING:
+                set(m, STRING);
+                return 'x';
+        }
+        assert(false);
+}
+
+static char line_feed(TrackSwitch &m) {
+        switch (m.state) {
+        case INIT:
+                return '\n';
+        case SLASH:
+        case LINE_COMMENT:
+                set(m, INIT);
+                return '\n';
+        case CHAR:
+        case STRING:
+        case BLOCK_COMMENT:
+                return 'x';
+        case ASTERISK:
+                set(m, BLOCK_COMMENT);
+                return 'x';
+        case ESC_CHAR:
+                set(m, CHAR);
+                return 'x';
+        case ESC_STRING:
+                set(m, STRING);
+                return 'x';
+        }
+        assert(false);
+}
+
+static char character(TrackSwitch &m, char const chr) {
+        switch (m.state) {
+        case INIT:
+        case SLASH:
+                return chr;
+        case CHAR:
+        case STRING:
+        case LINE_COMMENT:
+        case BLOCK_COMMENT:
+                return 'x';
+        case ASTERISK:
+                set(m, BLOCK_COMMENT);
+                return 'x';
+        case ESC_CHAR:
+                set(m, CHAR);
+                return 'x';
+        case ESC_STRING:
+                set(m, STRING);
+                return 'x';
+        }
+        assert(false);
+}
+
+char trackSwitch(TrackSwitch &m, char const chr) {
+        switch (chr) {
+        case '\'':
+                return apostroph(m);
+        case '"':
+                return quotation_marks(m);
+        case '/':
+                return slash(m);
+        case '*':
+                return asterisk(m);
+        case '\n':
+                return line_feed(m);
+        default:
+                return character(m, chr);
+        };
+        assert(false);
 }

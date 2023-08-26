@@ -9,7 +9,7 @@ namespace TRACKSWITCH {
                 STRING,
                 LINE_COMMENT,
                 BLOCK_COMMENT,
-                ASTERIX,
+                ASTERISK,
                 ESC_CHAR,
                 ESC_STRING,
         };
@@ -19,9 +19,9 @@ struct TrackSwitch {
         TRACKSWITCH::States state;
 };
 
-
+void TrackSwitch_init(TrackSwitch &m);
 void TrackSwitch_reset(TrackSwitch &m);
-char TrackSwitch_event(TrackSwitch &m, char chr);
+char trackSwitch(TrackSwitch &m, char const chr);
 
 
 

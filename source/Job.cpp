@@ -1,5 +1,6 @@
 #include "Job.h"
 #include "Brace_functions.h"
+#include "TrackSwitch.h"
 #include <cstddef>
 #include <fstream>
 #include <iterator>
@@ -28,36 +29,12 @@ void Brace_action_applyEndOfLine(std::string &copy) {
         copy += "\n";
 }
 
-/* off = 0 return chr         */
-/* otherwise return 'x'       */ 
-/* as a placeholder character for example {,},(,),[,],<,> */
-/* turn's off the stack tracking */
-static char track(char  &off, char const chr) {
-        if (off == 0) {
-                switch (chr) {
-                case '\'':
-                        off = '\'';
-                        return 'x';
-                case '"':
-                        off = '"';
-                        return 'x';
-                default:
-                        return chr;
-                }
-        } 
-        if (off == chr) {
-                off = 0;
-                return chr;
-        }
-        return 'x';
-}
-
 int Job_main(Gold &gold) {
-        char off = 0;
+        TrackSwitch_init(gold.filter);
         for (auto const &line : gold.txt) {
                 gold.brace_stack.reset();
                 for (size_t chr_idx = line.start; chr_idx < line.end; chr_idx++) {
-                        switch (track(off, gold.txt[chr_idx])) {
+                        switch (trackSwitch(gold.filter, gold.txt[chr_idx])) {
                         case '{':
                                 Brace_event_open(
                                         gold.brace_stack.last(), 
@@ -112,3 +89,4 @@ int Job_main(Gold &gold) {
         std::cout << gold.copy;
         return 0;
 }
+

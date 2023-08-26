@@ -2,7 +2,7 @@
 #define BRACE_FUNCTIONS_H
 
 #include "Brace_types.h"
-#include "Gold.h"
+#include <string>
 
 void Brace_reset(Brace &m); 
 void Brace_set(Brace &m, BRACE::States const state);
