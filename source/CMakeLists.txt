@@ -5,11 +5,10 @@ add_library(textfile
         TextFile.h
         TextFile.cpp
         Brace_types.h
-        Brace_functions.h
         Brace_functions.cpp
+        BraceStack.cpp
         Brace_pass.h
         Brace_pass.cpp
-        BraceStack.cpp
         TrackSwitch.h
         TrackSwitch.cpp
 )

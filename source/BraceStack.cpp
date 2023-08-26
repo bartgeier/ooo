@@ -1,5 +1,4 @@
 #include "Brace_types.h"
-#include "Brace_functions.h"
 
 void BraceStack::push() {
         v.push_back(v.back());

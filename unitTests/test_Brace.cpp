@@ -1,6 +1,5 @@
 #include "gtest/gtest.h"
 #include <cstddef>
-#include "Brace_functions.h"
 #include "Brace_types.h"
 
 using namespace BRACE;

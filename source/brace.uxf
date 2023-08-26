@@ -7,7 +7,7 @@
       <x>888</x>
       <y>1560</y>
       <w>112</w>
-      <h>64</h>
+      <h>144</h>
     </coordinates>
     <panel_attributes>Brace_types.h
 </panel_attributes>
@@ -16,32 +16,8 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>880</x>
-      <y>1656</y>
-      <w>160</w>
-      <h>64</h>
-    </coordinates>
-    <panel_attributes>Brace_functions.h
-
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>936</x>
-      <y>1616</y>
-      <w>24</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLState</id>
-    <coordinates>
-      <x>1088</x>
-      <y>1648</y>
+      <x>1096</x>
+      <y>1640</y>
       <w>168</w>
       <h>80</h>
     </coordinates>
@@ -51,13 +27,13 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1032</x>
-      <y>1680</y>
-      <w>72</w>
+      <x>992</x>
+      <y>1664</y>
+      <w>120</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>70.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
@@ -106,7 +82,7 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>744</x>
+      <x>736</x>
       <y>1352</y>
       <w>96</w>
       <h>376</h>
@@ -135,17 +111,6 @@
     </coordinates>
     <panel_attributes>brace_pass.h</panel_attributes>
     <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>832</x>
-      <y>1672</y>
-      <w>64</w>
-      <h>24</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;60.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
@@ -207,11 +172,11 @@
     <coordinates>
       <x>696</x>
       <y>1520</y>
-      <w>64</w>
+      <w>56</w>
       <h>24</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>50.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -1148,17 +1113,6 @@ switch off tracking.</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>832</x>
-      <y>1384</y>
-      <w>72</w>
-      <h>24</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
       <x>936</x>
       <y>1192</y>
       <w>24</w>
@@ -1173,9 +1127,53 @@ switch off tracking.</panel_attributes>
       <x>864</x>
       <y>1320</y>
       <w>176</w>
-      <h>320</h>
+      <h>408</h>
     </coordinates>
     <panel_attributes/>
     <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>1320</x>
+      <y>1320</y>
+      <w>112</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>TextFile.h</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1368</x>
+      <y>1192</y>
+      <w>24</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>1328</x>
+      <y>1432</y>
+      <w>112</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>TextFile.cpp</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1368</x>
+      <y>1384</y>
+      <w>24</w>
+      <h>64</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;60.0;10.0;10.0</additional_attributes>
   </element>
 </diagram>
