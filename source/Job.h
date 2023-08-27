@@ -3,6 +3,6 @@
 
 #include "Gold.h"
 
-int Job_main(Gold &gold, char const o[2]);
+int Job_main(Gold &gold);
 
 #endif
