@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
         golds.push_back(gold);
         error = golds[0].txt.load(argv[1], error);
         
-        return Job_main(golds[0]);
+        return Job_main(golds[0], "{}");
 }
 
 #if(0)

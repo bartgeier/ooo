@@ -44,7 +44,7 @@ TEST(Brace, set) {
         x.state = FIRST;
         Brace_set(x, NOT_LAST, 42);
         EXPECT_EQ(x.state, NOT_LAST);
-        EXPECT_EQ(x.chr_idx, 42);
+        EXPECT_EQ(x.idx, 42);
 }
 
 TEST(Brace, open) {
@@ -54,54 +54,54 @@ TEST(Brace, open) {
         x.state = INIT;
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, LAST);
-        EXPECT_EQ(x.chr_idx, 5);
+        EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
         stack.reset();
         x.state = IDLE ;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, LAST);
-        EXPECT_EQ(x.chr_idx, 5);
+        EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
         stack.reset();
         x.state = FIRST;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, FIRST);
-        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.size(), 2);
         EXPECT_EQ(stack.last().state, LAST);
-        EXPECT_EQ(stack.last().chr_idx, 5);
+        EXPECT_EQ(stack.last().idx, 5);
 
         stack.reset();
         EXPECT_EQ(stack.size(), 1);
         x.state = NOT_FIRST;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, NOT_FIRST);
-        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.last().state, LAST);
-        EXPECT_EQ(stack.last().chr_idx, 5);
+        EXPECT_EQ(stack.last().idx, 5);
 
         stack.reset();
         x.state = LAST;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_open(x, 6, stack);
         EXPECT_EQ(x.state, NOT_LAST);
-        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.last().state, LAST);
-        EXPECT_EQ(stack.last().chr_idx, 6);
+        EXPECT_EQ(stack.last().idx, 6);
 
         stack.reset();
         x.state = NOT_LAST;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_open(x, 7, stack);
         EXPECT_EQ(x.state, NOT_LAST);
-        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.last().state, LAST);
-        EXPECT_EQ(stack.last().chr_idx, 7);
+        EXPECT_EQ(stack.last().idx, 7);
 }
 
 TEST(Brace, close) {
@@ -110,39 +110,39 @@ TEST(Brace, close) {
         stack.reset();
         EXPECT_EQ(stack.size(), 1);
         x.state = INIT;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_close(x, 5, stack);
         EXPECT_EQ(x.state, FIRST);
-        EXPECT_EQ(x.chr_idx, 5);
+        EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
         stack.reset();
         x.state = IDLE;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_close(x, 5, stack);
         EXPECT_EQ(x.state, NOT_FIRST);
-        EXPECT_EQ(x.chr_idx, 5);
+        EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
         stack.reset();
         x.state = FIRST;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_close(x, 5, stack);
         EXPECT_EQ(x.state, FIRST);
-        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.size(), 2);
         EXPECT_EQ(stack.last().state, NOT_FIRST);
-        EXPECT_EQ(stack.last().chr_idx, 5);
+        EXPECT_EQ(stack.last().idx, 5);
 
         stack.reset();
         x.state = NOT_FIRST;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_close(x, 5, stack);
         EXPECT_EQ(x.state, NOT_FIRST);
-        EXPECT_EQ(x.chr_idx, 99);
+        EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.size(), 2);
         EXPECT_EQ(stack.last().state, NOT_FIRST);
-        EXPECT_EQ(stack.last().chr_idx, 5);
+        EXPECT_EQ(stack.last().idx, 5);
 
 
         stack.reset();
@@ -162,56 +162,56 @@ TEST(Brace, endOfLine) {
         Brace x;
         stack.reset();
         x.state = INIT;
-        x.chr_idx = 99; 
+        x.idx = 99; 
         Brace_event_endOfLine(x, 5, stack);
         EXPECT_EQ(x.state, TERMINATOR);
-        EXPECT_EQ(x.chr_idx, 5);
+        EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
         stack.reset();
         x.state = IDLE;
-        x.chr_idx = 999; 
+        x.idx = 999; 
         Brace_event_endOfLine(x, 7, stack);
         EXPECT_EQ(x.state, TERMINATOR);
-        EXPECT_EQ(x.chr_idx, 7);
+        EXPECT_EQ(x.idx, 7);
         EXPECT_EQ(stack.size(), 1);
 
         stack.reset();
         x.state = FIRST;
-        x.chr_idx = 1000; 
+        x.idx = 1000; 
         Brace_event_endOfLine(x, 13, stack);
         EXPECT_EQ(x.state, FIRST);
-        EXPECT_EQ(x.chr_idx, 1000);
+        EXPECT_EQ(x.idx, 1000);
         EXPECT_EQ(stack.size(), 2);
         EXPECT_EQ(stack.last().state, TERMINATOR);
-        EXPECT_EQ(stack.last().chr_idx, 13);
+        EXPECT_EQ(stack.last().idx, 13);
 
         stack.reset();
         x.state = NOT_FIRST;
-        x.chr_idx = 2000; 
+        x.idx = 2000; 
         Brace_event_endOfLine(x, 11, stack);
         EXPECT_EQ(x.state, NOT_FIRST);
-        EXPECT_EQ(x.chr_idx, 2000);
+        EXPECT_EQ(x.idx, 2000);
         EXPECT_EQ(stack.last().state, TERMINATOR);
-        EXPECT_EQ(stack.last().chr_idx, 11);
+        EXPECT_EQ(stack.last().idx, 11);
         
         stack.reset();
         x.state = LAST;
-        x.chr_idx = 3000; 
+        x.idx = 3000; 
         Brace_event_endOfLine(x, 71, stack);
         EXPECT_EQ(x.state, LAST);
-        EXPECT_EQ(x.chr_idx, 3000);
+        EXPECT_EQ(x.idx, 3000);
         EXPECT_EQ(stack.last().state, TERMINATOR);
-        EXPECT_EQ(stack.last().chr_idx, 71);
+        EXPECT_EQ(stack.last().idx, 71);
 
         stack.reset();
         x.state = NOT_LAST;
-        x.chr_idx = 81; 
+        x.idx = 81; 
         Brace_event_endOfLine(x, 3, stack);
         EXPECT_EQ(x.state, NOT_LAST);
-        EXPECT_EQ(x.chr_idx, 81);
+        EXPECT_EQ(x.idx, 81);
         EXPECT_EQ(stack.last().state, TERMINATOR);
-        EXPECT_EQ(stack.last().chr_idx, 3);
+        EXPECT_EQ(stack.last().idx, 3);
 }
 
 TEST(Brace, applyChar) {

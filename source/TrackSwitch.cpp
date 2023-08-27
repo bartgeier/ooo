@@ -30,7 +30,7 @@ static char apostroph(TrackSwitch &m) {
         case ASTERISK:
         case ESC_CHAR:
         case ESC_STRING:
-                return 'x';
+                return 'o';
         }
         assert(false);
 }
@@ -50,7 +50,7 @@ static char quotation_marks(TrackSwitch &m) {
         case ASTERISK:
         case ESC_CHAR:
         case ESC_STRING:
-                return 'x';
+                return 'o';
         }
         assert(false);
 }
@@ -65,22 +65,22 @@ static char slash(TrackSwitch &m) {
                 return '/';
         case CHAR:
                 set(m, ESC_CHAR);
-                return 'x';
+                return 'o';
         case STRING:
                 set(m, ESC_STRING);
-                return 'x';
+                return 'o';
         case LINE_COMMENT:
         case BLOCK_COMMENT:
-                return 'x';
+                return 'o';
         case ASTERISK:
                 set(m, INIT);
                 return '/';
         case ESC_CHAR:
                 set(m, CHAR);
-                return 'x';
+                return 'o';
         case ESC_STRING:
                 set(m, STRING);
-                return 'x';
+                return 'o';
         }
         assert(false);
 }
@@ -95,18 +95,18 @@ static char asterisk(TrackSwitch &m) {
         case CHAR:
         case STRING:
         case LINE_COMMENT:
-                return 'x';
+                return 'o';
         case BLOCK_COMMENT:
                 set(m, ASTERISK);
-                return 'x';
+                return 'o';
         case ASTERISK:
-                return 'x';
+                return 'o';
         case ESC_CHAR:
                 set(m, CHAR);
-                return 'x';
+                return 'o';
         case ESC_STRING:
                 set(m, STRING);
-                return 'x';
+                return 'o';
         }
         assert(false);
 }
@@ -122,16 +122,16 @@ static char line_feed(TrackSwitch &m) {
         case CHAR:
         case STRING:
         case BLOCK_COMMENT:
-                return 'x';
+                return 'o';
         case ASTERISK:
                 set(m, BLOCK_COMMENT);
-                return 'x';
+                return 'o';
         case ESC_CHAR:
                 set(m, CHAR);
-                return 'x';
+                return 'o';
         case ESC_STRING:
                 set(m, STRING);
-                return 'x';
+                return 'o';
         }
         assert(false);
 }
@@ -145,16 +145,16 @@ static char character(TrackSwitch &m, char const chr) {
         case STRING:
         case LINE_COMMENT:
         case BLOCK_COMMENT:
-                return 'x';
+                return 'o';
         case ASTERISK:
                 set(m, BLOCK_COMMENT);
-                return 'x';
+                return 'o';
         case ESC_CHAR:
                 set(m, CHAR);
-                return 'x';
+                return 'o';
         case ESC_STRING:
                 set(m, STRING);
-                return 'x';
+                return 'o';
         }
         assert(false);
 }

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <iostream>
 #include <ranges>
-
+#include <assert.h>
 
 void Brace_action_clone(BRACE::States const state, size_t const idx, BraceStack &stack) {
          stack.push(state, idx);
@@ -27,33 +27,38 @@ void Brace_action_applyEndOfLine(std::string &copy) {
         copy += "\n";
 }
 
-int Job_main(Gold &gold) {
+/* o has to be: "{}" or "()" or "<>" or "[]" */
+int Job_main(Gold &gold, char const o[2]) {
+        assert(
+                  o[0] == '{' & o[1] == '}'
+                | o[0] == '(' & o[1] == ')'
+                | o[0] == '[' & o[1] == ']'
+                | o[0] == '<' & o[1] == '>'
+        );
         TrackSwitch_init(gold.filter);
         for (auto const &line : gold.txt) {
                 gold.brace_stack.reset();
-                for (size_t chr_idx = line.start; chr_idx < line.end; chr_idx++) {
-                        switch (trackSwitch(gold.filter, gold.txt[chr_idx])) {
-                        case '{':
+                for (size_t idx = line.start; idx < line.end; idx++) {
+                        char const c = trackSwitch(gold.filter, gold.txt[idx]);
+                        if (c == o[0]) {
                                 Brace_event_open(
                                         gold.brace_stack.last(), 
-                                        chr_idx,
+                                        idx,
                                         gold.brace_stack
                                 );
-                                break;
-                        case '}':
+                                continue;
+                        } if (c == o[1]) {
                                 Brace_event_close(
                                         gold.brace_stack.last(), 
-                                        chr_idx, 
+                                        idx, 
                                         gold.brace_stack
                                 );
-                                break;
-                        case ' ':
+                                continue;
+                        } if (c == ' ') {
                                 /* nothing */
-                                break;
-                        default:
-                                Brace_event_nonBrace(gold.brace_stack.last());
-                                break;
-                        }
+                                continue;
+                        } 
+                        Brace_event_nonBrace(gold.brace_stack.last());
                 }
                 Brace_event_endOfLine(
                         gold.brace_stack.last(),
@@ -65,15 +70,15 @@ int Job_main(Gold &gold) {
                 for (auto &brace : gold.brace_stack) { 
                         /* apply characters from txt and Braces from stack, */ 
                         /* and move them into copy */
-                        size_t const B = brace.chr_idx;
-                        for (size_t chr_idx = A; chr_idx < B; chr_idx++) {
+                        size_t const B = brace.idx;
+                        for (size_t idx = A; idx < B; idx++) {
                                 Brace_event_applyChar(
                                         brace,
-                                        gold.txt[chr_idx],
+                                        gold.txt[idx],
                                         gold.copy
                                 );
                         }
-                        Brace_event_apply(brace, "{}", gold.copy);
+                        Brace_event_apply(brace, o, gold.copy);
                         A = B + 1;
                 }
         }

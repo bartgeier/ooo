@@ -19,7 +19,7 @@ namespace BRACE {
 
 struct Brace {
         BRACE::States state;
-        size_t chr_idx;
+        size_t idx;
 };
 
 class BraceStack {
