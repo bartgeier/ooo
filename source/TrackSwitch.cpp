@@ -3,19 +3,19 @@
 
 using namespace TRACKSWITCH;
 
-static void set(TrackSwitch &m, States state) {
+static void set(Gold::TrackSwitch &m, TRACKSWITCH::States state) {
         m.state = state;
 }
 
-void TrackSwitch_init(TrackSwitch &m) {
+void TrackSwitch_init(Gold::TrackSwitch &m) {
         m.state = INIT;
 }
 
-void TrackSwitch_reset(TrackSwitch &m) {
+void TrackSwitch_reset(Gold::TrackSwitch &m) {
         TrackSwitch_init(m);
 }
 
-static char apostroph(TrackSwitch &m) {
+static char apostroph(Gold::TrackSwitch &m) {
         switch (m.state) {
         case INIT:
         case SLASH:
@@ -35,7 +35,7 @@ static char apostroph(TrackSwitch &m) {
         assert(false);
 }
 
-static char quotation_marks(TrackSwitch &m) {
+static char quotation_marks(Gold::TrackSwitch &m) {
         switch (m.state) {
         case INIT:
         case SLASH:
@@ -55,7 +55,7 @@ static char quotation_marks(TrackSwitch &m) {
         assert(false);
 }
 
-static char slash(TrackSwitch &m) {
+static char slash(Gold::TrackSwitch &m) {
         switch (m.state) {
         case INIT:
                 set(m, SLASH);
@@ -85,7 +85,7 @@ static char slash(TrackSwitch &m) {
         assert(false);
 }
 
-static char asterisk(TrackSwitch &m) {
+static char asterisk(Gold::TrackSwitch &m) {
         switch (m.state) {
         case INIT:
                 return '*';
@@ -111,7 +111,7 @@ static char asterisk(TrackSwitch &m) {
         assert(false);
 }
 
-static char line_feed(TrackSwitch &m) {
+static char line_feed(Gold::TrackSwitch &m) {
         switch (m.state) {
         case INIT:
                 return '\n';
@@ -136,7 +136,7 @@ static char line_feed(TrackSwitch &m) {
         assert(false);
 }
 
-static char character(TrackSwitch &m, char const chr) {
+static char character(Gold::TrackSwitch &m, char const chr) {
         switch (m.state) {
         case INIT:
         case SLASH:
@@ -159,7 +159,7 @@ static char character(TrackSwitch &m, char const chr) {
         assert(false);
 }
 
-char trackSwitch(TrackSwitch &m, char const chr) {
+char trackSwitch(Gold::TrackSwitch &m, char const chr) {
         switch (chr) {
         case '\'':
                 return apostroph(m);

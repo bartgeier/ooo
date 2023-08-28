@@ -1,11 +1,12 @@
 #include <gtest/gtest.h>
+#include "Gold.h"
 #include "TrackSwitch.h"
 /* https://www.thepunctuationguide.com/parentheses.html */
 
 using namespace TRACKSWITCH;
 
 TEST(TrackSwitch, init) {
-        TrackSwitch x;
+        Gold::Gold::TrackSwitch x;
         TrackSwitch_init(x);
         EXPECT_EQ(x.state, INIT);
         EXPECT_EQ(trackSwitch(x, 'i'), 'i');
@@ -13,14 +14,14 @@ TEST(TrackSwitch, init) {
 }
 
 TEST(TrackSwitch, reset) {
-        TrackSwitch x;
+        Gold::TrackSwitch x;
         TrackSwitch_reset(x);
         EXPECT_EQ(x.state, INIT);
         EXPECT_EQ(trackSwitch(x, 'i'), 'i');
 }
 
 TEST(TrackSwitch, apostrophe) {
-        TrackSwitch x;
+        Gold::TrackSwitch x;
         x.state = INIT;
         EXPECT_EQ(trackSwitch(x, '\''), '\'');
         EXPECT_EQ(x.state, CHAR);
@@ -59,7 +60,7 @@ TEST(TrackSwitch, apostrophe) {
 }
 
 TEST(TrackSwitch, quotation_marks) {
-        TrackSwitch x;
+        Gold::TrackSwitch x;
         x.state = INIT;
         EXPECT_EQ(trackSwitch(x, '"'), '"');
         EXPECT_EQ(x.state, STRING);
@@ -98,7 +99,7 @@ TEST(TrackSwitch, quotation_marks) {
 }
 
 TEST(TrackSwitch, slash) {
-        TrackSwitch x;
+        Gold::TrackSwitch x;
         x.state = INIT;
         EXPECT_EQ(trackSwitch(x, '/'), '/');
         EXPECT_EQ(x.state, SLASH);
@@ -137,7 +138,7 @@ TEST(TrackSwitch, slash) {
 }
 
 TEST(TrackSwitch, asterisk) {
-        TrackSwitch x;
+        Gold::TrackSwitch x;
         x.state = INIT;
         EXPECT_EQ(trackSwitch(x, '*'), '*');
         EXPECT_EQ(x.state, INIT);
@@ -176,7 +177,7 @@ TEST(TrackSwitch, asterisk) {
 }
 
 TEST(TrackSwitch, line_feed) {
-        TrackSwitch x;
+        Gold::TrackSwitch x;
         x.state = INIT;
         EXPECT_EQ(trackSwitch(x, '\n'), '\n');
         EXPECT_EQ(x.state, INIT);
@@ -215,7 +216,7 @@ TEST(TrackSwitch, line_feed) {
 }
 
 TEST(TrackSwitch, character) {
-        TrackSwitch x;
+        Gold::TrackSwitch x;
         x.state = INIT;
         EXPECT_EQ(trackSwitch(x, 'g'), 'g');
         EXPECT_EQ(x.state, INIT);

@@ -1,4 +1,5 @@
 #include "Task_brace.h"
+#include "TrackSwitch.h"
 #include <assert.h>
 
 void Brace_action_clone(BRACE::States const state, size_t const idx, BraceStack &stack) {

@@ -4,11 +4,26 @@
 #include <string>
 #include "TextFile.h"
 #include "Brace_types.h"
-#include "TrackSwitch.h"
+
+namespace TRACKSWITCH {
+        enum States {    /* visible because unittests */
+                INIT,
+                SLASH,
+                CHAR,
+                STRING,
+                LINE_COMMENT,
+                BLOCK_COMMENT,
+                ASTERISK,
+                ESC_CHAR,
+                ESC_STRING,
+        };
+};
 
 struct Gold {
         TextFile txt;
-        TrackSwitch filter;
+        struct TrackSwitch {
+                TRACKSWITCH::States state;
+        } filter;
         BraceStack brace_stack;
         std::string copy;
 };
