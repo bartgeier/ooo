@@ -8,16 +8,28 @@ using namespace BRACE;
 static struct Flag {
         States state;
         size_t idx;
-        BraceStack *stack;
+        // BraceStack *stack;
 } flag;
 
-/* stubs */
-void Brace_action_clone(BRACE::States const state, size_t const idx, BraceStack &stack) {
-        stack.push(state, idx);
+
+static void stack_reset(std::vector<Brace> &stack) {
+        stack.resize(1);
+        stack.back().state = BRACE::INIT;
 }
 
-void Brace_action_deleteMe(BraceStack &stack) {
-        stack.pop();
+/* stubs */
+void Brace_action_clone(
+        BRACE::States const state,
+        size_t const idx,
+        std::vector<Brace> &stack
+) {
+        stack.push_back(stack.back());
+        stack.back().idx = idx;
+        stack.back().state = state;
+}
+
+void Brace_action_deleteMe(std::vector<Brace> &stack) {
+        stack.pop_back();
 }
 
 void Brace_action_applyChar(char chr, std::string &copy) {
@@ -48,16 +60,16 @@ TEST(Brace, set) {
 }
 
 TEST(Brace, open) {
-        BraceStack stack;
+        std::vector<Brace> stack;
         Brace x;
-        stack.reset();
+        stack_reset(stack);
         x.state = INIT;
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, LAST);
         EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = IDLE ;
         x.idx = 99; 
         Brace_event_open(x, 5, stack);
@@ -65,49 +77,49 @@ TEST(Brace, open) {
         EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = FIRST;
         x.idx = 99; 
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, FIRST);
         EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.size(), 2);
-        EXPECT_EQ(stack.last().state, LAST);
-        EXPECT_EQ(stack.last().idx, 5);
+        EXPECT_EQ(stack.back().state, LAST);
+        EXPECT_EQ(stack.back().idx, 5);
 
-        stack.reset();
+        stack_reset(stack);
         EXPECT_EQ(stack.size(), 1);
         x.state = NOT_FIRST;
         x.idx = 99; 
         Brace_event_open(x, 5, stack);
         EXPECT_EQ(x.state, NOT_FIRST);
         EXPECT_EQ(x.idx, 99);
-        EXPECT_EQ(stack.last().state, LAST);
-        EXPECT_EQ(stack.last().idx, 5);
+        EXPECT_EQ(stack.back().state, LAST);
+        EXPECT_EQ(stack.back().idx, 5);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = LAST;
         x.idx = 99; 
         Brace_event_open(x, 6, stack);
         EXPECT_EQ(x.state, NOT_LAST);
         EXPECT_EQ(x.idx, 99);
-        EXPECT_EQ(stack.last().state, LAST);
-        EXPECT_EQ(stack.last().idx, 6);
+        EXPECT_EQ(stack.back().state, LAST);
+        EXPECT_EQ(stack.back().idx, 6);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = NOT_LAST;
         x.idx = 99; 
         Brace_event_open(x, 7, stack);
         EXPECT_EQ(x.state, NOT_LAST);
         EXPECT_EQ(x.idx, 99);
-        EXPECT_EQ(stack.last().state, LAST);
-        EXPECT_EQ(stack.last().idx, 7);
+        EXPECT_EQ(stack.back().state, LAST);
+        EXPECT_EQ(stack.back().idx, 7);
 }
 
 TEST(Brace, close) {
-        BraceStack stack;
+        std::vector<Brace> stack;
         Brace x;
-        stack.reset();
+        stack_reset(stack);
         EXPECT_EQ(stack.size(), 1);
         x.state = INIT;
         x.idx = 99; 
@@ -116,7 +128,7 @@ TEST(Brace, close) {
         EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = IDLE;
         x.idx = 99; 
         Brace_event_close(x, 5, stack);
@@ -124,43 +136,43 @@ TEST(Brace, close) {
         EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = FIRST;
         x.idx = 99; 
         Brace_event_close(x, 5, stack);
         EXPECT_EQ(x.state, FIRST);
         EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.size(), 2);
-        EXPECT_EQ(stack.last().state, NOT_FIRST);
-        EXPECT_EQ(stack.last().idx, 5);
+        EXPECT_EQ(stack.back().state, NOT_FIRST);
+        EXPECT_EQ(stack.back().idx, 5);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = NOT_FIRST;
         x.idx = 99; 
         Brace_event_close(x, 5, stack);
         EXPECT_EQ(x.state, NOT_FIRST);
         EXPECT_EQ(x.idx, 99);
         EXPECT_EQ(stack.size(), 2);
-        EXPECT_EQ(stack.last().state, NOT_FIRST);
-        EXPECT_EQ(stack.last().idx, 5);
+        EXPECT_EQ(stack.back().state, NOT_FIRST);
+        EXPECT_EQ(stack.back().idx, 5);
 
 
-        stack.reset();
+        stack_reset(stack);
         EXPECT_EQ(stack.size(), 1);
         x.state = LAST;
         Brace_event_close(x, 5, stack);
         EXPECT_EQ(stack.size(), 0);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = NOT_LAST;
         Brace_event_close(x, 5, stack);
         EXPECT_EQ(stack.size(), 0);
 }
 
 TEST(Brace, endOfLine) {
-        BraceStack stack;
+        std::vector<Brace> stack;
         Brace x;
-        stack.reset();
+        stack_reset(stack);
         x.state = INIT;
         x.idx = 99; 
         Brace_event_endOfLine(x, 5, stack);
@@ -168,7 +180,7 @@ TEST(Brace, endOfLine) {
         EXPECT_EQ(x.idx, 5);
         EXPECT_EQ(stack.size(), 1);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = IDLE;
         x.idx = 999; 
         Brace_event_endOfLine(x, 7, stack);
@@ -176,42 +188,42 @@ TEST(Brace, endOfLine) {
         EXPECT_EQ(x.idx, 7);
         EXPECT_EQ(stack.size(), 1);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = FIRST;
         x.idx = 1000; 
         Brace_event_endOfLine(x, 13, stack);
         EXPECT_EQ(x.state, FIRST);
         EXPECT_EQ(x.idx, 1000);
         EXPECT_EQ(stack.size(), 2);
-        EXPECT_EQ(stack.last().state, TERMINATOR);
-        EXPECT_EQ(stack.last().idx, 13);
+        EXPECT_EQ(stack.back().state, TERMINATOR);
+        EXPECT_EQ(stack.back().idx, 13);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = NOT_FIRST;
         x.idx = 2000; 
         Brace_event_endOfLine(x, 11, stack);
         EXPECT_EQ(x.state, NOT_FIRST);
         EXPECT_EQ(x.idx, 2000);
-        EXPECT_EQ(stack.last().state, TERMINATOR);
-        EXPECT_EQ(stack.last().idx, 11);
+        EXPECT_EQ(stack.back().state, TERMINATOR);
+        EXPECT_EQ(stack.back().idx, 11);
         
-        stack.reset();
+        stack_reset(stack);
         x.state = LAST;
         x.idx = 3000; 
         Brace_event_endOfLine(x, 71, stack);
         EXPECT_EQ(x.state, LAST);
         EXPECT_EQ(x.idx, 3000);
-        EXPECT_EQ(stack.last().state, TERMINATOR);
-        EXPECT_EQ(stack.last().idx, 71);
+        EXPECT_EQ(stack.back().state, TERMINATOR);
+        EXPECT_EQ(stack.back().idx, 71);
 
-        stack.reset();
+        stack_reset(stack);
         x.state = NOT_LAST;
         x.idx = 81; 
         Brace_event_endOfLine(x, 3, stack);
         EXPECT_EQ(x.state, NOT_LAST);
         EXPECT_EQ(x.idx, 81);
-        EXPECT_EQ(stack.last().state, TERMINATOR);
-        EXPECT_EQ(stack.last().idx, 3);
+        EXPECT_EQ(stack.back().state, TERMINATOR);
+        EXPECT_EQ(stack.back().idx, 3);
 }
 
 TEST(Brace, applyChar) {

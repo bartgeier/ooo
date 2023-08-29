@@ -24,7 +24,7 @@ struct Gold {
         struct TrackSwitch {
                 TRACKSWITCH::States state;
         } filter;
-        BraceStack brace_stack;
+        std::vector<Brace> brace_stack;
         std::string copy;
 };
 

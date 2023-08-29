@@ -8,7 +8,6 @@ add_library(textfile
         Task_brace.cpp
         Brace_types.h
         Brace_functions.cpp
-        BraceStack.cpp
         TrackSwitch.h
         TrackSwitch.cpp
 )

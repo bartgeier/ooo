@@ -2,15 +2,21 @@
 #include "TrackSwitch.h"
 #include <assert.h>
 
-void Brace_action_clone(BRACE::States const state, size_t const idx, BraceStack &stack) {
-         stack.push(state, idx);
+void Brace_action_clone(
+        BRACE::States const state,
+        size_t const idx,
+        std::vector<Brace> &stack
+) {
+        stack.push_back(stack.back());
+        stack.back().idx = idx;
+        stack.back().state = state;
 }
 
-void Brace_action_deleteMe(BraceStack &stack) {
+void Brace_action_deleteMe(std::vector<Brace> &stack) {
         if (stack.size() > 1) {
-                stack.pop();
+                stack.pop_back();
         } else {
-                Brace_set(stack.last(), BRACE::IDLE);
+                Brace_set(stack.back(), BRACE::IDLE);
         };
 }
 
@@ -31,19 +37,20 @@ int task_brace(Gold &gold, char const o[2]) {
         );
         TrackSwitch_init(gold.filter);
         for (auto const &line : gold.txt) {
-                gold.brace_stack.reset();
+                gold.brace_stack.resize(1);
+                gold.brace_stack.back().state = BRACE::INIT;
                 for (size_t idx = line.start; idx < line.end; idx++) {
                         char const c = trackSwitch(gold.filter, gold.txt[idx]);
                         if (c == o[0]) {
                                 Brace_event_open(
-                                        gold.brace_stack.last(), 
+                                        gold.brace_stack.back(), 
                                         idx,
                                         gold.brace_stack
                                 );
                                 continue;
                         } if (c == o[1]) {
                                 Brace_event_close(
-                                        gold.brace_stack.last(), 
+                                        gold.brace_stack.back(), 
                                         idx, 
                                         gold.brace_stack
                                 );
@@ -52,10 +59,10 @@ int task_brace(Gold &gold, char const o[2]) {
                                 /* nothing */
                                 continue;
                         } 
-                        Brace_event_nonBrace(gold.brace_stack.last());
+                        Brace_event_nonBrace(gold.brace_stack.back());
                 }
                 Brace_event_endOfLine(
-                        gold.brace_stack.last(),
+                        gold.brace_stack.back(), 
                         line.end,
                         gold.brace_stack
                 );

@@ -4,8 +4,8 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1505</x>
-      <y>1365</y>
+      <x>1491</x>
+      <y>1183</y>
       <w>98</w>
       <h>126</h>
     </coordinates>
@@ -16,8 +16,8 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1687</x>
-      <y>1435</y>
+      <x>1673</x>
+      <y>1253</y>
       <w>147</w>
       <h>70</h>
     </coordinates>
@@ -27,8 +27,8 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1596</x>
-      <y>1456</y>
+      <x>1582</x>
+      <y>1274</y>
       <w>105</w>
       <h>21</h>
     </coordinates>
@@ -100,28 +100,6 @@
     </coordinates>
     <panel_attributes>task_brace.h</panel_attributes>
     <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLState</id>
-    <coordinates>
-      <x>1687</x>
-      <y>1365</y>
-      <w>98</w>
-      <h>56</h>
-    </coordinates>
-    <panel_attributes>BraceStack.cpp</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1596</x>
-      <y>1386</y>
-      <w>105</w>
-      <h>21</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
@@ -1103,24 +1081,13 @@ switch off tracking.</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1547</x>
+      <x>1533</x>
       <y>1043</y>
-      <w>21</w>
-      <h>126</h>
+      <w>35</w>
+      <h>154</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;160.0</additional_attributes>
-  </element>
-  <element>
-    <id>UMLState</id>
-    <coordinates>
-      <x>1484</x>
-      <y>1155</y>
-      <w>154</w>
-      <h>357</h>
-    </coordinates>
-    <panel_attributes/>
-    <additional_attributes/>
+    <additional_attributes>30.0;10.0;10.0;200.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
@@ -1225,12 +1192,12 @@ switch off tracking.</panel_attributes>
     <id>Relation</id>
     <coordinates>
       <x>1351</x>
-      <y>1407</y>
-      <w>371</w>
-      <h>161</h>
+      <y>1316</y>
+      <w>357</w>
+      <h>252</h>
     </coordinates>
     <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>510.0;140.0;450.0;210.0;100.0;210.0;10.0;10.0</additional_attributes>
+    <additional_attributes>490.0;10.0;450.0;340.0;100.0;340.0;10.0;140.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>

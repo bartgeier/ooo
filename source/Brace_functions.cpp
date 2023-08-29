@@ -25,7 +25,7 @@ void Brace_set(Brace &m, States const state, size_t idx) {
         set(m, state, idx);
 }
 
-void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
+void Brace_event_open(Brace &m, size_t idx, std::vector<Brace> &stack) {
         switch (m.state) {
         case INIT:
         case IDLE:
@@ -48,7 +48,7 @@ void Brace_event_open(Brace &m, size_t idx, BraceStack &stack) {
         }
 }
 
-void Brace_event_close(Brace &m, size_t idx, BraceStack &stack) {
+void Brace_event_close(Brace &m, size_t idx, std::vector<Brace> &stack) {
         switch (m.state) {
         case INIT:
                 set(m, FIRST, idx);
@@ -92,7 +92,7 @@ void Brace_event_nonBrace(Brace &m) {
         }
 }
 
-void Brace_event_endOfLine(Brace &m, size_t idx, BraceStack &stack) {
+void Brace_event_endOfLine(Brace &m, size_t idx, std::vector<Brace> &stack) {
         switch(m.state) {
         case INIT:
         case IDLE:
