@@ -1,47 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
-  <zoom_level>7</zoom_level>
+  <zoom_level>5</zoom_level>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1491</x>
-      <y>1183</y>
-      <w>98</w>
-      <h>126</h>
-    </coordinates>
-    <panel_attributes>Brace_types.h
-</panel_attributes>
-    <additional_attributes/>
-  </element>
-  <element>
-    <id>UMLState</id>
-    <coordinates>
-      <x>1673</x>
-      <y>1253</y>
-      <w>147</w>
-      <h>70</h>
+      <x>885</x>
+      <y>865</y>
+      <w>105</w>
+      <h>50</h>
     </coordinates>
     <panel_attributes>Brace_functions.cpp</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1582</x>
-      <y>1274</y>
-      <w>105</w>
-      <h>21</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>130.0;10.0;10.0;10.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLState</id>
     <coordinates>
-      <x>917</x>
-      <y>1218</y>
-      <w>98</w>
-      <h>63</h>
+      <x>655</x>
+      <y>810</y>
+      <w>70</w>
+      <h>105</h>
     </coordinates>
     <panel_attributes>task_brace.cpp</panel_attributes>
     <additional_attributes/>
@@ -49,10 +26,10 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>406</x>
-      <y>980</y>
-      <w>1365</w>
-      <h>70</h>
+      <x>290</x>
+      <y>700</y>
+      <w>975</w>
+      <h>50</h>
     </coordinates>
     <panel_attributes>gold.h</panel_attributes>
     <additional_attributes/>
@@ -60,10 +37,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>574</x>
-      <y>1043</y>
-      <w>21</w>
-      <h>273</h>
+      <x>410</x>
+      <y>745</y>
+      <w>15</w>
+      <h>195</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;370.0;10.0;10.0</additional_attributes>
@@ -71,10 +48,10 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>644</x>
-      <y>1183</y>
-      <w>84</w>
-      <h>329</h>
+      <x>460</x>
+      <y>845</y>
+      <w>60</w>
+      <h>235</h>
     </coordinates>
     <panel_attributes>Job.cpp</panel_attributes>
     <additional_attributes/>
@@ -82,10 +59,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>868</x>
-      <y>1246</y>
-      <w>63</w>
-      <h>21</h>
+      <x>620</x>
+      <y>890</y>
+      <w>45</w>
+      <h>15</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>70.0;10.0;10.0;10.0</additional_attributes>
@@ -93,10 +70,10 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>777</x>
-      <y>1218</y>
-      <w>98</w>
-      <h>63</h>
+      <x>555</x>
+      <y>870</y>
+      <w>70</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>task_brace.h</panel_attributes>
     <additional_attributes/>
@@ -104,10 +81,10 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>385</x>
-      <y>1309</y>
-      <w>98</w>
-      <h>56</h>
+      <x>275</x>
+      <y>935</y>
+      <w>70</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>main.cpp</panel_attributes>
     <additional_attributes/>
@@ -115,10 +92,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>476</x>
-      <y>1330</y>
-      <w>77</w>
-      <h>21</h>
+      <x>340</x>
+      <y>950</y>
+      <w>55</w>
+      <h>15</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;90.0;10.0</additional_attributes>
@@ -126,10 +103,10 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>539</x>
-      <y>1302</y>
-      <w>77</w>
-      <h>63</h>
+      <x>385</x>
+      <y>930</y>
+      <w>55</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>Job.h</panel_attributes>
     <additional_attributes/>
@@ -137,10 +114,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>609</x>
-      <y>1330</y>
-      <w>49</w>
-      <h>21</h>
+      <x>435</x>
+      <y>950</y>
+      <w>35</w>
+      <h>15</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>50.0;10.0;10.0;10.0</additional_attributes>
@@ -148,10 +125,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>721</x>
-      <y>1246</y>
-      <w>70</w>
-      <h>21</h>
+      <x>515</x>
+      <y>890</y>
+      <w>50</w>
+      <h>15</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;80.0;10.0</additional_attributes>
@@ -159,10 +136,10 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>252</x>
-      <y>210</y>
-      <w>315</w>
-      <h>91</h>
+      <x>180</x>
+      <y>150</y>
+      <w>225</w>
+      <h>65</h>
     </coordinates>
     <panel_attributes>FIRST
 transparency=0</panel_attributes>
@@ -171,10 +148,10 @@ transparency=0</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1827</x>
-      <y>217</y>
-      <w>266</w>
-      <h>91</h>
+      <x>1305</x>
+      <y>155</y>
+      <w>190</w>
+      <h>65</h>
     </coordinates>
     <panel_attributes>LAST
 transparency=0</panel_attributes>
@@ -183,10 +160,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1953</x>
-      <y>301</y>
-      <w>98</w>
-      <h>154</h>
+      <x>1395</x>
+      <y>215</y>
+      <w>70</w>
+      <h>110</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 
@@ -199,10 +176,10 @@ open(idx, stack)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1337</x>
-      <y>42</y>
-      <w>112</w>
-      <h>112</h>
+      <x>955</x>
+      <y>30</y>
+      <w>80</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 close(idx, stack)
@@ -213,10 +190,10 @@ close(idx, stack)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1638</x>
-      <y>224</y>
-      <w>203</w>
-      <h>56</h>
+      <x>1170</x>
+      <y>160</y>
+      <w>145</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 open(idx, stack)
@@ -228,10 +205,10 @@ open(idx, stack)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1155</x>
-      <y>539</y>
-      <w>126</w>
-      <h>84</h>
+      <x>825</x>
+      <y>385</y>
+      <w>90</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 endOfLine(idx, stack)
@@ -241,10 +218,10 @@ endOfLine(idx, stack)
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1120</x>
-      <y>609</y>
-      <w>98</w>
-      <h>112</h>
+      <x>800</x>
+      <y>435</y>
+      <w>70</w>
+      <h>80</h>
     </coordinates>
     <panel_attributes>TERMINATOR
 transparency=0</panel_attributes>
@@ -254,9 +231,9 @@ transparency=0</panel_attributes>
     <id>UMLState</id>
     <coordinates>
       <x>0</x>
-      <y>63</y>
-      <w>2324</w>
-      <h>336</h>
+      <y>45</y>
+      <w>1660</w>
+      <h>240</h>
     </coordinates>
     <panel_attributes>bg=yellow
 transparency=0
@@ -266,10 +243,10 @@ layer=-2</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2317</x>
-      <y>210</y>
-      <w>182</w>
-      <h>84</h>
+      <x>1655</x>
+      <y>150</y>
+      <w>130</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 applyChar(char, copy)
@@ -279,10 +256,10 @@ applyChar(char, copy)</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>917</x>
-      <y>623</y>
-      <w>217</w>
-      <h>91</h>
+      <x>655</x>
+      <y>445</y>
+      <w>155</w>
+      <h>65</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apply(brace_char[2], copy)
@@ -292,10 +269,10 @@ applyEndOfLine(copy)</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1197</x>
-      <y>140</y>
-      <w>1106</w>
-      <h>210</h>
+      <x>855</x>
+      <y>100</y>
+      <w>790</w>
+      <h>150</h>
     </coordinates>
     <panel_attributes>OPEN {
 valign=top
@@ -307,10 +284,10 @@ layer=-1</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1442</x>
-      <y>210</y>
-      <w>203</w>
-      <h>98</h>
+      <x>1030</x>
+      <y>150</y>
+      <w>145</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>NOT_LAST
 transparency=0</panel_attributes>
@@ -319,10 +296,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>399</x>
-      <y>476</y>
-      <w>259</w>
-      <h>35</h>
+      <x>285</x>
+      <y>340</y>
+      <w>185</w>
+      <h>25</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 nonBrace
@@ -332,10 +309,10 @@ nonBrace
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>588</x>
-      <y>210</y>
-      <w>224</w>
-      <h>91</h>
+      <x>420</x>
+      <y>150</y>
+      <w>160</w>
+      <h>65</h>
     </coordinates>
     <panel_attributes>NOT_FIRST
 transparency=0</panel_attributes>
@@ -344,10 +321,10 @@ transparency=0</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>42</x>
-      <y>147</y>
-      <w>1029</w>
-      <h>203</h>
+      <x>30</x>
+      <y>105</y>
+      <w>735</w>
+      <h>145</h>
     </coordinates>
     <panel_attributes>CLOSE }
 valign=top
@@ -359,10 +336,10 @@ layer=-1</panel_attributes>
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>1323</x>
-      <y>7</y>
-      <w>42</w>
-      <h>42</h>
+      <x>945</x>
+      <y>5</y>
+      <w>30</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>type=flow_final
 transparency=0</panel_attributes>
@@ -371,10 +348,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>336</x>
-      <y>294</y>
-      <w>98</w>
-      <h>196</h>
+      <x>240</x>
+      <y>210</y>
+      <w>70</w>
+      <h>140</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 close(idx, stack)
@@ -385,10 +362,10 @@ close(idx, stack)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1638</x>
-      <y>266</y>
-      <w>203</w>
-      <h>28</h>
+      <x>1170</x>
+      <y>190</y>
+      <w>145</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 nonBrace</panel_attributes>
@@ -397,10 +374,10 @@ nonBrace</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>287</x>
-      <y>476</y>
-      <w>119</w>
-      <h>35</h>
+      <x>205</x>
+      <y>340</y>
+      <w>85</w>
+      <h>25</h>
     </coordinates>
     <panel_attributes>INIT
 transparency=0</panel_attributes>
@@ -409,10 +386,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>266</x>
-      <y>84</y>
-      <w>168</w>
-      <h>77</h>
+      <x>190</x>
+      <y>60</y>
+      <w>120</w>
+      <h>55</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 open(idx, stack)
@@ -424,10 +401,10 @@ open(idx, stack)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>448</x>
-      <y>84</y>
-      <w>224</w>
-      <h>77</h>
+      <x>320</x>
+      <y>60</y>
+      <w>160</w>
+      <h>55</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 close(idx, stack)
@@ -437,10 +414,10 @@ close(idx, stack)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1456</x>
-      <y>154</y>
-      <w>175</w>
-      <h>70</h>
+      <x>1040</x>
+      <y>110</y>
+      <w>125</w>
+      <h>50</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 open(idx, stack)
@@ -452,10 +429,10 @@ open(idx, stack)
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>644</x>
-      <y>476</y>
-      <w>84</w>
-      <h>35</h>
+      <x>460</x>
+      <y>340</y>
+      <w>60</w>
+      <h>25</h>
     </coordinates>
     <panel_attributes>IDLE
 transparency=0</panel_attributes>
@@ -464,10 +441,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>679</x>
-      <y>294</y>
-      <w>98</w>
-      <h>196</h>
+      <x>485</x>
+      <y>210</y>
+      <w>70</w>
+      <h>140</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 close(idx, stack)
@@ -478,10 +455,10 @@ close(idx, stack)
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>308</x>
-      <y>483</y>
-      <w>14</w>
-      <h>14</h>
+      <x>220</x>
+      <y>345</y>
+      <w>10</w>
+      <h>10</h>
     </coordinates>
     <panel_attributes>type=initial
 layer=1</panel_attributes>
@@ -490,10 +467,10 @@ layer=1</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>189</x>
-      <y>441</y>
-      <w>1960</w>
-      <h>105</h>
+      <x>135</x>
+      <y>315</y>
+      <w>1400</w>
+      <h>75</h>
     </coordinates>
     <panel_attributes>START
 valign=top
@@ -505,10 +482,10 @@ layer=-1</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2086</x>
-      <y>231</y>
-      <w>210</w>
-      <h>70</h>
+      <x>1490</x>
+      <y>165</y>
+      <w>150</w>
+      <h>50</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apply(brace_char[2], copy)
@@ -518,10 +495,10 @@ applyChar(brace_char[0], copy)</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1246</x>
-      <y>224</y>
-      <w>210</w>
-      <h>70</h>
+      <x>890</x>
+      <y>160</y>
+      <w>150</w>
+      <h>50</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apply(brace_char[2], copy) /
@@ -532,10 +509,10 @@ applyEndOfLine(copy)</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>805</x>
-      <y>224</y>
-      <w>217</w>
-      <h>70</h>
+      <x>575</x>
+      <y>160</y>
+      <w>155</w>
+      <h>50</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apply(brace_char[2], copy) /
@@ -546,10 +523,10 @@ applyChar(brace_char[1], copy)</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>77</x>
-      <y>224</y>
-      <w>189</w>
-      <h>70</h>
+      <x>55</x>
+      <y>160</y>
+      <w>135</w>
+      <h>50</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apply(brace_char[2], copy)
@@ -560,10 +537,10 @@ applyChar(brace_char[1], copy)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1022</x>
+      <x>730</x>
       <y>0</y>
-      <w>238</w>
-      <h>77</h>
+      <w>170</w>
+      <h>55</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 endOfLine(idx, stack)
@@ -574,10 +551,10 @@ endOfLine(idx, stack)
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1211</x>
-      <y>630</y>
-      <w>182</w>
-      <h>84</h>
+      <x>865</x>
+      <y>450</y>
+      <w>130</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 applyChar(char, copy)
@@ -587,10 +564,10 @@ applyChar(char, copy)</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2149</x>
-      <y>1162</y>
-      <w>140</w>
-      <h>644</h>
+      <x>1535</x>
+      <y>830</y>
+      <w>100</w>
+      <h>460</h>
     </coordinates>
     <panel_attributes>INIT
 --
@@ -607,10 +584,10 @@ valign=top
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2695</x>
-      <y>1393</y>
-      <w>133</w>
-      <h>98</h>
+      <x>1925</x>
+      <y>995</y>
+      <w>95</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>LINE_COMMENT
 --
@@ -628,10 +605,10 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2282</x>
-      <y>1449</y>
-      <w>140</w>
-      <h>28</h>
+      <x>1630</x>
+      <y>1035</y>
+      <w>100</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 slash -&gt; /</panel_attributes>
@@ -640,10 +617,10 @@ slash -&gt; /</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2408</x>
-      <y>1435</y>
-      <w>140</w>
-      <h>238</h>
+      <x>1720</x>
+      <y>1025</y>
+      <w>100</w>
+      <h>170</h>
     </coordinates>
     <panel_attributes>SLASH
 bg=white
@@ -653,10 +630,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2541</x>
-      <y>1449</y>
-      <w>168</w>
-      <h>28</h>
+      <x>1815</x>
+      <y>1035</y>
+      <w>120</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 slash -&gt; /</panel_attributes>
@@ -665,10 +642,10 @@ slash -&gt; /</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2282</x>
-      <y>1393</y>
-      <w>427</w>
-      <h>28</h>
+      <x>1630</x>
+      <y>995</y>
+      <w>305</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 line_feed -&gt; \n</panel_attributes>
@@ -677,10 +654,10 @@ line_feed -&gt; \n</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2562</x>
-      <y>1176</y>
-      <w>147</w>
-      <h>28</h>
+      <x>1830</x>
+      <y>840</y>
+      <w>105</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apostroph -&gt; '</panel_attributes>
@@ -689,10 +666,10 @@ apostroph -&gt; '</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2541</x>
-      <y>1568</y>
-      <w>161</w>
-      <h>28</h>
+      <x>1815</x>
+      <y>1120</y>
+      <w>115</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 asterisk -&gt; *</panel_attributes>
@@ -701,10 +678,10 @@ asterisk -&gt; *</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2688</x>
-      <y>1512</y>
-      <w>154</w>
-      <h>98</h>
+      <x>1920</x>
+      <y>1080</y>
+      <w>110</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>BLOCK_COMMENT
 --
@@ -722,10 +699,10 @@ valign=top</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2688</x>
-      <y>1708</y>
-      <w>161</w>
-      <h>105</h>
+      <x>1920</x>
+      <y>1220</y>
+      <w>115</w>
+      <h>75</h>
     </coordinates>
     <panel_attributes>ASTERISK
 --
@@ -739,10 +716,10 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2702</x>
-      <y>1603</y>
-      <w>84</w>
-      <h>119</h>
+      <x>1930</x>
+      <y>1145</y>
+      <w>60</w>
+      <h>85</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 asterisk -&gt; o</panel_attributes>
@@ -751,10 +728,10 @@ asterisk -&gt; o</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2282</x>
-      <y>1729</y>
-      <w>420</w>
-      <h>28</h>
+      <x>1630</x>
+      <y>1235</y>
+      <w>300</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 slash -&gt; /</panel_attributes>
@@ -763,10 +740,10 @@ slash -&gt; /</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2821</x>
-      <y>1603</y>
-      <w>126</w>
-      <h>119</h>
+      <x>2015</x>
+      <y>1145</y>
+      <w>90</w>
+      <h>85</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apostroph -&gt; o
@@ -778,10 +755,10 @@ character(chr) -&gt; o</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2695</x>
-      <y>1148</y>
-      <w>133</w>
-      <h>91</h>
+      <x>1925</x>
+      <y>820</y>
+      <w>95</w>
+      <h>65</h>
     </coordinates>
     <panel_attributes>CHAR
 --
@@ -799,10 +776,10 @@ valign=top</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2695</x>
-      <y>1260</y>
-      <w>133</w>
-      <h>98</h>
+      <x>1925</x>
+      <y>900</y>
+      <w>95</w>
+      <h>70</h>
     </coordinates>
     <panel_attributes>STRING
 --
@@ -820,10 +797,10 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2562</x>
-      <y>1267</y>
-      <w>147</w>
-      <h>28</h>
+      <x>1830</x>
+      <y>905</y>
+      <w>105</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 quotation_marks -&gt; "</panel_attributes>
@@ -832,10 +809,10 @@ quotation_marks -&gt; "</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2282</x>
-      <y>1295</y>
-      <w>427</w>
-      <h>28</h>
+      <x>1630</x>
+      <y>925</y>
+      <w>305</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 quotation_marks -&gt; "</panel_attributes>
@@ -844,10 +821,10 @@ quotation_marks -&gt; "</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2282</x>
-      <y>1204</y>
-      <w>427</w>
-      <h>28</h>
+      <x>1630</x>
+      <y>860</y>
+      <w>305</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apostroph -&gt; '</panel_attributes>
@@ -856,10 +833,10 @@ apostroph -&gt; '</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2821</x>
-      <y>1295</y>
-      <w>273</w>
-      <h>28</h>
+      <x>2015</x>
+      <y>925</y>
+      <w>195</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 slash -&gt; o</panel_attributes>
@@ -868,10 +845,10 @@ slash -&gt; o</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>3080</x>
-      <y>1260</y>
-      <w>133</w>
-      <h>91</h>
+      <x>2200</x>
+      <y>900</y>
+      <w>95</w>
+      <h>65</h>
     </coordinates>
     <panel_attributes>ESC_STRING
 bg=white
@@ -882,10 +859,10 @@ transparency=0
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2821</x>
-      <y>1155</y>
-      <w>273</w>
-      <h>28</h>
+      <x>2015</x>
+      <y>825</y>
+      <w>195</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 slash -&gt; o</panel_attributes>
@@ -894,10 +871,10 @@ slash -&gt; o</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>3080</x>
-      <y>1148</y>
-      <w>133</w>
-      <h>84</h>
+      <x>2200</x>
+      <y>820</y>
+      <w>95</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>ESC_CHAR
 bg=white
@@ -908,10 +885,10 @@ transparency=0
   <element>
     <id>UMLSpecialState</id>
     <coordinates>
-      <x>2191</x>
-      <y>1365</y>
-      <w>42</w>
-      <h>42</h>
+      <x>1565</x>
+      <y>975</y>
+      <w>30</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>type=initial
 layer=1</panel_attributes>
@@ -920,10 +897,10 @@ layer=1</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2093</x>
-      <y>1113</y>
-      <w>476</w>
-      <h>714</h>
+      <x>1495</x>
+      <y>795</y>
+      <w>340</w>
+      <h>510</h>
     </coordinates>
     <panel_attributes>CODE
 bg=yellow
@@ -934,10 +911,10 @@ valign=top</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>2653</x>
-      <y>1113</y>
-      <w>203</w>
-      <h>511</h>
+      <x>1895</x>
+      <y>795</y>
+      <w>145</w>
+      <h>365</h>
     </coordinates>
     <panel_attributes>
 bg=yellow
@@ -948,10 +925,10 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2695</x>
-      <y>1064</y>
-      <w>126</w>
-      <h>63</h>
+      <x>1925</x>
+      <y>760</y>
+      <w>90</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 character(chr) -&gt; o</panel_attributes>
@@ -960,10 +937,10 @@ character(chr) -&gt; o</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2268</x>
-      <y>1064</y>
-      <w>140</w>
-      <h>63</h>
+      <x>1620</x>
+      <y>760</y>
+      <w>100</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 character(chr) -&gt; chr</panel_attributes>
@@ -972,10 +949,10 @@ character(chr) -&gt; chr</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2282</x>
-      <y>1568</y>
-      <w>140</w>
-      <h>28</h>
+      <x>1630</x>
+      <y>1120</y>
+      <w>100</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 character(chr) -&gt; chr</panel_attributes>
@@ -984,10 +961,10 @@ character(chr) -&gt; chr</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2282</x>
-      <y>1547</y>
-      <w>140</w>
-      <h>28</h>
+      <x>1630</x>
+      <y>1105</y>
+      <w>100</w>
+      <h>20</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 line_feed -&gt; \n</panel_attributes>
@@ -996,10 +973,10 @@ line_feed -&gt; \n</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2821</x>
-      <y>1316</y>
-      <w>273</w>
-      <h>77</h>
+      <x>2015</x>
+      <y>940</y>
+      <w>195</w>
+      <h>55</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apostroph -&gt; o
@@ -1013,10 +990,10 @@ character(chr) -&gt; o</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>2821</x>
-      <y>1176</y>
-      <w>273</w>
-      <h>77</h>
+      <x>2015</x>
+      <y>840</y>
+      <w>195</w>
+      <h>55</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 apostroph -&gt; o
@@ -1030,10 +1007,10 @@ character(chr) -&gt; o</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>2485</x>
-      <y>1001</y>
-      <w>175</w>
-      <h>105</h>
+      <x>1775</x>
+      <y>715</y>
+      <w>125</w>
+      <h>75</h>
     </coordinates>
     <panel_attributes>/* ATTENTION dirty trick */
 Returning an o
@@ -1048,10 +1025,10 @@ switch off tracking.</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1225</x>
-      <y>1099</y>
-      <w>98</w>
-      <h>63</h>
+      <x>885</x>
+      <y>805</y>
+      <w>70</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>TrackSwitch.cpp</panel_attributes>
     <additional_attributes/>
@@ -1059,43 +1036,32 @@ switch off tracking.</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1190</x>
-      <y>1127</y>
-      <w>49</w>
-      <h>21</h>
+      <x>840</x>
+      <y>825</y>
+      <w>55</w>
+      <h>15</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>50.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1099</x>
-      <y>1106</y>
-      <w>98</w>
-      <h>63</h>
+      <x>765</x>
+      <y>810</y>
+      <w>80</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>TrackSwitch.h</panel_attributes>
     <additional_attributes/>
   </element>
   <element>
-    <id>Relation</id>
-    <coordinates>
-      <x>1533</x>
-      <y>1043</y>
-      <w>35</w>
-      <h>154</h>
-    </coordinates>
-    <panel_attributes>lt=-&gt;</panel_attributes>
-    <additional_attributes>30.0;10.0;10.0;200.0</additional_attributes>
-  </element>
-  <element>
     <id>UMLState</id>
     <coordinates>
-      <x>546</x>
-      <y>812</y>
-      <w>98</w>
-      <h>63</h>
+      <x>390</x>
+      <y>580</y>
+      <w>70</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>TextFile.h</panel_attributes>
     <additional_attributes/>
@@ -1103,10 +1069,10 @@ switch off tracking.</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>588</x>
-      <y>868</y>
-      <w>21</w>
-      <h>126</h>
+      <x>420</x>
+      <y>620</y>
+      <w>15</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;160.0;10.0;10.0</additional_attributes>
@@ -1114,10 +1080,10 @@ switch off tracking.</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>546</x>
-      <y>714</y>
-      <w>98</w>
-      <h>63</h>
+      <x>390</x>
+      <y>510</y>
+      <w>70</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>TextFile.cpp</panel_attributes>
     <additional_attributes/>
@@ -1125,10 +1091,10 @@ switch off tracking.</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>588</x>
-      <y>770</y>
-      <w>21</w>
-      <h>56</h>
+      <x>420</x>
+      <y>550</y>
+      <w>15</w>
+      <h>40</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;60.0</additional_attributes>
@@ -1136,10 +1102,10 @@ switch off tracking.</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>812</x>
-      <y>1043</y>
-      <w>21</w>
-      <h>189</h>
+      <x>580</x>
+      <y>745</y>
+      <w>15</w>
+      <h>135</h>
     </coordinates>
     <panel_attributes>lt=-&gt;</panel_attributes>
     <additional_attributes>10.0;250.0;10.0;10.0</additional_attributes>
@@ -1147,43 +1113,43 @@ switch off tracking.</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1141</x>
-      <y>1043</y>
-      <w>21</w>
-      <h>77</h>
+      <x>795</x>
+      <y>745</y>
+      <w>15</w>
+      <h>60</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1008</x>
-      <y>1127</y>
-      <w>105</w>
-      <h>119</h>
+      <x>720</x>
+      <y>825</y>
+      <w>55</w>
+      <h>15</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
-    <additional_attributes>130.0;10.0;70.0;10.0;70.0;150.0;10.0;150.0</additional_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1008</x>
-      <y>1260</y>
-      <w>350</w>
-      <h>105</h>
+      <x>720</x>
+      <y>880</y>
+      <w>55</w>
+      <h>15</h>
     </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>480.0;130.0;460.0;30.0;10.0;10.0</additional_attributes>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1302</x>
-      <y>1351</y>
-      <w>98</w>
-      <h>63</h>
+      <x>765</x>
+      <y>865</y>
+      <w>85</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>Brace_functions.h</panel_attributes>
     <additional_attributes/>
@@ -1191,23 +1157,34 @@ switch off tracking.</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1351</x>
-      <y>1316</y>
-      <w>357</w>
-      <h>252</h>
+      <x>845</x>
+      <y>885</y>
+      <w>50</w>
+      <h>15</h>
     </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>490.0;10.0;450.0;340.0;100.0;340.0;10.0;140.0</additional_attributes>
+    <panel_attributes>lt=&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;80.0;10.0</additional_attributes>
   </element>
   <element>
-    <id>Relation</id>
+    <id>UMLState</id>
     <coordinates>
-      <x>1365</x>
-      <y>1043</y>
-      <w>42</w>
-      <h>322</h>
+      <x>750</x>
+      <y>795</y>
+      <w>110</w>
+      <h>170</h>
     </coordinates>
-    <panel_attributes>lt=&lt;.</panel_attributes>
-    <additional_attributes>40.0;10.0;30.0;240.0;10.0;440.0</additional_attributes>
+    <panel_attributes/>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>475</x>
+      <y>760</y>
+      <w>85</w>
+      <h>35</h>
+    </coordinates>
+    <panel_attributes>#include chart</panel_attributes>
+    <additional_attributes/>
   </element>
 </diagram>

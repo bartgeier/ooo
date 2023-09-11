@@ -1,18 +1,11 @@
 #include "gtest/gtest.h"
 #include <cstddef>
-#include "Brace_types.h"
+#include "Brace_functions.h"
+#include <vector>
 
 using namespace BRACE;
 
-
-static struct Flag {
-        States state;
-        size_t idx;
-        // BraceStack *stack;
-} flag;
-
-
-static void stack_reset(std::vector<Brace> &stack) {
+static void stack_reset(std::vector<Gold::Brace> &stack) {
         stack.resize(1);
         stack.back().state = BRACE::INIT;
 }
@@ -21,14 +14,14 @@ static void stack_reset(std::vector<Brace> &stack) {
 void Brace_action_clone(
         BRACE::States const state,
         size_t const idx,
-        std::vector<Brace> &stack
+        std::vector<Gold::Brace> &stack
 ) {
         stack.push_back(stack.back());
         stack.back().idx = idx;
         stack.back().state = state;
 }
 
-void Brace_action_deleteMe(std::vector<Brace> &stack) {
+void Brace_action_deleteMe(std::vector<Gold::Brace> &stack) {
         stack.pop_back();
 }
 
@@ -42,7 +35,7 @@ void Brace_action_applyEndOfLine(std::string &copy) {
 
 
 TEST(Brace, reset) {
-        Brace x;
+        Gold::Brace x;
         x.state = FIRST;
         Brace_reset(x);
         EXPECT_EQ(x.state, INIT);
@@ -52,7 +45,7 @@ TEST(Brace, reset) {
 }
 
 TEST(Brace, set) {
-        Brace x;
+        Gold::Brace x;
         x.state = FIRST;
         Brace_set(x, NOT_LAST, 42);
         EXPECT_EQ(x.state, NOT_LAST);
@@ -60,8 +53,8 @@ TEST(Brace, set) {
 }
 
 TEST(Brace, open) {
-        std::vector<Brace> stack;
-        Brace x;
+        std::vector<Gold::Brace> stack;
+        Gold::Brace x;
         stack_reset(stack);
         x.state = INIT;
         Brace_event_open(x, 5, stack);
@@ -117,8 +110,8 @@ TEST(Brace, open) {
 }
 
 TEST(Brace, close) {
-        std::vector<Brace> stack;
-        Brace x;
+        std::vector<Gold::Brace> stack;
+        Gold::Brace x;
         stack_reset(stack);
         EXPECT_EQ(stack.size(), 1);
         x.state = INIT;
@@ -170,8 +163,8 @@ TEST(Brace, close) {
 }
 
 TEST(Brace, endOfLine) {
-        std::vector<Brace> stack;
-        Brace x;
+        std::vector<Gold::Brace> stack;
+        Gold::Brace x;
         stack_reset(stack);
         x.state = INIT;
         x.idx = 99; 
@@ -228,7 +221,7 @@ TEST(Brace, endOfLine) {
 
 TEST(Brace, applyChar) {
         std::string copy;
-        Brace x;
+        Gold::Brace x;
         copy.clear();
         x.state = FIRST;
         Brace_event_applyChar(x, 'X', copy);
@@ -262,7 +255,7 @@ TEST(Brace, applyChar) {
 
 TEST(Brace, apply) {
         std::string copy;
-        Brace x;
+        Gold::Brace x;
         copy.clear();
         x.state = FIRST;
         Brace_event_apply(x, "{}", copy);

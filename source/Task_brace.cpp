@@ -1,18 +1,19 @@
 #include "Task_brace.h"
 #include "TrackSwitch.h"
+#include "Brace_functions.h"
 #include <assert.h>
 
 void Brace_action_clone(
         BRACE::States const state,
         size_t const idx,
-        std::vector<Brace> &stack
+        std::vector<Gold::Brace> &stack
 ) {
         stack.push_back(stack.back());
         stack.back().idx = idx;
         stack.back().state = state;
 }
 
-void Brace_action_deleteMe(std::vector<Brace> &stack) {
+void Brace_action_deleteMe(std::vector<Gold::Brace> &stack) {
         if (stack.size() > 1) {
                 stack.pop_back();
         } else {

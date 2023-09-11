@@ -1,31 +1,31 @@
-#include "Brace_types.h"
+#include "Brace_functions.h"
 #include <cstddef>
 #include <assert.h>
 
 using namespace BRACE;
 
-static void set(Brace &m, States const state) {
+static void set(Gold::Brace &m, States const state) {
         m.state = state;
 
 }
-static void set(Brace &m, States const state, size_t idx) {
+static void set(Gold::Brace &m, States const state, size_t idx) {
         m.state = state;
         m.idx = idx;
 }
 
-void Brace_reset(Brace &m) {
+void Brace_reset(Gold::Brace &m) {
         m.state = INIT;
 }
 
-void Brace_set(Brace &m, States const state) {
+void Brace_set(Gold::Brace &m, States const state) {
         set(m, state);
 }
 
-void Brace_set(Brace &m, States const state, size_t idx) {
+void Brace_set(Gold::Brace &m, States const state, size_t idx) {
         set(m, state, idx);
 }
 
-void Brace_event_open(Brace &m, size_t idx, std::vector<Brace> &stack) {
+void Brace_event_open(Gold::Brace &m, size_t idx, std::vector<Gold::Brace> &stack) {
         switch (m.state) {
         case INIT:
         case IDLE:
@@ -48,7 +48,7 @@ void Brace_event_open(Brace &m, size_t idx, std::vector<Brace> &stack) {
         }
 }
 
-void Brace_event_close(Brace &m, size_t idx, std::vector<Brace> &stack) {
+void Brace_event_close(Gold::Brace &m, size_t idx, std::vector<Gold::Brace> &stack) {
         switch (m.state) {
         case INIT:
                 set(m, FIRST, idx);
@@ -70,7 +70,7 @@ void Brace_event_close(Brace &m, size_t idx, std::vector<Brace> &stack) {
         }
 }
 
-void Brace_event_nonBrace(Brace &m) {
+void Brace_event_nonBrace(Gold::Brace &m) {
         switch(m.state) {
         case INIT:
                 set(m, IDLE);
@@ -92,7 +92,7 @@ void Brace_event_nonBrace(Brace &m) {
         }
 }
 
-void Brace_event_endOfLine(Brace &m, size_t idx, std::vector<Brace> &stack) {
+void Brace_event_endOfLine(Gold::Brace &m, size_t idx, std::vector<Gold::Brace> &stack) {
         switch(m.state) {
         case INIT:
         case IDLE:
@@ -110,7 +110,7 @@ void Brace_event_endOfLine(Brace &m, size_t idx, std::vector<Brace> &stack) {
         }
 }
 
-void Brace_event_applyChar(Brace &m, char chr, std::string &copy) {
+void Brace_event_applyChar(Gold::Brace &m, char chr, std::string &copy) {
         switch(m.state) {
         case INIT:
         case IDLE:
@@ -126,7 +126,7 @@ void Brace_event_applyChar(Brace &m, char chr, std::string &copy) {
         }
 }
 
-void Brace_event_apply(Brace &m, char const o[2], std::string &copy) {
+void Brace_event_apply(Gold::Brace &m, char const o[2], std::string &copy) {
         assert(
                   o[0] == '{' & o[1] == '}'
                 | o[0] == '(' & o[1] == ')'

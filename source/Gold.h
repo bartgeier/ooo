@@ -3,10 +3,9 @@
 
 #include <string>
 #include "TextFile.h"
-#include "Brace_types.h"
 
 namespace TRACKSWITCH {
-        enum States {    /* visible because unittests */
+        enum States {
                 INIT,
                 SLASH,
                 CHAR,
@@ -19,13 +18,30 @@ namespace TRACKSWITCH {
         };
 };
 
+namespace BRACE {
+        enum States {
+                INIT,
+                IDLE,
+                FIRST,
+                NOT_FIRST,
+                LAST,
+                NOT_LAST,
+                TERMINATOR
+        };
+};
+
 struct Gold {
         TextFile txt;
+        std::string copy;
+
         struct TrackSwitch {
                 TRACKSWITCH::States state;
         } filter;
+        struct Brace {
+                BRACE::States state;
+                size_t idx;
+        };
         std::vector<Brace> brace_stack;
-        std::string copy;
 };
 
 #endif

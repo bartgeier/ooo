@@ -6,7 +6,7 @@ add_library(textfile
         Job.cpp
         Task_brace.h
         Task_brace.cpp
-        Brace_types.h
+        Brace_functions.h
         Brace_functions.cpp
         TrackSwitch.h
         TrackSwitch.cpp
