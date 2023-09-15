@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include <cstddef>
-#include "Brace_functions.h"
+#include "Brace.h"
 #include <vector>
 
 using namespace BRACE;

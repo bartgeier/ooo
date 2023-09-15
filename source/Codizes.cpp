@@ -1,21 +1,21 @@
-#include "TrackSwitch.h"
+#include "Codizes.h"
 #include <assert.h>
 
-using namespace TRACKSWITCH;
+using namespace CODIZES;
 
-static void set(Gold::TrackSwitch &m, TRACKSWITCH::States state) {
+static void set(Gold::Codizes &m, CODIZES::States state) {
         m.state = state;
 }
 
-void TrackSwitch_init(Gold::TrackSwitch &m) {
+void Codizes_init(Gold::Codizes &m) {
         m.state = INIT;
 }
 
-void TrackSwitch_reset(Gold::TrackSwitch &m) {
-        TrackSwitch_init(m);
+void Codizes_reset(Gold::Codizes &m) {
+        Codizes_init(m);
 }
 
-static char apostroph(Gold::TrackSwitch &m) {
+static char apostroph(Gold::Codizes &m) {
         switch (m.state) {
         case INIT:
         case SLASH:
@@ -35,7 +35,7 @@ static char apostroph(Gold::TrackSwitch &m) {
         assert(false);
 }
 
-static char quotation_marks(Gold::TrackSwitch &m) {
+static char quotation_marks(Gold::Codizes &m) {
         switch (m.state) {
         case INIT:
         case SLASH:
@@ -55,7 +55,7 @@ static char quotation_marks(Gold::TrackSwitch &m) {
         assert(false);
 }
 
-static char slash(Gold::TrackSwitch &m) {
+static char slash(Gold::Codizes &m) {
         switch (m.state) {
         case INIT:
                 set(m, SLASH);
@@ -85,7 +85,7 @@ static char slash(Gold::TrackSwitch &m) {
         assert(false);
 }
 
-static char asterisk(Gold::TrackSwitch &m) {
+static char asterisk(Gold::Codizes &m) {
         switch (m.state) {
         case INIT:
                 return '*';
@@ -111,7 +111,7 @@ static char asterisk(Gold::TrackSwitch &m) {
         assert(false);
 }
 
-static char line_feed(Gold::TrackSwitch &m) {
+static char line_feed(Gold::Codizes &m) {
         switch (m.state) {
         case INIT:
                 return '\n';
@@ -136,7 +136,7 @@ static char line_feed(Gold::TrackSwitch &m) {
         assert(false);
 }
 
-static char character(Gold::TrackSwitch &m, char const chr) {
+static char character(Gold::Codizes &m, char const chr) {
         switch (m.state) {
         case INIT:
         case SLASH:
@@ -159,7 +159,7 @@ static char character(Gold::TrackSwitch &m, char const chr) {
         assert(false);
 }
 
-char trackSwitch(Gold::TrackSwitch &m, char const chr) {
+char codizes(Gold::Codizes &m, char const chr) {
         switch (chr) {
         case '\'':
                 return apostroph(m);

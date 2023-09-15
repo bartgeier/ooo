@@ -4,7 +4,7 @@
 #include <string>
 #include "TextFile.h"
 
-namespace TRACKSWITCH {
+namespace CODIZES {
         enum States {
                 INIT,
                 SLASH,
@@ -34,8 +34,8 @@ struct Gold {
         TextFile txt;
         std::string copy;
 
-        struct TrackSwitch {
-                TRACKSWITCH::States state;
+        struct Codizes {
+                CODIZES::States state;
         } filter;
         struct Brace {
                 BRACE::States state;

@@ -6,10 +6,10 @@ add_library(textfile
         Job.cpp
         Task_brace.h
         Task_brace.cpp
-        Brace_functions.h
-        Brace_functions.cpp
-        TrackSwitch.h
-        TrackSwitch.cpp
+        Brace.h
+        Brace.cpp
+        Codizes.h
+        Codizes.cpp
 )
 
 add_executable(mainApp main.cpp)

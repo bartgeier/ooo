@@ -1,7 +1,6 @@
-#ifndef BRACE_FUNCTIONS_H
-#define BRACE_FUNCTIONS_H
+#ifndef BRACE_H
+#define BRACE_H
 
-// #include "Brace_types.h"
 #include "Gold.h"
 #include <vector>
 
