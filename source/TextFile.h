@@ -7,11 +7,11 @@
 
 class TextFile {
         std::string file;
-        struct Line {
+public: struct Line {
                 size_t start;
                 size_t end;
         };
-        std::vector<Line> lines;
+private: std::vector<Line> lines;
 public:
         bool load(char const *path, bool error);
         std::vector<Line>::iterator begin();

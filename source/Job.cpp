@@ -10,15 +10,15 @@
 
 
 int Job_main(Gold &gold) {
-        task_brace(gold, "{}");
-
+        task_brace(gold, "{}", gold.pong, gold.ping);
+//  int task_brace(Gold &gold, char const o[2], std::string sink, TextFile &source)
         // std::cout << gold.txt.file;
-        std::cout << gold.txt;
+        std::cout << gold.ping;
         //https://www.learncpp.com/cpp-tutorial/overloading-the-io-operators/
-        for (auto const &line : gold.txt) {
+        for (auto const &line : gold.ping) {
                 std::cout << line.start << ' ' << line.end << '\n';
         }
-        std::cout << gold.copy;
+        std::cout << gold.pong;
         return 0;
 }
 

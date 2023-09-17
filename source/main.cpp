@@ -10,7 +10,7 @@ int main(int argc, char* argv[]) {
         bool error = (argc < 2);
         Gold gold;
         golds.push_back(gold);
-        error = golds[0].txt.load(argv[1], error);
+        error = golds[0].ping.load(argv[1], error);
         
         return Job_main(golds[0]);
 }

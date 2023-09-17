@@ -3,6 +3,11 @@
 
 #include "Gold.h"
 
-int task_brace(Gold &gold, char const o[2]);
+void task_brace(
+        Gold &gold, 
+        char const o[2], 
+        std::string &sink, 
+        TextFile &source
+);
 
 #endif

@@ -31,8 +31,8 @@ namespace BRACE {
 };
 
 struct Gold {
-        TextFile txt;
-        std::string copy;
+        TextFile ping;
+        std::string pong;
 
         struct Codizes {
                 CODIZES::States state;
