@@ -21,7 +21,7 @@ TEST(TextFile, load) {
         EXPECT_EQ(txt.line(txt.numOfLines() - 1).end, 86);
 }
 
-TEST(TextFile, error) {
+TEST(TextFile, load_error) {
         std::filesystem::path currentDir = std::filesystem::current_path();
         std::string path = std::filesystem::current_path();
         path.append("/../../unitTests/Example.txt");
@@ -33,3 +33,18 @@ TEST(TextFile, error) {
         EXPECT_EQ(txt.numOfLines(), 0);
 }
 
+TEST(TextFile, append_character) {
+        TextFile txt;
+        EXPECT_EQ(txt.numOfLines(), 1);
+        txt.append('o');
+        EXPECT_EQ(txt.size(), 1);
+        txt.append('o');
+        EXPECT_EQ(txt.numOfLines(), 1);
+        txt.append('o');
+        txt.append('o');
+        txt.append('o');
+        txt.append('o');
+        txt.append('\n');
+        EXPECT_EQ(txt.size(), 7);
+        EXPECT_EQ(txt.numOfLines(), 2);
+}

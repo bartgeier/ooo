@@ -42,8 +42,7 @@ static void track(
         );
 }
 
-/* apply characters from source and braces from stack, */ 
-/* and move them into sink */
+/* move characters from source and braces from stack, into sink */
 static void apply(
         std::vector<Gold::Brace> &stack,
         std::string &sink,
@@ -85,6 +84,32 @@ void task_brace(
                 track(gold.brace_stack, gold.filter, line, source, o);
                 apply(gold.brace_stack, sink, line, source, o);
         }
+}
+
+void Brace_action_clone(
+        BRACE::States const state,
+        size_t const idx,
+        std::vector<Gold::Brace> &stack
+) {
+        stack.push_back(stack.back());
+        stack.back().idx = idx;
+        stack.back().state = state;
+}
+
+void Brace_action_deleteMe(std::vector<Gold::Brace> &stack) {
+        if (stack.size() > 1) {
+                stack.pop_back();
+        } else {
+                Brace_set(stack.back(), BRACE::IDLE);
+        };
+}
+
+void Brace_action_applyChar(char chr, std::string &copy) {
+        copy += chr;
+}
+
+void Brace_action_applyEndOfLine(std::string &copy) {
+        copy += "\n";
 }
 #else
 void task_brace(
@@ -147,7 +172,6 @@ void task_brace(
                 }
         }
 }
-#endif
 
 void Brace_action_clone(
         BRACE::States const state,
@@ -174,3 +198,5 @@ void Brace_action_applyChar(char chr, std::string &copy) {
 void Brace_action_applyEndOfLine(std::string &copy) {
         copy += "\n";
 }
+#endif
+

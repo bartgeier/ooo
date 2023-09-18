@@ -1,4 +1,4 @@
-/* Hiermit teilen { wir 
+/* Hiermit üöä Ü teilen { wir 
  * } ihnen } mit { das
  *  {} wir ihnen nichts mitzuteilen haben. */ } {
  void fn(a,b)

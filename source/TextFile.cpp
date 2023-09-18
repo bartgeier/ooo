@@ -12,8 +12,8 @@ bool TextFile::load(char const *path, bool error) {
                 return true;
         }
         this->file = std::string(
-                        (std::istreambuf_iterator<char>(file)),
-                        (std::istreambuf_iterator<char>())
+                (std::istreambuf_iterator<char>(file)),
+                (std::istreambuf_iterator<char>())
         );
         file.close();
         size_t start = 0;
@@ -36,6 +36,19 @@ std::vector<TextFile::Line>::iterator TextFile::begin()  {
 
 std::vector<TextFile::Line>::iterator TextFile::end()  {
         return lines.end();
+}
+
+void TextFile::append(char const chr) {
+        if (lines.size() == 0) {
+                lines.push_back({0, 0});
+        }
+        file += chr;
+        if (chr == '\n') {
+                size_t x = lines.back().end + 1;
+                lines.push_back({x, x});
+        } else {
+                lines.back().end++;
+        }
 }
 
 char& TextFile::operator[](size_t chr_idx) {

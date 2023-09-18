@@ -17,6 +17,7 @@ public:
         std::vector<Line>::iterator begin();
         std::vector<Line>::iterator end();
         operator char const*(); //is used for std::cout << textFile
+        void append(char const chr);
 
 /* for unittests */
         char& operator[](size_t chr_idx);
