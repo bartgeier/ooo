@@ -187,11 +187,11 @@ TEST(Codizes, line_feed) {
         EXPECT_EQ(x.state, INIT);
 
         x.state = CHAR;
-        EXPECT_EQ(codizes(x, '\n'), 'o');
+        EXPECT_EQ(codizes(x, '\n'), '\n');
         EXPECT_EQ(x.state, CHAR);
 
         x.state = STRING;
-        EXPECT_EQ(codizes(x, '\n'), 'o');
+        EXPECT_EQ(codizes(x, '\n'), '\n');
         EXPECT_EQ(x.state, STRING);
 
         x.state = LINE_COMMENT;
@@ -199,19 +199,19 @@ TEST(Codizes, line_feed) {
         EXPECT_EQ(x.state, INIT);
 
         x.state = BLOCK_COMMENT;
-        EXPECT_EQ(codizes(x, '\n'), 'o');
+        EXPECT_EQ(codizes(x, '\n'), '\n');
         EXPECT_EQ(x.state, BLOCK_COMMENT);
 
         x.state = ASTERISK;
-        EXPECT_EQ(codizes(x, '\n'), 'o');
+        EXPECT_EQ(codizes(x, '\n'), '\n');
         EXPECT_EQ(x.state, BLOCK_COMMENT);
 
         x.state = ESC_CHAR;
-        EXPECT_EQ(codizes(x, '\n'), 'o');
+        EXPECT_EQ(codizes(x, '\n'), '\n');
         EXPECT_EQ(x.state, CHAR);
 
         x.state = ESC_STRING;
-        EXPECT_EQ(codizes(x, '\n'), 'o');
+        EXPECT_EQ(codizes(x, '\n'), '\n');
         EXPECT_EQ(x.state, STRING);
 }
 

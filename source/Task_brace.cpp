@@ -4,12 +4,12 @@
 #include "TextFile.h"
 #include <assert.h>
 
-#if(0)
+#if(1)
 static void track(
         std::vector<Gold::Brace> &stack,
         Gold::Codizes &filter,
         TextFile::Line const &line,
-        TextFile &source,
+        TextFile const &source,
         char const o[2]
 ) {
         for (size_t idx = line.start; idx < line.end; idx++) {
@@ -45,9 +45,9 @@ static void track(
 /* move characters from source and braces from stack, into sink */
 static void apply(
         std::vector<Gold::Brace> &stack,
-        std::string &sink,
+        TextFile &sink,
         TextFile::Line const &line,
-        TextFile &source,
+        TextFile const &source,
         char const o[2]
 ) {
         size_t A = line.start;
@@ -68,8 +68,8 @@ static void apply(
 void task_brace(
         Gold &gold, 
         char const o[2], 
-        std::string &sink, 
-        TextFile &source
+        TextFile &sink, 
+        TextFile const &source
 ) {
         assert(
                   o[0] == '{' & o[1] == '}'
@@ -104,19 +104,19 @@ void Brace_action_deleteMe(std::vector<Gold::Brace> &stack) {
         };
 }
 
-void Brace_action_applyChar(char chr, std::string &copy) {
-        copy += chr;
+void Brace_action_applyChar(char chr, TextFile &copy) {
+        copy.append(chr);
 }
 
-void Brace_action_applyEndOfLine(std::string &copy) {
-        copy += "\n";
+void Brace_action_applyEndOfLine(TextFile &copy) {
+        copy.append('\n');
 }
 #else
 void task_brace(
         Gold &gold, 
         char const o[2], 
-        std::string &sink, 
-        TextFile &source
+        TextFile &sink, 
+        TextFile const &source
 ) {
         assert(
                   o[0] == '{' & o[1] == '}'
@@ -191,12 +191,12 @@ void Brace_action_deleteMe(std::vector<Gold::Brace> &stack) {
         };
 }
 
-void Brace_action_applyChar(char chr, std::string &copy) {
-        copy += chr;
+void Brace_action_applyChar(char chr, TextFile &copy) {
+        copy.append(chr);
 }
 
-void Brace_action_applyEndOfLine(std::string &copy) {
-        copy += "\n";
+void Brace_action_applyEndOfLine(TextFile &copy) {
+        copy.append('\n');
 }
 #endif
 

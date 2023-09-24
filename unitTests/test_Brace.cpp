@@ -25,12 +25,12 @@ void Brace_action_deleteMe(std::vector<Gold::Brace> &stack) {
         stack.pop_back();
 }
 
-void Brace_action_applyChar(char chr, std::string &copy) {
-        copy += chr;
+void Brace_action_applyChar(char chr, TextFile &copy) {
+        copy.append(chr);
 }
 
-void Brace_action_applyEndOfLine(std::string &copy) {
-        copy += '\n';
+void Brace_action_applyEndOfLine(TextFile &copy) {
+        copy.append('\n');
 }
 
 
@@ -220,69 +220,70 @@ TEST(Brace, endOfLine) {
 }
 
 TEST(Brace, applyChar) {
-        std::string copy;
+        TextFile  copy(10000);
         Gold::Brace x;
         copy.clear();
         x.state = FIRST;
         Brace_event_applyChar(x, 'X', copy);
         EXPECT_EQ(x.state, FIRST);
-        EXPECT_EQ(copy, std::string("X"));
+        EXPECT_EQ(copy[0], 'X');
 
         copy.clear();
         x.state = NOT_FIRST;
         Brace_event_applyChar(x, 'Y', copy);
         EXPECT_EQ(x.state, NOT_FIRST);
-        EXPECT_EQ(copy, std::string("Y"));
+        EXPECT_EQ(copy[0], 'Y');
 
         copy.clear();
         x.state = LAST;
         Brace_event_applyChar(x, 'Z', copy);
         EXPECT_EQ(x.state, LAST);
-        EXPECT_EQ(copy, std::string("Z"));
+        EXPECT_EQ(copy[0], 'Z');
 
         copy.clear();
         x.state = NOT_LAST;
         Brace_event_applyChar(x, 'A', copy);
         EXPECT_EQ(x.state, NOT_LAST);
-        EXPECT_EQ(copy, std::string("A"));
+        EXPECT_EQ(copy[0], 'A');
 
         copy.clear();
         x.state = TERMINATOR;
         Brace_event_applyChar(x, 'T', copy);
         EXPECT_EQ(x.state, TERMINATOR);
-        EXPECT_EQ(copy, std::string("T"));
+        EXPECT_EQ(copy[0], 'T');
 }
 
 TEST(Brace, apply) {
-        std::string copy;
+        TextFile copy(10000);
         Gold::Brace x;
         copy.clear();
         x.state = FIRST;
         Brace_event_apply(x, "{}", copy);
         EXPECT_EQ(x.state, FIRST);
-        EXPECT_EQ(copy, std::string("}"));
+        EXPECT_EQ(copy[0], '}');
 
         copy.clear();
         x.state = NOT_FIRST;
         Brace_event_apply(x, "{}", copy);
         EXPECT_EQ(x.state, NOT_FIRST);
-        EXPECT_EQ(copy, std::string("\n}"));
+        EXPECT_EQ(copy[0], '\n');
 
         copy.clear();
         x.state = LAST;
         Brace_event_apply(x, "{}", copy);
         EXPECT_EQ(x.state, LAST);
-        EXPECT_EQ(copy, std::string("{"));
+        EXPECT_EQ(copy[0], '{');
 
         copy.clear();
         x.state = NOT_LAST;
         Brace_event_apply(x, "{}", copy);
         EXPECT_EQ(x.state, NOT_LAST);
-        EXPECT_EQ(copy, std::string("{\n"));
+        EXPECT_EQ(copy[0], '{');
+        EXPECT_EQ(copy[1], '\n');
 
         copy.clear();
         x.state = TERMINATOR;
         Brace_event_apply(x, "{}", copy);
         EXPECT_EQ(x.state, TERMINATOR);
-        EXPECT_EQ(copy, std::string("\n"));
+        EXPECT_EQ(copy[0], '\n');
 }

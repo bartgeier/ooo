@@ -110,7 +110,7 @@ void Brace_event_endOfLine(Gold::Brace &m, size_t idx, std::vector<Gold::Brace> 
         }
 }
 
-void Brace_event_applyChar(Gold::Brace &m, char chr, std::string &copy) {
+void Brace_event_applyChar(Gold::Brace &m, char chr, TextFile &copy) {
         switch(m.state) {
         case INIT:
         case IDLE:
@@ -126,7 +126,7 @@ void Brace_event_applyChar(Gold::Brace &m, char chr, std::string &copy) {
         }
 }
 
-void Brace_event_apply(Gold::Brace &m, char const o[2], std::string &copy) {
+void Brace_event_apply(Gold::Brace &m, char const o[2], TextFile &copy) {
         assert(
                   o[0] == '{' & o[1] == '}'
                 | o[0] == '(' & o[1] == ')'

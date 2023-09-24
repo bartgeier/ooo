@@ -11,8 +11,8 @@ void Brace_event_open(Gold::Brace &m, size_t idx, std::vector<Gold::Brace> &stac
 void Brace_event_close(Gold::Brace &m, size_t idx, std::vector<Gold::Brace> &stack);
 void Brace_event_nonBrace(Gold::Brace &m);
 void Brace_event_endOfLine(Gold::Brace &m, size_t idx, std::vector<Gold::Brace> &stack);
-void Brace_event_applyChar(Gold::Brace &m, char chr, std::string &copy);
-void Brace_event_apply(Gold::Brace &m, char const type[2], std::string &copy);
+void Brace_event_applyChar(Gold::Brace &m, char chr, TextFile &copy);
+void Brace_event_apply(Gold::Brace &m, char const type[2], TextFile &copy);
 
 void Brace_action_clone(
         BRACE::States const state,
@@ -20,7 +20,7 @@ void Brace_action_clone(
         std::vector<Gold::Brace> &stack
 );
 void Brace_action_deleteMe(std::vector<Gold::Brace> &stack);
-void Brace_action_applyChar(char chr, std::string &copy);
-void Brace_action_applyEndOfLine(std::string &copy);
+void Brace_action_applyChar(char chr, TextFile &copy);
+void Brace_action_applyEndOfLine(TextFile &copy);
 
 #endif

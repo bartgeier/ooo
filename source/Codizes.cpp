@@ -111,6 +111,32 @@ static char asterisk(Gold::Codizes &m) {
         assert(false);
 }
 
+#if(1)
+static char line_feed(Gold::Codizes &m) {
+        switch (m.state) {
+        case INIT:
+                return '\n';
+        case SLASH:
+        case LINE_COMMENT:
+                set(m, INIT);
+                return '\n';
+        case CHAR:
+        case STRING:
+        case BLOCK_COMMENT:
+                return '\n';
+        case ASTERISK:
+                set(m, BLOCK_COMMENT);
+                return '\n';
+        case ESC_CHAR:
+                set(m, CHAR);
+                return '\n';
+        case ESC_STRING:
+                set(m, STRING);
+                return '\n';
+        }
+        assert(false);
+}
+#else 
 static char line_feed(Gold::Codizes &m) {
         switch (m.state) {
         case INIT:
@@ -135,6 +161,7 @@ static char line_feed(Gold::Codizes &m) {
         }
         assert(false);
 }
+#endif
 
 static char character(Gold::Codizes &m, char const chr) {
         switch (m.state) {
