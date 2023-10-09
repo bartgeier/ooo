@@ -220,7 +220,10 @@ TEST(Brace, endOfLine) {
 }
 
 TEST(Brace, applyChar) {
-        TextFile  copy(10000);
+        size_t const s1 = 10000;
+        char buffer1[s1];
+        TextFile copy;
+        copy.setMemory(buffer1, s1);
         Gold::Brace x;
         copy.clear();
         x.state = FIRST;
@@ -254,7 +257,10 @@ TEST(Brace, applyChar) {
 }
 
 TEST(Brace, apply) {
-        TextFile copy(10000);
+        size_t const s1 = 10000;
+        char buffer1[s1];
+        TextFile copy;
+        copy.setMemory(buffer1, s1);
         Gold::Brace x;
         copy.clear();
         x.state = FIRST;

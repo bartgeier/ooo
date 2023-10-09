@@ -4,16 +4,15 @@
 #include "TextFile.h"
 #include <assert.h>
 
-#if(1)
+#if 0
 static void track(
         std::vector<Gold::Brace> &stack,
         Gold::Codizes &filter,
-        TextFile::Line const &line,
-        TextFile const &source,
+        Slice const &line,
         char const o[2]
 ) {
-        for (size_t idx = line.start; idx < line.end; idx++) {
-                char const c = codizes(filter, source[idx]);
+        for (size_t idx = 0; idx < line.size; idx++) {
+                char const c = codizes(filter, line.at[idx]);
                 if (c == o[0]) {
                         Brace_event_open(
                                 stack.back(), 
@@ -37,7 +36,7 @@ static void track(
         codizes(filter, '\n'); 
         Brace_event_endOfLine(
                 stack.back(), 
-                line.end,
+                line.size,
                 stack
         );
 }
@@ -46,17 +45,16 @@ static void track(
 static void apply(
         std::vector<Gold::Brace> &stack,
         TextFile &sink,
-        TextFile::Line const &line,
-        TextFile const &source,
+        Slice const &line,
         char const o[2]
 ) {
-        size_t A = line.start;
+        size_t A = 0;
         for (auto &brace : stack) { 
                 size_t const B = brace.idx;
                 for (size_t idx = A; idx < B; idx++) {
                         Brace_event_applyChar(
                                 brace,
-                                source[idx],
+                                line.at[idx],
                                 sink
                         );
                 }
@@ -68,8 +66,8 @@ static void apply(
 void task_brace(
         Gold &gold, 
         char const o[2], 
-        TextFile &sink, 
-        TextFile const &source
+        TextFile const &source,
+        TextFile &sink
 ) {
         assert(
                   o[0] == '{' & o[1] == '}'
@@ -81,8 +79,8 @@ void task_brace(
         for (auto const &line : source) {
                 gold.brace_stack.resize(1);
                 Brace_set(gold.brace_stack.back(), BRACE::INIT);
-                track(gold.brace_stack, gold.filter, line, source, o);
-                apply(gold.brace_stack, sink, line, source, o);
+                track(gold.brace_stack, gold.filter, line, o);
+                apply(gold.brace_stack, sink, line, o);
         }
 }
 
@@ -115,8 +113,8 @@ void Brace_action_applyEndOfLine(TextFile &copy) {
 void task_brace(
         Gold &gold, 
         char const o[2], 
-        TextFile &sink, 
-        TextFile const &source
+        TextFile const &source,
+        TextFile &sink
 ) {
         assert(
                   o[0] == '{' & o[1] == '}'
@@ -128,8 +126,8 @@ void task_brace(
         for (auto const &line : source) {
                 gold.brace_stack.resize(1);
                 Brace_set(gold.brace_stack.back(), BRACE::INIT);
-                for (size_t idx = line.start; idx < line.end; idx++) {
-                        char const c = codizes(gold.filter, source[idx]);
+                for (size_t idx = 0; idx < line.size; idx++) {
+                        char const c = codizes(gold.filter, line.at[idx]);
                         if (c == o[0]) {
                                 Brace_event_open(
                                         gold.brace_stack.back(), 
@@ -153,17 +151,17 @@ void task_brace(
                 codizes(gold.filter, '\n'); 
                 Brace_event_endOfLine(
                         gold.brace_stack.back(), 
-                        line.end,
+                        line.size,
                         gold.brace_stack
                 );
 
-                size_t A = line.start;
+                size_t A = 0;
                 for (auto &brace : gold.brace_stack) { 
                         size_t const B = brace.idx;
                         for (size_t idx = A; idx < B; idx++) {
                                 Brace_event_applyChar(
                                         brace,
-                                        source[idx],
+                                        line[idx],
                                         sink
                                 );
                         }
@@ -199,4 +197,3 @@ void Brace_action_applyEndOfLine(TextFile &copy) {
         copy.append('\n');
 }
 #endif
-

@@ -1,17 +1,29 @@
 #include "Job.h"
 #include "Gold.h"
+#include <iostream>
 
 std::vector<Gold> golds;
 
 //main::job::task::process
 
+Gold Gold_create() {
+        Gold gold;
+        size_t s = 10000;
+        char* buffer = (char*) malloc(s);
+        gold.ping.setMemory(buffer, s);
+        s = 10000;
+        buffer = (char*) malloc(s);
+        gold.pong.setMemory(buffer, s);
+        return gold;
+}
 
 int main(int argc, char* argv[]) {
         bool error = (argc < 2);
-        Gold gold;
-        golds.push_back(gold);
+        golds.push_back(Gold_create());
+
         error = golds[0].ping.load(argv[1], error);
-        
+        golds[0].ping.setLineSlice();
+
         return Job_main(golds[0]);
 }
 

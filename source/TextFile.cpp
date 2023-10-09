@@ -3,80 +3,159 @@
 #include <fstream>
 #include <iostream>
 
-static void pr(TextFile::Line const &line) {
-        printf("%p", line.at);
-        std::string s;
-        for (size_t i = 0; i < line.size; i++) {
-                s += line.at[i];
+TextVector &TextVector::setMemory(char *buffer, size_t capacity) {
+        assert(capacity > 0);
+        _size = 0;
+        CAPACITY = capacity;
+        at = buffer;
+        for (size_t i = 0; i < CAPACITY; i++) {
+                at[i] = 0;
         }
-        std::cout << s;
+        return *this;
 }
 
-TextFile::TextFile(size_t capacity) {
-        file.reserve(10000);
-        assert(file.capacity() == 10000);
+void TextVector::clear() {
+        for (size_t i = 0; i < _size; i++) {
+                at[i] = 0;
+        }
+        _size = 0;
+}
+
+bool TextVector::load(char const *path, bool error) {
+        if (error) {
+                return true;
+        }
+        std::ifstream is(path, std::ifstream::binary);
+        if (!is.is_open()) {
+                return true;
+        }
+        is.seekg(0, is.end);
+        size_t const isLen = is.tellg();
+        is.seekg(0, is.beg);
+        if (isLen >= (CAPACITY - 1)) {
+                is.close();
+                return true;
+        }
+        is.read(at, isLen);
+        is.close();
+        if (!is) {
+                return true;
+        }
+        _size = isLen;
+        return error;
+}
+
+size_t TextVector::size() const {
+        return _size;
+}
+
+char *TextVector::begin() {
+        return &at[0];
+}
+
+char *TextVector::end() {
+        return  &at[_size];
+}
+char const *TextVector::cbegin() const {
+        return &at[0];
+}
+
+char const *TextVector::cend() const {
+        return  &at[_size];
+}
+
+char const &TextVector::operator[](size_t idx) const {
+        return at[idx];
+}
+
+TextVector::operator char const*() const {
+        return at;
+}
+
+bool TextVector::push_back(char const chr) {
+        if (_size < (CAPACITY - 1)) {
+                at[_size] = chr;
+                _size++;
+                return false;
+        }
+        /* error */
+        return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+Slice::Slice(char const *at, size_t front, size_t size) {
+        this->at = at;
+        this->front = front;
+        this->size = size;
+}
+
+char const *Slice::cbegin() const {
+        return &at[0];
+}
+
+char const *Slice::cend() const {
+        return  &at[size];
+}
+
+char const &Slice::operator[](size_t idx) const {
+        return at[idx];
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+TextFile &TextFile::setMemory(char *buffer, size_t capacity) {
+        file.setMemory(buffer, capacity);
         clear();
+        return *this;
 }
 
 void TextFile::clear() {
         lines.clear();
         file.clear();
-        lines.push_back({0, 0, nullptr, 0});
 }
 
 bool TextFile::load(char const *path, bool error) {
         if (error) {
                 return true;
         }
-        std::ifstream file(path);
-        if (!file.is_open()) {
+        error = file.load(path, error);
+        if (error) {
                 return true;
         }
-        this->file = std::string(
-                (std::istreambuf_iterator<char>(file)),
-                (std::istreambuf_iterator<char>())
-        );
-        file.close();
         lines.clear();
-        size_t start = 0;
-        for (size_t end = 0; end < this->file.size(); end++) {
-                if (this->file[end] == '\n') {
-                        lines.push_back({start, end, &(this->file[start]), end - start});
-                        start = end + 1;
-                }
-        }
         return false;
 }
 
-void TextFile::append(char const chr) {
-        file += chr;
-        if (chr == '\n') {
-                size_t x = lines.back().end + 1;
-                 pr(lines.back());
-                 std::cout << "-->" <<'\n';
-                //lines.push_back({x, x, &(this->file[x]), 0});
-                lines.push_back({x, x, &(this->file.c_str()[x]), 0});
-        } else {
-                lines.back().end++;
-                lines.back().size++;
-                lines.back().at = &(this->file.c_str()[lines.back().start]);
+void TextFile::setLineSlice() {
+        size_t front = 0;
+        for (size_t idx = 0; idx < file.size(); idx++) {
+                if ((file[idx] == '\n')
+                ||  (idx == file.size() - 1)) {
+                        lines.push_back({&file[front], front, (idx - front)});
+                        front = idx + 1;
+                }
         }
 }
 
-TextFile::operator char const*() const {
-        return file.c_str();
+void TextFile::append(char const chr) {
+         file.push_back(chr);
 }
 
-std::vector<TextFile::Line>::const_iterator TextFile::begin() const {
+TextFile::operator char const*() const {
+        return &file[0];
+}
+
+std::vector<Slice>::const_iterator TextFile::begin() const {
         return lines.begin();
 }
 
-std::vector<TextFile::Line>::const_iterator TextFile::end() const {
+std::vector<Slice>::const_iterator TextFile::end() const {
         return lines.end();
 }
 
-char const &TextFile::operator[](size_t chr_idx) const {
-        return file[chr_idx];
+char const &TextFile::operator[](size_t idx) const {
+        return file[idx];
 }
 
 size_t TextFile::size() const {
@@ -87,6 +166,6 @@ size_t TextFile::numOfLines() const {
         return this->lines.size();
 }
 
-TextFile::Line const &TextFile::line(size_t line_idx) const {
+Slice const &TextFile::line(size_t line_idx) const {
         return lines[line_idx];
 }

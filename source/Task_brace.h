@@ -6,8 +6,8 @@
 void task_brace(
         Gold &gold, 
         char const o[2], 
-        TextFile &sink, 
-        TextFile const &source
+        TextFile const &source,
+        TextFile &sink
 );
 
 #endif
