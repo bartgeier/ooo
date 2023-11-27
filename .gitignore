@@ -3,4 +3,5 @@
 **/tree-sitter-c
 **/test
 **/.cache
-
+ooo
+nobuild
