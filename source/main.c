@@ -257,8 +257,8 @@ int main(int argc, char const **argv) {
                 }
         };
 
-        const char *file_path = "drv_ADC_Umrechner.c";
-        read_txt_file(&job.source, "drv_ADC_Umrechner.c");
+        const char *file_path = "test/drv_ADC_Umrechner.c";
+        read_txt_file(&job.source, "test/drv_ADC_Umrechner.c");
         StringView_replace_tabs_with_one_space(&job.sink, &job.source);
         StringView_replace_tabs_with_one_space(&job.source, &job.sink);
         StringView_remove_indentation(&job.sink, &job.source);

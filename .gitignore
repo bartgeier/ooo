@@ -3,5 +3,6 @@
 **/tree-sitter-c
 **/test
 **/.cache
+**/googletest
 ooo
 nobuild
