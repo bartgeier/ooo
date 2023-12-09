@@ -4,5 +4,7 @@
 **/test
 **/.cache
 **/googletest
-ooo
 nobuild
+nobuild.old
+ooo
+otest
