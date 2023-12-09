@@ -1,7 +1,7 @@
 **/build
 **/tree-sitter
 **/tree-sitter-c
-**/test
+**/examples
 **/.cache
 **/googletest
 nobuild
