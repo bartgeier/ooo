@@ -149,6 +149,17 @@ bool curly_brace_style_for_code_blocks(
 
         if (prev_sibling != sym_function_definition 
         & serial == anon_sym_RBRACE 
+        & serial_parent == sym_compound_statement
+        & me == sym_else_clause) {
+                /* end of an code block compound statement  */
+                /* closed curly brace on a new line         */
+                /* ' else'                                  */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        }
+
+        if (prev_sibling != sym_function_definition 
+        & serial == anon_sym_RBRACE 
         & serial_parent == sym_compound_statement) {
                 /* end of an code block compound statement  */
                 /* closed curly brace on a new line         */
@@ -192,15 +203,16 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
         TSSymbol parent = get_parent(node);
         TSSymbol grand = get_grand_parent(node);
         TSSymbol prev_sibling = get_previous_sibling(node);
-        
+
         switch (transition) { 
         case OOO_ENTRY:
-                if ((me != sym_compound_statement)
+                if ((me != sym_compound_statement) & (me != sym_else_clause)
                 & (parent == sym_if_statement 
-                |  parent == sym_while_statement
-                |  parent == sym_for_statement)) {
+                | (parent == sym_else_clause & me != anon_sym_else)
+                |  parent == sym_for_statement
+                |  parent == sym_while_statement)) {
                         /* indent after if wihtout curly brace */
-                        /* if/for/while (true)                 */
+                        /* if/else/for/while (true)                 */
                         /* ----->do_something();               */
                         level++;
                 }
@@ -271,8 +283,8 @@ int main(int argc, char const **argv) {
         if (print) { 
                 ooo_print_nodes(
                         ts_tree_root_node(tree),
-                        66, // start row
-                        67, // end row
+                        170, // start row
+                        199, // end row
                         0    // level
                 );
                 return 0;

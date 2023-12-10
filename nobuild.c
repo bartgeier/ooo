@@ -13,16 +13,6 @@ void create_build_dir(bool const clean) {
         MKDIRS(OOO_BUILD_DIR);
 }
 
-void move_nobbuild_old(bool const clean) {
-        if (clean) {
-                if (PATH_EXISTS("nobuild.old")) RM("nobuild.old");
-        }
-        if (PATH_EXISTS("nobuild.old")) {
-                RENAME("nobuild.old", PATH(OOO_BUILD_DIR, "nobuild.c"));                    \
-                INFO("MOVE: nobuild.old -> build/nobuild.c");
-        }
-}
-
 void treesitter_download_build(bool const clean) {
         #define TS_COMMIT "0ff28346be3d27f935d7cde8bbdf6b621c268e1a"
         if (clean) {
@@ -146,6 +136,16 @@ void ooo_build(bool const clean) {
         #else
                 CMD("cl.exe", CFLAGS, "-I", OOO_INC, "-o", "main", OOO_SRC);
         #endif
+}
+
+void move_nobbuild_old(bool const clean) {
+        if (clean) {
+                if (PATH_EXISTS("nobuild.old")) RM("nobuild.old");
+        }
+        if (PATH_EXISTS("nobuild.old")) {
+                RENAME("nobuild.old", PATH(OOO_BUILD_DIR, "nobuild.c"));                    \
+                INFO("MOVE: nobuild.old -> build/nobuild.c");
+        }
 }
 
 int main(int argc, char **argv) {
