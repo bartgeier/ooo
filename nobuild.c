@@ -133,14 +133,13 @@ void uinttests_build(bool const clean) {
 void ooo_build(bool const clean) {
         #define NOT_USED "-ggdb", "-std=c99"
         #define _CFLAGS  "-Wall", "-Wextra", "-pedantic"
-        #define CFLAGS "-pedantic" 
+        #define CFLAGS "-ggdb", "-pedantic" 
         #define OOO_INC "tree-sitter/lib/include/" 
-        #define OOO_SRC "./source/main.c", "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c"
+        #define OOO_SRC "./source/main.c", "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c", "./source/ooo_runner.c"
         if (clean) {
                 if (PATH_EXISTS("ooo")) RM("ooo");
                 return;
         }
-        if (clean) return;
         INFO("BUILD: ooo code styler");
         #ifndef _WIN32
                 CMD("gcc", CFLAGS, "-I", OOO_INC, "-o", "ooo", OOO_SRC);

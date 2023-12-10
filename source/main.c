@@ -4,22 +4,18 @@
 #include <stdio.h>
 #include <assert.h>
 #include "tree_sitter/api.h"
-#define StringView_IMPLEMENTAION
-#include "StringView.h"
-#define OOO_IMPLEMENTATION
+
 #include "treesitter_symbol_ids.h"
-#define CURSOR_IMPLEMENTATION
-#include "Cursor.h"
+#include "ooo_runner.h"
+#define OStr_IMPLEMENTAION
+#include "StringView.h"
+
 // Declare the `tree_sitter_json` function, which is
 // implemented by the `tree-sitter-json` library.
 TSLanguage *tree_sitter_c();
 
-
-
-
-
 /* return true => error */ 
-bool read_txt_file(StringView *source, char const *path) {
+bool read_txt_file(OStr *source, char const *path) {
         FILE *file = fopen(path, "r");
         if (file == NULL) {
                 return true;
@@ -114,7 +110,7 @@ bool curly_brace_style_for_code_blocks(
                 /* nested code block compound statement  */
                 /* function(bool example)\n{             */
                 /* '\n{'                                 */
-                StringView_append_chr(&job->sink, '\n'); 
+                OStr_append_chr(&job->sink, '\n'); 
                 return false;
         }
 
@@ -124,7 +120,7 @@ bool curly_brace_style_for_code_blocks(
                 /* not a nested code block compound statement        */
                 /* if (x == 42) {                                    */
                 /* ' {'                                              */
-                StringView_append_chr(&job->sink, ' ');
+                OStr_append_chr(&job->sink, ' ');
                 return false;
         }
 
@@ -132,9 +128,9 @@ bool curly_brace_style_for_code_blocks(
                 /* new line after { begin code block compound statement */
                 /* '{ ' or '{\n'                                        */
                 if (is_single_line(ts_node_parent(node))) {
-                        StringView_append_chr(&job->sink, ' ');
+                        OStr_append_chr(&job->sink, ' ');
                 } else {
-                        StringView_append_chr(&job->sink, '\n');
+                        OStr_append_chr(&job->sink, '\n');
                 }
                 return false;
         }
@@ -144,9 +140,9 @@ bool curly_brace_style_for_code_blocks(
                 /* closed curly brace on a new line         */
                 /* ' }' or '\n}'                            */
                 if (is_single_line(ts_node_parent(node))) {
-                        StringView_append_chr(&job->sink, ' ');
+                        OStr_append_chr(&job->sink, ' ');
                 } else {
-                        StringView_append_chr(&job->sink, '\n');
+                        OStr_append_chr(&job->sink, '\n');
                 }
                 return false;
         }
@@ -157,13 +153,13 @@ bool curly_brace_style_for_code_blocks(
                 /* end of an code block compound statement  */
                 /* closed curly brace on a new line         */
                 /* '}\n' or '}\n\n'                         */
-                size_t n = StringView_at_least_1_not_3(
+                size_t n = OStr_at_least_1_not_3(
                         &job->source, 
                         slice.begin, 
                         slice.end, 
                         '\n'
                 );
-                StringView_append_number_of_char(&job->sink, n, '\n');
+                OStr_append_number_of_char(&job->sink, n, '\n');
                 return false;
         }
 
@@ -173,7 +169,7 @@ bool curly_brace_style_for_code_blocks(
                 /* end of an function code block compound statement  */
                 /* closed curly brace on a new line         */
                 /* '}\n\n'                                  */
-                StringView_append_number_of_char(&job->sink, 2, '\n');
+                OStr_append_number_of_char(&job->sink, 2, '\n');
                 return false;
         }
         return true;
@@ -259,10 +255,10 @@ int main(int argc, char const **argv) {
 
         const char *file_path = "examples/drv_ADC_Umrechner.c";
         read_txt_file(&job.source, "examples/drv_ADC_Umrechner.c");
-        StringView_replace_tabs_with_one_space(&job.sink, &job.source);
-        StringView_replace_tabs_with_one_space(&job.source, &job.sink);
-        StringView_remove_indentation(&job.sink, &job.source);
-        StringView_move(&job.source, &job.sink);
+        OStr_replace_tabs_with_one_space(&job.sink, &job.source);
+        OStr_replace_tabs_with_one_space(&job.source, &job.sink);
+        OStr_remove_indentation(&job.sink, &job.source);
+        OStr_move(&job.source, &job.sink);
 
         TSParser *parser = ts_parser_new();
         ts_parser_set_language(parser, tree_sitter_c());
@@ -281,7 +277,7 @@ int main(int argc, char const **argv) {
                 );
                 return 0;
         }
-        Cursor_reset(&job.cursor);
+        OStrCursor_reset(&job.cursor);
 
         ooo_visit_nodes(
                 ts_tree_root_node(tree),
@@ -289,9 +285,9 @@ int main(int argc, char const **argv) {
                 &job
         );
 
-        StringView_clear(&job.source);
+        OStr_clear(&job.source);
 
-        Cursor_reset(&job.cursor);
+        OStrCursor_reset(&job.cursor);
         tree = ts_parser_parse_string(
                 parser,
                 NULL,
