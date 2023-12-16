@@ -1,6 +1,55 @@
 #include "ooo_runner.h"
 #include <stdio.h>
 
+TSSymbol ooo_parent(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        TSNode p = ts_node_parent(n);
+        if (ts_node_is_null(p)) {
+                return 0;
+        }
+        return ts_node_symbol(p);
+}
+
+TSSymbol ooo_grand_parent(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        TSNode p = ts_node_parent(n);
+        if (ts_node_is_null(p)) {
+                return 0;
+        }
+        TSNode g = ts_node_parent(p);
+        if (ts_node_is_null(g)) {
+                return 0;
+        }
+        return ts_node_symbol(g);
+}
+
+TSSymbol ooo_previous_sibling(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        TSNode s = ts_node_prev_sibling(n);
+        if (ts_node_is_null(s)) {
+                return 0;
+        }
+        return ts_node_symbol(s);
+}
+
+TSSymbol ooo_last_child(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        uint32_t count = ts_node_child_count(n);
+        if (count == 0) {
+                return 0;
+        }
+        TSNode child = ts_node_child(n, count - 1);
+        return ts_node_symbol(child);
+}
+
 TSNode ooo_visit_nodes(
         TSNode node,
         TSNode serial_node,
@@ -62,11 +111,11 @@ void ooo_set_indentation(
         for (size_t i = cx; i < sx; i++) {
                 if (source->at[i] == '\n') {
                         OStr_append_chr(sink, source->at[i]);
-                        printf("%c", source->at[i]);
+                        // printf("%c", source->at[i]);
                         OStr_append_spaces(sink, 4 * indentation_level);
                 } else {
                         OStr_append_chr(sink, source->at[i]);
-                        printf("%c", source->at[i]);
+                        // printf("%c", source->at[i]);
                 }
         }
 
@@ -91,10 +140,11 @@ void ooo_set_indentation(
         } 
         for (size_t i = ax; i < ex; i++) {
                 OStr_append_chr(sink, source->at[i]);
-                printf("%c", source->at[i]);
+                // printf("%c", source->at[i]);
         }
 }
 
+#if 0
 void ooo_print_nodes(
         TSNode node,
         size_t row_begin,
@@ -132,3 +182,39 @@ void ooo_print_nodes(
                 ooo_print_nodes(child, row_begin, row_end, level);
         }
 }
+#else
+void ooo_print_nodes(
+        TSNode node,
+        size_t row_begin,
+        size_t row_end,
+        size_t level
+) {
+        TSPoint start = ts_node_start_point(node);
+        TSPoint end = ts_node_end_point(node);
+        size_t num_of_childs = ts_node_child_count(node);
+
+        if (level == 0) {
+                printf("Start | End    |  (NodeID)me (NodeID)parent (NodeID)grand_parent ...\n");
+        }
+        if (start.row >= row_begin && start.row < row_end) {
+                printf("%d:%-3d|%4d:%-3d|  ",
+                        start.row,
+                        start.column,
+                        end.row,
+                        end.column
+                );
+                TSNode x = node;
+                for (size_t i = 0; i < level; i++) {
+                        printf("(%d)%s ", ts_node_symbol(x), ts_node_type(x));
+                        x = ts_node_parent(x);
+                }
+                printf("\n");
+        }
+
+        level++;
+        for (size_t it = 0; it < num_of_childs; it++) {
+                TSNode child = ts_node_child(node, it);
+                ooo_print_nodes(child, row_begin, row_end, level);
+        }
+}
+#endif

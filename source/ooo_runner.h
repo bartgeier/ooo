@@ -53,4 +53,8 @@ bool ooo_rule_dispatcher(
 
 size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_t level);
 
+TSSymbol ooo_parent(TSNode n);
+TSSymbol ooo_grand_parent(TSNode n);
+TSSymbol ooo_previous_sibling(TSNode n);
+TSSymbol ooo_last_child(TSNode n);
 #endif

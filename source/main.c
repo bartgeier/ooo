@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <errno.h>
 #include "tree_sitter/api.h"
 
 #include "treesitter_symbol_ids.h"
@@ -30,57 +31,8 @@ bool read_txt_file(OStr *source, char const *path) {
         } while (chr != EOF);
         source->size--; 
         source->at[source->size] = 0;
+        fclose(file);
         return false;
-}
-
-
-TSSymbol get_parent(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode p = ts_node_parent(n);
-        if (ts_node_is_null(p)) {
-                return 0;
-        }
-        return ts_node_symbol(p);
-}
-
-TSSymbol get_grand_parent(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode p = ts_node_parent(n);
-        if (ts_node_is_null(p)) {
-                return 0;
-        }
-        TSNode g = ts_node_parent(p);
-        if (ts_node_is_null(g)) {
-                return 0;
-        }
-        return ts_node_symbol(g);
-}
-
-TSSymbol get_previous_sibling(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode s = ts_node_prev_sibling(n);
-        if (ts_node_is_null(s)) {
-                return 0;
-        }
-        return ts_node_symbol(s);
-}
-
-TSSymbol get_last_child(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        uint32_t count = ts_node_child_count(n);
-        if (count == 0) {
-                return 0;
-        }
-        TSNode child = ts_node_child(n, count - 1);
-        return ts_node_symbol(child);
 }
 
 bool is_single_line(TSNode n) {
@@ -96,13 +48,13 @@ bool curly_brace_style_for_code_blocks(
         OOO_Slice slice,
         OOO_Job *job
 ) {
-        TSSymbol parent = get_parent(node);
+        TSSymbol parent = ooo_parent(node);
         TSSymbol me = ts_node_symbol(node);
-        TSSymbol grand = get_grand_parent(node);
-        TSSymbol prev_sibling = get_previous_sibling(node);
+        TSSymbol grand = ooo_grand_parent(node);
+        TSSymbol prev_sibling = ooo_previous_sibling(node);
 
         TSSymbol serial = ts_node_symbol(serial_node);
-        TSSymbol serial_parent = get_parent(serial_node);
+        TSSymbol serial_parent = ooo_parent(serial_node);
 
         if ((me == sym_compound_statement)
         &   (parent == sym_function_definition | parent == sym_compound_statement)) {
@@ -192,6 +144,9 @@ bool ooo_rule_dispatcher(
         OOO_Slice slice,
         OOO_Job *job
 ) {
+        if (job->cursor.row == 58) {
+                (void)0;
+        }
         bool r;
         r = curly_brace_style_for_code_blocks(node, serial_node, slice, job);
         return r; // return false -> rule applyed
@@ -200,9 +155,9 @@ bool ooo_rule_dispatcher(
 
 size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_t level) {
         TSSymbol me = ts_node_symbol(node);
-        TSSymbol parent = get_parent(node);
-        TSSymbol grand = get_grand_parent(node);
-        TSSymbol prev_sibling = get_previous_sibling(node);
+        TSSymbol parent = ooo_parent(node);
+        TSSymbol grand = ooo_grand_parent(node);
+        TSSymbol prev_sibling = ooo_previous_sibling(node);
 
         switch (transition) { 
         case OOO_ENTRY:
@@ -216,7 +171,8 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
                         /* ----->do_something();               */
                         level++;
                 }
-                if (me == anon_sym_RBRACE) {
+                if (me == anon_sym_RBRACE
+                & parent == sym_compound_statement) {
                         /* '}'  unindented */
                         level--;
                 }
@@ -239,34 +195,56 @@ char const *shift_args(int *argc, char const ***argv) {
         *argv += 1;
         return result;
 }
-
+#define MEM_SIZE 1000*1024
 int main(int argc, char const **argv) {
         printf("%s\n", shift_args(&argc, &argv));
-        bool print = false; 
-        if (argc > 0) {
+        struct { 
+                bool b; 
+                size_t begin;
+                size_t end;
+        } print = { false, 0, 0 }; 
+        while (argc > 0) {
                 if (strcmp(shift_args(&argc, &argv), "p") == 0) {
-                        print = true;
+                        if (argc > 0) {
+                                errno = 0;
+                                char *endptr;
+                                char const *astr = shift_args(&argc, &argv); 
+                                print.begin = strtol(astr, &endptr, 10); 
+                                if (endptr == astr) break;
+                        } else {
+                                break;
+                        }
+                        if (argc > 0) {
+                                errno = 0;
+                                char *endptr;
+                                char const *astr = shift_args(&argc, &argv); 
+                                print.end = strtol(astr, &endptr, 10); 
+                                if (endptr == astr) break;
+                        } else {
+                                break;
+                        }
+                        print.b = true;
                 }
         }
 
-        char *snk = (char*)malloc(100*1024);
-        char *src = (char*)malloc(100*1024);
+        char *snk = (char*)malloc(MEM_SIZE);
+        char *src = (char*)malloc(MEM_SIZE);
         OOO_Job job = {
                 .cursor = {0},
                 .sink = {
-                        .capacity = 100*1024,
+                        .capacity = MEM_SIZE,
                         .size = 0,
                         .at = snk
                 },
                 .source = {
-                        .capacity = 100*1024,
+                        .capacity = MEM_SIZE,
                         .size = 0,
                         .at = src
                 }
         };
 
-        const char *file_path = "examples/drv_ADC_Umrechner.c";
-        read_txt_file(&job.source, "examples/drv_ADC_Umrechner.c");
+        // const char *file_path = "examples/CipActionDispatcher.c";
+        read_txt_file(&job.source, "examples/CipActionDispatcher.c");
         OStr_replace_tabs_with_one_space(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
         OStr_remove_indentation(&job.sink, &job.source);
@@ -280,17 +258,16 @@ int main(int argc, char const **argv) {
                 job.source.at,
                 job.source.size
         );
-        if (print) { 
+        if (print.b) { 
                 ooo_print_nodes(
                         ts_tree_root_node(tree),
-                        170, // start row
-                        199, // end row
-                        0    // level
+                        print.begin, // start row
+                        print.end,   // end row
+                        0            // level
                 );
                 return 0;
         }
         OStrCursor_reset(&job.cursor);
-
         ooo_visit_nodes(
                 ts_tree_root_node(tree),
                 ts_tree_root_node(tree),
