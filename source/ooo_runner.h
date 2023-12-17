@@ -56,5 +56,6 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
 TSSymbol ooo_parent(TSNode n);
 TSSymbol ooo_grand_parent(TSNode n);
 TSSymbol ooo_previous_sibling(TSNode n);
+TSSymbol ooo_previous_grand_siblin(TSNode n);
 TSSymbol ooo_last_child(TSNode n);
 #endif

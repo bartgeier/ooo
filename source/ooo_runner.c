@@ -38,6 +38,20 @@ TSSymbol ooo_previous_sibling(TSNode n) {
         return ts_node_symbol(s);
 }
 
+TSSymbol ooo_previous_grand_siblin(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        TSNode p = ts_node_parent(n);
+        if (ts_node_is_null(p)) {
+                return 0;
+        }
+        TSNode g = ts_node_parent(p);
+        if (ts_node_is_null(g)) {
+                return 0;
+        }
+        return ooo_previous_sibling(g);
+}
 TSSymbol ooo_last_child(TSNode n) {
         if (ts_node_is_null(n)) {
                 return 0;
