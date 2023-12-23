@@ -52,30 +52,37 @@ bool curly_brace_style_for_code_blocks(
         TSSymbol me = ts_node_symbol(node);
         TSSymbol grand = ooo_grand_parent(node);
         TSSymbol prev_sibling = ooo_previous_sibling(node);
+        TSSymbol prev_parent_sibling = ooo_previous_parent_siblin(node);
 
         TSSymbol serial = ts_node_symbol(serial_node);
         TSSymbol serial_parent = ooo_parent(serial_node);
 
-        if ((me == sym_compound_statement)
-        &   (parent == sym_function_definition | parent == sym_compound_statement)) {
-                /* Curly brace for function K&R begin or */
+        if (me == sym_compound_statement & parent == sym_function_definition) {
+                /* Curly brace for function K&R-Rule */
+                /* function(bool example)\n{         */
+                /* '\n{'                             */
+                OStr_append_chr(&job->sink, '\n'); 
+                return false;
+        }
+        if (me == sym_compound_statement & parent != sym_function_definition 
+        & (parent == sym_compound_statement
+        | parent == sym_case_statement & prev_sibling !=  anon_sym_COLON)) {
+                /* Curly brace not function  */
                 /* nested code block compound statement  */
-                /* function(bool example)\n{             */
                 /* '\n{'                                 */
                 OStr_append_chr(&job->sink, '\n'); 
                 return false;
         }
-
-        if ((me == sym_compound_statement)
-        & !(parent == sym_function_definition | parent == sym_compound_statement)) {
-                /* Curly brace begin code block if not a function or */
-                /* not a nested code block compound statement        */
-                /* if (x == 42) {                                    */
-                /* ' {'                                              */
+        if (me == sym_compound_statement
+        & parent != sym_function_definition 
+        & parent != sym_compound_statement
+        & prev_parent_sibling !=  anon_sym_COLON) {
+                /* indent after if wihtout curly brace */
+                /* if/else/for/while (true)            */
+                /* ----->do_something();               */
                 OStr_append_chr(&job->sink, ' ');
                 return false;
         }
-
         if (parent == sym_compound_statement & prev_sibling == anon_sym_LBRACE) {
                 /* new line after { begin code block compound statement */
                 /* '{ ' or '{\n'                                        */
@@ -86,7 +93,6 @@ bool curly_brace_style_for_code_blocks(
                 }
                 return false;
         }
- 
         if (me == anon_sym_RBRACE & parent == sym_compound_statement) {
                 /* end of an code block compound statement  */
                 /* closed curly brace on a new line         */
@@ -98,17 +104,30 @@ bool curly_brace_style_for_code_blocks(
                 }
                 return false;
         }
-
-        if (prev_sibling != sym_function_definition 
+        if (me == sym_else_clause
+        & prev_sibling != sym_function_definition 
         & serial == anon_sym_RBRACE 
-        & serial_parent == sym_compound_statement
-        & me == sym_else_clause) {
+        & serial_parent == sym_compound_statement) {
                 /* end of an code block compound statement  */
                 /* '} else'                                 */
                 OStr_append_chr(&job->sink, ' ');
                 return false;
         }
-
+        if (me == anon_sym_RBRACE 
+        & parent == sym_case_statement) {
+                /* end of an code block compound statement  */
+                /* '} break'                                 */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        }
+        if (me == sym_break_statement 
+        & parent == sym_case_statement
+        & serial == anon_sym_RBRACE) {
+                /* end of an code block compound statement  */
+                /* '} break'                                 */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        }
         if (prev_sibling != sym_function_definition 
         & serial == anon_sym_RBRACE 
         & serial_parent == sym_compound_statement) {
@@ -124,7 +143,6 @@ bool curly_brace_style_for_code_blocks(
                 OStr_append_number_of_char(&job->sink, n, '\n');
                 return false;
         }
-
         if (prev_sibling == sym_function_definition 
         & serial == anon_sym_RBRACE 
         & serial_parent == sym_compound_statement) {
@@ -147,7 +165,6 @@ bool curly_brace_style_field_declaration_list(
         TSSymbol me = ts_node_symbol(node);
         TSSymbol grand = ooo_grand_parent(node);
         TSSymbol prev_sibling = ooo_previous_sibling(node);
-
         TSSymbol serial = ts_node_symbol(serial_node);
         TSSymbol serial_parent = ooo_parent(serial_node);
 
@@ -157,7 +174,6 @@ bool curly_brace_style_field_declaration_list(
                 OStr_append_chr(&job->sink, ' '); 
                 return false;
         }
-
         if (parent == sym_field_declaration_list & prev_sibling == anon_sym_LBRACE) {
                 /* struct Foo {  */
                 /* '{ ' or '{\n' */
@@ -168,7 +184,6 @@ bool curly_brace_style_field_declaration_list(
                 }
                 return false;
         }
-
         if (me == anon_sym_RBRACE & parent == sym_field_declaration_list) {
                 /* struct Foo { .... } */
                 /* ' }' or '\n}'       */
@@ -179,7 +194,6 @@ bool curly_brace_style_field_declaration_list(
                 }
                 return false;
         }
-
         if (parent == sym_declaration 
         & serial == anon_sym_RBRACE 
         & serial_parent == sym_field_declaration_list) {
@@ -188,7 +202,6 @@ bool curly_brace_style_field_declaration_list(
                 OStr_append_chr(&job->sink, ' ');
                 return false;
         }
-
         return true;
 }
 
@@ -202,7 +215,6 @@ bool curly_brace_style_initializer_list(
         TSSymbol me = ts_node_symbol(node);
         TSSymbol grand = ooo_grand_parent(node);
         TSSymbol prev_sibling = ooo_previous_sibling(node);
-
         TSSymbol serial = ts_node_symbol(serial_node);
         TSSymbol serial_parent = ooo_parent(serial_node);
 
@@ -212,7 +224,6 @@ bool curly_brace_style_initializer_list(
                 OStr_append_chr(&job->sink, ' '); 
                 return false;
         }
-
         if (parent ==  sym_initializer_list & prev_sibling == anon_sym_LBRACE) {
                 /* int [] Foo = { ... }  */
                 /* '{' or '{\n' */
@@ -223,7 +234,6 @@ bool curly_brace_style_initializer_list(
                 }
                 return false;
         }
-
         if (me == anon_sym_RBRACE & parent == sym_initializer_list) {
                 /* int [] Foo = { ... }  */
                 /* '}' or '\n}'  */
@@ -234,18 +244,6 @@ bool curly_brace_style_initializer_list(
                 }
                 return false;
         }
-
-#if 0 
-        if (parent == sym_declaration 
-        & serial == anon_sym_RBRACE 
-        & serial_parent == sym_initializer_list
-        & me == anon_sym_SEMI) {
-                /* semikolon ; */
-                /* '};'          */
-                //OStr_append_chr(&job->sink, '');
-                return false;
-        }
-#endif
         return true;
 }
 
@@ -266,32 +264,55 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
         TSSymbol parent = ooo_parent(node);
         TSSymbol grand = ooo_grand_parent(node);
         TSSymbol prev_sibling = ooo_previous_sibling(node);
+        TSSymbol next_sibling = ooo_next_sibling(node);
+        TSSymbol prev_parent_sibling = ooo_previous_parent_siblin(node);
+        TSSymbol next_parent_sibling = ooo_next_parent_siblin(node);
         TSSymbol prev_grand_sibling = ooo_previous_grand_siblin(node);
 
         switch (transition) { 
         case OOO_ENTRY:
-                if ((me != sym_compound_statement) & (me != sym_else_clause)
-                & (parent == sym_if_statement 
+                if (me != sym_compound_statement 
+                & me != sym_else_clause
+                & parent == sym_if_statement 
                 | (parent == sym_else_clause & me != anon_sym_else)
-                |  parent == sym_for_statement
-                |  parent == sym_while_statement)) {
+                | parent == sym_for_statement
+                | parent == sym_while_statement) {
                         /* indent after if wihtout curly brace */
                         /* if/else/for/while (true)            */
                         /* ----->do_something();               */
                         level++;
                 }
-
-                if (me == anon_sym_RBRACE & grand != sym_switch_statement & grand != sym_case_statement
-                &  (parent == sym_compound_statement
-                |   parent == sym_field_declaration_list
-                |   parent == sym_initializer_list)) {
-                        /* '}'  unindented */
+                if (me == anon_sym_RBRACE 
+                & grand != sym_switch_statement 
+                & grand != sym_case_statement
+                & (parent == sym_compound_statement
+                | parent == sym_field_declaration_list
+                | parent == sym_initializer_list)) {
+                        /* '}' */
                         level--;
                 }
-
-                if (me == anon_sym_RBRACE & grand == sym_case_statement & prev_grand_sibling != anon_sym_COLON
-                &  (parent == sym_compound_statement)) {
-                        /* '}'  unindented */
+                if (me == anon_sym_RBRACE 
+                & parent == sym_compound_statement
+                & prev_parent_sibling != anon_sym_COLON
+                & grand == sym_case_statement) {
+                        /* '}' */
+                        level--;
+                }
+                if (me == anon_sym_RBRACE 
+                & next_parent_sibling == sym_break_statement 
+                & parent == sym_compound_statement
+                & prev_parent_sibling == anon_sym_COLON
+                & grand == sym_case_statement) {
+                        /* '} break;' */
+                        // level--;
+                }
+                if (me == anon_sym_RBRACE 
+                & prev_sibling == sym_break_statement 
+                & parent == sym_compound_statement
+                & prev_parent_sibling == anon_sym_COLON
+                & grand == sym_case_statement) {
+                        /* '    break;'  */
+                        /* '}'           */
                         level--;
                 }
                 return level;

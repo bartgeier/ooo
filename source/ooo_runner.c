@@ -38,6 +38,39 @@ TSSymbol ooo_previous_sibling(TSNode n) {
         return ts_node_symbol(s);
 }
 
+TSSymbol ooo_next_sibling(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        TSNode s = ts_node_next_sibling(n);
+        if (ts_node_is_null(s)) {
+                return 0;
+        }
+        return ts_node_symbol(s);
+}
+
+TSSymbol ooo_previous_parent_siblin(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        TSNode p = ts_node_parent(n);
+        if (ts_node_is_null(p)) {
+                return 0;
+        }
+        return ooo_previous_sibling(p);
+}
+
+TSSymbol ooo_next_parent_siblin(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        TSNode p = ts_node_parent(n);
+        if (ts_node_is_null(p)) {
+                return 0;
+        }
+        return ooo_next_sibling(p);
+}
+
 TSSymbol ooo_previous_grand_siblin(TSNode n) {
         if (ts_node_is_null(n)) {
                 return 0;
