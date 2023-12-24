@@ -272,14 +272,40 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
         switch (transition) { 
         case OOO_ENTRY:
                 if (me != sym_compound_statement 
-                & me != sym_else_clause
-                & parent == sym_if_statement 
-                | (parent == sym_else_clause & me != anon_sym_else)
-                | parent == sym_for_statement
-                | parent == sym_while_statement) {
+                & me != anon_sym_while
+                & me != sym_parenthesized_expression
+                & parent == sym_while_statement) { 
                         /* indent after if wihtout curly brace */
-                        /* if/else/for/while (true)            */
-                        /* ----->do_something();               */
+                        /* while (fuu)              */
+                        /* ----->do_something(); */
+                        level++;
+                }
+                if (me != sym_compound_statement 
+                & me != anon_sym_if
+                & me != sym_parenthesized_expression
+                & me != sym_else_clause
+                & parent == sym_if_statement) { 
+                        /* indent after if wihtout curly brace */
+                        /* if (fuu)              */
+                        /* ----->do_something(); */
+                        level++;
+                }
+                if (me != sym_compound_statement 
+                & me != anon_sym_else 
+                & me != sym_if_statement 
+                & parent ==  sym_else_clause) {
+                        /* indent after if wihtout curly brace */
+                        /* else                  */
+                        /* ----->do_something(); */
+                        level++;
+                }
+                if (me != sym_compound_statement 
+                & me != anon_sym_for
+                & prev_sibling == anon_sym_RPAREN
+                & parent == sym_for_statement) { 
+                        /* indent after if wihtout curly brace */
+                        /* for (fuu)              */
+                        /* ----->do_something(); */
                         level++;
                 }
                 if (me == anon_sym_RBRACE 
@@ -315,6 +341,14 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
                         /* '}'           */
                         level--;
                 }
+                
+
+
+
+                if (me == anon_sym_RPAREN) {
+                        /* ')'           */
+                        level--;
+                }
                 return level;
         case OOO_NEXT:  
                 if ((me == sym_compound_statement 
@@ -322,7 +356,7 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
                 & parent != sym_case_statement)
                 |   me == sym_field_declaration_list
                 |   me == sym_initializer_list) {
-                        /* after '{'  indented */
+                        /* after '{'  */
                         level++;
                 }
                 if (me == sym_compound_statement 
@@ -331,6 +365,10 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
                         level++;
                 }
                 if (me == sym_case_statement) {
+                        level++;
+                }
+                if (me == sym_argument_list) {
+                        /* after 'printf ('  */
                         level++;
                 }
                 return level;
