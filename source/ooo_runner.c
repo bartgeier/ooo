@@ -1,6 +1,39 @@
 #include "ooo_runner.h"
 #include <stdio.h>
 
+TSSymbol ooo_paren(TSNode n, size_t i) {
+        while (i > 0) {
+                n = ts_node_parent(n);
+                if (ts_node_is_null(n)) {
+                        return 0;
+                }
+                i--;
+        }
+        return ts_node_symbol(n);
+}
+
+TSSymbol ooo_pSibling(TSNode n, size_t i) {
+        while (i > 0) {
+                n = ts_node_prev_sibling(n);
+                if (ts_node_is_null(n)) {
+                        return 0;
+                }
+                i--;
+        }
+        return ts_node_symbol(n);
+}
+
+TSSymbol ooo_nSibling(TSNode n, size_t i) {
+        while (i > 0) {
+                n = ts_node_next_sibling(n);
+                if (ts_node_is_null(n)) {
+                        return 0;
+                }
+                i--;
+        }
+        return ts_node_symbol(n);
+}
+
 TSSymbol ooo_parent(TSNode n) {
         if (ts_node_is_null(n)) {
                 return 0;
@@ -36,6 +69,21 @@ TSSymbol ooo_previous_sibling(TSNode n) {
                 return 0;
         }
         return ts_node_symbol(s);
+}
+
+TSSymbol ooo_previous2_sibling(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        TSNode s1 = ts_node_prev_sibling(n);
+        if (ts_node_is_null(s1)) {
+                return 0;
+        }
+        TSNode s2 = ts_node_prev_sibling(s1);
+        if (ts_node_is_null(s2)) {
+                return 0;
+        }
+        return ts_node_symbol(s2);
 }
 
 TSSymbol ooo_next_sibling(TSNode n) {
@@ -144,7 +192,7 @@ void ooo_set_indentation(
         TSNode node,
         size_t indentation_level
 ) {
-        char const *type_name = ts_node_type(node);
+        //char const *type_name = ts_node_type(node);
         TSSymbol str_symbol = ts_node_symbol(node);
 
         size_t cx = cursor->idx;
@@ -179,7 +227,8 @@ void ooo_set_indentation(
         }
         size_t ax = cursor->idx;
         size_t ex = OStrCursor_move_to_point(cursor, source, ts_node_end_point(node));
-        if (str_symbol == sym_preproc_def) {
+        if (str_symbol == sym_preproc_def 
+        | str_symbol == anon_sym_LF & ooo_parent(node) == sym_preproc_if) {
                 /* preproc_def node includes the \n                */
                 /* \n is then not used for indentation             */
                 /* OStrCursor_decrement set the ex index before \n */

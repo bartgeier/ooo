@@ -48,20 +48,30 @@ bool curly_brace_style_for_code_blocks(
         OOO_Slice slice,
         OOO_Job *job
 ) {
-        TSSymbol parent = ooo_parent(node);
-        TSSymbol me = ts_node_symbol(node);
-        TSSymbol grand = ooo_grand_parent(node);
-        TSSymbol prev_sibling = ooo_previous_sibling(node);
+        //TSSymbol parent = ooo_parent(node);
+        TSSymbol parent = ooo_paren(node, 1);
+        //TSSymbol me = ts_node_symbol(node);
+        TSSymbol me = ooo_paren(node, 0);
+        //TSSymbol grand = ooo_grand_parent(node);
+        TSSymbol grand = ooo_paren(node, 2);
+        //TSSymbol prev_sibling = ooo_previous_sibling(node);
+        TSSymbol prev_sibling = ooo_pSibling(node, 1);
         TSSymbol prev_parent_sibling = ooo_previous_parent_siblin(node);
 
+        //ooo(pSibling(1, paren(1, node));
+
         TSSymbol serial = ts_node_symbol(serial_node);
-        TSSymbol serial_parent = ooo_parent(serial_node);
+        TSSymbol serial_parent = ooo_paren(serial_node, 1);
 
         if (me == sym_compound_statement & parent == sym_function_definition) {
                 /* Curly brace for function K&R-Rule */
                 /* function(bool example)\n{         */
                 /* '\n{'                             */
-                OStr_append_chr(&job->sink, '\n'); 
+                if (is_single_line(ts_node_parent(node))) {
+                        OStr_append_chr(&job->sink, '\n'); 
+                } else {
+                        OStr_append_chr(&job->sink, ' '); 
+                }
                 return false;
         }
         if (me == sym_compound_statement & parent != sym_function_definition 
@@ -77,13 +87,11 @@ bool curly_brace_style_for_code_blocks(
         & parent != sym_function_definition 
         & parent != sym_compound_statement
         & prev_parent_sibling !=  anon_sym_COLON) {
-                /* indent after if wihtout curly brace */
-                /* if/else/for/while (true)            */
-                /* ----->do_something();               */
                 OStr_append_chr(&job->sink, ' ');
                 return false;
         }
-        if (parent == sym_compound_statement & prev_sibling == anon_sym_LBRACE) {
+        if (parent == sym_compound_statement 
+        & prev_sibling == anon_sym_LBRACE) {
                 /* new line after { begin code block compound statement */
                 /* '{ ' or '{\n'                                        */
                 if (is_single_line(ts_node_parent(node))) {
@@ -91,6 +99,15 @@ bool curly_brace_style_for_code_blocks(
                 } else {
                         OStr_append_chr(&job->sink, '\n');
                 }
+                return false;
+        }
+        if (me == anon_sym_RBRACE
+        & parent == sym_compound_statement 
+        & prev_sibling == sym_break_statement 
+        & grand == sym_case_statement) {
+                /* end of an code block compound statement  */
+                /* 'break; }'                               */
+                OStr_append_chr(&job->sink, ' ');
                 return false;
         }
         if (me == anon_sym_RBRACE & parent == sym_compound_statement) {
@@ -113,18 +130,11 @@ bool curly_brace_style_for_code_blocks(
                 OStr_append_chr(&job->sink, ' ');
                 return false;
         }
-        if (me == anon_sym_RBRACE 
-        & parent == sym_case_statement) {
-                /* end of an code block compound statement  */
-                /* '} break'                                 */
-                OStr_append_chr(&job->sink, ' ');
-                return false;
-        }
         if (me == sym_break_statement 
         & parent == sym_case_statement
         & serial == anon_sym_RBRACE) {
                 /* end of an code block compound statement  */
-                /* '} break'                                 */
+                /* '} break;'                                */
                 OStr_append_chr(&job->sink, ' ');
                 return false;
         }
@@ -247,6 +257,45 @@ bool curly_brace_style_initializer_list(
         return true;
 }
 
+bool parenthesize_style_parameter_list(
+        TSNode node,
+        TSNode serial_node,
+        OOO_Slice slice,
+        OOO_Job *job
+) {
+        TSSymbol parent = ooo_parent(node);
+        TSSymbol me = ts_node_symbol(node);
+        TSSymbol grand = ooo_grand_parent(node);
+        TSSymbol prev_sibling = ooo_previous_sibling(node);
+        TSSymbol serial = ts_node_symbol(serial_node);
+        TSSymbol serial_parent = ooo_parent(serial_node);
+        if (me == sym_parameter_list) {
+                /* void Foo(  */
+                return false;
+        }
+        if (parent == sym_parameter_list & prev_sibling == anon_sym_LPAREN) {
+                /* void Foo(  */
+                /* '( ' or '(\n' */
+                if (is_single_line(ts_node_parent(node))) {
+                        OStr_append_chr(&job->sink, ' ');
+                } else {
+                        OStr_append_chr(&job->sink, '\n');
+                }
+                return false;
+        }
+        if (me == anon_sym_RPAREN & parent == sym_parameter_list) {
+                /* void Foo ( .... ) */
+                /* ' )' or '\n)'     */
+                if (is_single_line(ts_node_parent(node))) {
+                        OStr_append_chr(&job->sink, ' ');
+                } else {
+                        OStr_append_chr(&job->sink, '\n');
+                }
+                return false;
+        }
+        return true;
+}
+
 bool ooo_rule_dispatcher(
         TSNode node,
         TSNode serial_node,
@@ -255,7 +304,8 @@ bool ooo_rule_dispatcher(
 ) {
         return curly_brace_style_for_code_blocks(node, serial_node, slice, job)
         && curly_brace_style_field_declaration_list(node, serial_node, slice, job)
-        && curly_brace_style_initializer_list(node, serial_node, slice, job);
+        && curly_brace_style_initializer_list(node, serial_node, slice, job)
+        && parenthesize_style_parameter_list(node, serial_node, slice, job);
         /* return false -> rule applyed and done */
 }
 
@@ -341,11 +391,9 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
                         /* '}'           */
                         level--;
                 }
-                
-
-
-
-                if (me == anon_sym_RPAREN) {
+                if (me == anon_sym_RPAREN
+                & (parent == sym_parameter_list 
+                | parent == sym_argument_list)) {
                         /* ')'           */
                         level--;
                 }
@@ -369,6 +417,10 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
                 }
                 if (me == sym_argument_list) {
                         /* after 'printf ('  */
+                        level++;
+                }
+                if (me == sym_parameter_list) {
+                        /* after 'void foo('  */
                         level++;
                 }
                 return level;
