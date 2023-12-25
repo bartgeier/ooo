@@ -48,20 +48,13 @@ bool curly_brace_style_for_code_blocks(
         OOO_Slice slice,
         OOO_Job *job
 ) {
-        //TSSymbol parent = ooo_parent(node);
-        TSSymbol parent = ooo_paren(node, 1);
-        //TSSymbol me = ts_node_symbol(node);
-        TSSymbol me = ooo_paren(node, 0);
-        //TSSymbol grand = ooo_grand_parent(node);
-        TSSymbol grand = ooo_paren(node, 2);
-        //TSSymbol prev_sibling = ooo_previous_sibling(node);
-        TSSymbol prev_sibling = ooo_pSibling(node, 1);
-        TSSymbol prev_parent_sibling = ooo_previous_parent_siblin(node);
-
-        //ooo(pSibling(1, paren(1, node));
-
-        TSSymbol serial = ts_node_symbol(serial_node);
-        TSSymbol serial_parent = ooo_paren(serial_node, 1);
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol prev_parent_sibling = ooo(sibling(-1, super(1, node)));
+        TSSymbol serial = ooo(serial_node);
+        TSSymbol serial_parent = ooo(super(1, serial_node));
 
         if (me == sym_compound_statement & parent == sym_function_definition) {
                 /* Curly brace for function K&R-Rule */
@@ -171,12 +164,12 @@ bool curly_brace_style_field_declaration_list(
         OOO_Slice slice,
         OOO_Job *job
 ) {
-        TSSymbol parent = ooo_parent(node);
-        TSSymbol me = ts_node_symbol(node);
-        TSSymbol grand = ooo_grand_parent(node);
-        TSSymbol prev_sibling = ooo_previous_sibling(node);
-        TSSymbol serial = ts_node_symbol(serial_node);
-        TSSymbol serial_parent = ooo_parent(serial_node);
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol serial = ooo(serial_node);
+        TSSymbol serial_parent = ooo(super(1, serial_node));
 
         if (me == sym_field_declaration_list) {
                 /* struct Foo {  */
@@ -221,12 +214,12 @@ bool curly_brace_style_initializer_list(
         OOO_Slice slice,
         OOO_Job *job
 ) {
-        TSSymbol parent = ooo_parent(node);
-        TSSymbol me = ts_node_symbol(node);
-        TSSymbol grand = ooo_grand_parent(node);
-        TSSymbol prev_sibling = ooo_previous_sibling(node);
-        TSSymbol serial = ts_node_symbol(serial_node);
-        TSSymbol serial_parent = ooo_parent(serial_node);
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol serial = ooo(serial_node);
+        TSSymbol serial_parent = ooo(super(1, serial_node));
 
         if (me == sym_initializer_list) {
                 /* int [] Foo = { ... }  */
@@ -263,12 +256,13 @@ bool parenthesize_style_parameter_list(
         OOO_Slice slice,
         OOO_Job *job
 ) {
-        TSSymbol parent = ooo_parent(node);
-        TSSymbol me = ts_node_symbol(node);
-        TSSymbol grand = ooo_grand_parent(node);
-        TSSymbol prev_sibling = ooo_previous_sibling(node);
-        TSSymbol serial = ts_node_symbol(serial_node);
-        TSSymbol serial_parent = ooo_parent(serial_node);
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol serial = ooo(serial_node);
+        TSSymbol serial_parent = ooo(super(1, serial_node));
+
         if (me == sym_parameter_list) {
                 /* void Foo(  */
                 return false;
@@ -310,14 +304,12 @@ bool ooo_rule_dispatcher(
 }
 
 size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_t level) {
-        TSSymbol me = ts_node_symbol(node);
-        TSSymbol parent = ooo_parent(node);
-        TSSymbol grand = ooo_grand_parent(node);
-        TSSymbol prev_sibling = ooo_previous_sibling(node);
-        TSSymbol next_sibling = ooo_next_sibling(node);
-        TSSymbol prev_parent_sibling = ooo_previous_parent_siblin(node);
-        TSSymbol next_parent_sibling = ooo_next_parent_siblin(node);
-        TSSymbol prev_grand_sibling = ooo_previous_grand_siblin(node);
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol prev_parent_sibling = ooo(sibling(-1, super(1, node)));
+        TSSymbol next_parent_sibling = ooo(sibling(1, super(1, node)));
 
         switch (transition) { 
         case OOO_ENTRY:

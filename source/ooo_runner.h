@@ -53,19 +53,11 @@ bool ooo_rule_dispatcher(
 
 size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_t level);
 
+TSSymbol ooo(TSNode);
+TSNode super(int i, TSNode n); 
+TSNode child(unsigned int const i, TSNode n);
+TSNode child_first(TSNode n);
+TSNode child_last(TSNode n);
+TSNode sibling(int i, TSNode n);
 
-
-TSSymbol ooo_paren(TSNode n, size_t i);
-TSSymbol ooo_pSibling(TSNode n, size_t i);
-TSSymbol ooo_nSibling(TSNode n, size_t i);
-
-TSSymbol ooo_parent(TSNode n);
-TSSymbol ooo_grand_parent(TSNode n);
-TSSymbol ooo_previous_sibling(TSNode n);
-TSSymbol ooo_previous2_sibling(TSNode n);
-TSSymbol ooo_next_sibling(TSNode n);
-TSSymbol ooo_previous_parent_siblin(TSNode n);
-TSSymbol ooo_next_parent_siblin(TSNode n);
-TSSymbol ooo_previous_grand_siblin(TSNode n);
-TSSymbol ooo_last_child(TSNode n);
 #endif

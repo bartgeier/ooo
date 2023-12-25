@@ -1,148 +1,53 @@
 #include "ooo_runner.h"
 #include <stdio.h>
 
-TSSymbol ooo_paren(TSNode n, size_t i) {
-        while (i > 0) {
+TSSymbol ooo(TSNode n) {
+        if (ts_node_is_null(n)) {
+                return 0;
+        }
+        return ts_node_symbol(n);
+}
+
+TSNode super(int i, TSNode n) {
+        while (i > 0 & !ts_node_is_null(n)) {
                 n = ts_node_parent(n);
-                if (ts_node_is_null(n)) {
-                        return 0;
-                }
                 i--;
         }
-        return ts_node_symbol(n);
+        return n;
 }
 
-TSSymbol ooo_pSibling(TSNode n, size_t i) {
-        while (i > 0) {
+TSNode child(unsigned int const i, TSNode n) {
+        if (!ts_node_is_null(n)) {
+                n = ts_node_child(n, i);
+        }
+        return n;
+}
+
+TSNode child_first(TSNode n) {
+        //for (size_t it = 0; it < num_of_childs; it++) {
+        if (!ts_node_is_null(n)) {
+                n = ts_node_child(n, 0);
+        }
+        return n;
+}
+
+TSNode child_last(TSNode n) {
+        if (!ts_node_is_null(n)) {
+                n = ts_node_child(n, ts_node_child_count(n) - 1);
+        }
+        return n;
+}
+
+TSNode sibling(int i, TSNode n) {
+        while (i > 0 & !ts_node_is_null(n)) {
                 n = ts_node_prev_sibling(n);
-                if (ts_node_is_null(n)) {
-                        return 0;
-                }
                 i--;
         }
-        return ts_node_symbol(n);
-}
-
-TSSymbol ooo_nSibling(TSNode n, size_t i) {
-        while (i > 0) {
-                n = ts_node_next_sibling(n);
-                if (ts_node_is_null(n)) {
-                        return 0;
-                }
-                i--;
+        while (i < 0 & !ts_node_is_null(n)) {
+                n = ts_node_prev_sibling(n);
+                i++;
         }
-        return ts_node_symbol(n);
-}
-
-TSSymbol ooo_parent(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode p = ts_node_parent(n);
-        if (ts_node_is_null(p)) {
-                return 0;
-        }
-        return ts_node_symbol(p);
-}
-
-TSSymbol ooo_grand_parent(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode p = ts_node_parent(n);
-        if (ts_node_is_null(p)) {
-                return 0;
-        }
-        TSNode g = ts_node_parent(p);
-        if (ts_node_is_null(g)) {
-                return 0;
-        }
-        return ts_node_symbol(g);
-}
-
-TSSymbol ooo_previous_sibling(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode s = ts_node_prev_sibling(n);
-        if (ts_node_is_null(s)) {
-                return 0;
-        }
-        return ts_node_symbol(s);
-}
-
-TSSymbol ooo_previous2_sibling(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode s1 = ts_node_prev_sibling(n);
-        if (ts_node_is_null(s1)) {
-                return 0;
-        }
-        TSNode s2 = ts_node_prev_sibling(s1);
-        if (ts_node_is_null(s2)) {
-                return 0;
-        }
-        return ts_node_symbol(s2);
-}
-
-TSSymbol ooo_next_sibling(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode s = ts_node_next_sibling(n);
-        if (ts_node_is_null(s)) {
-                return 0;
-        }
-        return ts_node_symbol(s);
-}
-
-TSSymbol ooo_previous_parent_siblin(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode p = ts_node_parent(n);
-        if (ts_node_is_null(p)) {
-                return 0;
-        }
-        return ooo_previous_sibling(p);
-}
-
-TSSymbol ooo_next_parent_siblin(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode p = ts_node_parent(n);
-        if (ts_node_is_null(p)) {
-                return 0;
-        }
-        return ooo_next_sibling(p);
-}
-
-TSSymbol ooo_previous_grand_siblin(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        TSNode p = ts_node_parent(n);
-        if (ts_node_is_null(p)) {
-                return 0;
-        }
-        TSNode g = ts_node_parent(p);
-        if (ts_node_is_null(g)) {
-                return 0;
-        }
-        return ooo_previous_sibling(g);
-}
-TSSymbol ooo_last_child(TSNode n) {
-        if (ts_node_is_null(n)) {
-                return 0;
-        }
-        uint32_t count = ts_node_child_count(n);
-        if (count == 0) {
-                return 0;
-        }
-        TSNode child = ts_node_child(n, count - 1);
-        return ts_node_symbol(child);
+        return n;
 }
 
 TSNode ooo_visit_nodes(
@@ -193,7 +98,7 @@ void ooo_set_indentation(
         size_t indentation_level
 ) {
         //char const *type_name = ts_node_type(node);
-        TSSymbol str_symbol = ts_node_symbol(node);
+        TSSymbol me = ooo(node);
 
         size_t cx = cursor->idx;
         size_t sx = OStrCursor_move_to_point(
@@ -227,8 +132,8 @@ void ooo_set_indentation(
         }
         size_t ax = cursor->idx;
         size_t ex = OStrCursor_move_to_point(cursor, source, ts_node_end_point(node));
-        if (str_symbol == sym_preproc_def 
-        | str_symbol == anon_sym_LF & ooo_parent(node) == sym_preproc_if) {
+        if (me == sym_preproc_def 
+        | me == anon_sym_LF & ooo(super(1, node)) == sym_preproc_if) {
                 /* preproc_def node includes the \n                */
                 /* \n is then not used for indentation             */
                 /* OStrCursor_decrement set the ex index before \n */
