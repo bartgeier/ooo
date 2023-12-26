@@ -311,6 +311,7 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
         TSSymbol prev_parent_sibling = ooo(sibling(-1, super(1, node)));
         TSSymbol next_parent_sibling = ooo(sibling(1, super(1, node)));
 
+
         switch (transition) { 
         case OOO_ENTRY:
                 if (me != sym_compound_statement 
