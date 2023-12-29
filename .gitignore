@@ -8,3 +8,10 @@ nobuild
 nobuild.old
 ooo
 otest
+output.c
+
+nobuild.exe
+nobuild.exe.old
+ooo.exe
+otest.exe
+unzip.exe

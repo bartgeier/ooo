@@ -204,7 +204,7 @@ void chain_echo(Chain chain);
     } while(0)
 
 #ifndef REBUILD_URSELF
-#  if _WIN32
+#  ifdef _WIN32
 #    if defined(__GNUC__)
 #       define REBUILD_URSELF(binary_path, source_path) CMD("gcc", "-o", binary_path, source_path)
 #    elif defined(__clang__)
