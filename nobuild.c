@@ -150,8 +150,8 @@ void googleTest_download_build(bool const clean) {
         MKDIRS("googletest");
         MKDIRS("googletest/build");
         MKDIRS("googletest/include");
-        RENAME("googletest-"GTEST_COMMIT"/build\\lib", "googletest/build/lib/");
-        RENAME("googletest-"GTEST_COMMIT"/googletest/include\\gtest", "googletest/include/gtest/");
+        RENAME("googletest-"GTEST_COMMIT"/build/lib", "googletest/build/lib/");
+        RENAME("googletest-"GTEST_COMMIT"/googletest/include/gtest", "googletest/include/gtest/");
         RM("googletest-"GTEST_COMMIT);
 }
 
