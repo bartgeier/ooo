@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
+#include <getopt.h>
 #include "tree_sitter/api.h"
 
 #include "treesitter_symbol_ids.h"
@@ -312,7 +313,6 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
         TSSymbol prev_parent_sibling = ooo(sibling(-1, super(1, node)));
         TSSymbol next_parent_sibling = ooo(sibling(1, super(1, node)));
 
-
         switch (transition) { 
         case OOO_ENTRY:
                 if (me != sym_compound_statement 
@@ -430,6 +430,7 @@ char const *shift_args(int *argc, char const ***argv) {
         *argv += 1;
         return result;
 }
+
 #define MEM_SIZE 1000*1024
 int main(int argc, char const **argv) {
         printf("%s\n", shift_args(&argc, &argv));
