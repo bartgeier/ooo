@@ -32,18 +32,14 @@ typedef struct {
         };
 } OArg_t;
 
-#define QARG_STR_SIZE 100
-typedef struct {
-        char at[QARG_STR_SIZE];
-} OArgStr;
-
-void swap_size_t(size_t *x, size_t *y) {
+static void swap_size_t(size_t *x, size_t *y) {
         if (x != y) {
                 *x = *x + *y;
                 *y = *x - *y;
                 *x = *x - *y;
         }
 }
+
 static int str_to_num(char *s, size_t *result) {
         errno = 0;
         char *endptr;
@@ -55,38 +51,77 @@ static int str_to_num(char *s, size_t *result) {
         return 0; // successful
 }
 
-static size_t split_length(char const *vstr, char const split) {
-        size_t i = 0;
-        while(vstr[i] != 0 & vstr[i] != split) {
-                i++;
-        }
-        return i;
+typedef struct {
+        char split;
+        bool is_changed;
+        char* at;
+} OArgSplit;
+
+static OArgSplit create_split(char *vstr, char const split) {
+        OArgSplit m = {
+                .split = split,
+                .is_changed = false,
+                .at = vstr,
+                .is_changed = false,
+        };
+        return m;
 }
 
-static OArgStr next_split(char **vstr, char split) {
-        size_t len = split_length(*vstr, split);
-        OARG_ASSERT(len < QARG_STR_SIZE, "split argument to long");
-        OArgStr s = {0};
-        size_t i = 0;
-        for(; i < len; i++) {
-                s.at[i] = (*vstr)[i];
+/* repairs the last split */
+static char *unsplit(OArgSplit *m) {
+        if (m->is_changed) {
+                m->at[-1] = m->split;
+                m->is_changed = false;
         }
-        s.at[i] = 0;
-        *vstr = &(*vstr)[i + 1];
-        return s;
+        return m->at; // returns tail
+}
+
+static char *next_split(OArgSplit *m) {
+        unsplit(m);
+        if (m->at[0] == 0) {
+                return m->at;
+        }
+        char *result = m->at;
+        size_t i = 0;
+        while (m->at[i] != m->split & m->at[i] != 0) {
+                i++;
+        }
+        if (m->at[i] == m->split) {
+                m->is_changed = true;
+                m->at[i] = 0;
+                i++;
+        }
+        m->at = &m->at[i];
+        return result;
+}
+
+static char* next_argument(OArgSplit *split, char *optarg) {
+        char *result = NULL;
+        do {
+                result = next_split(split);
+        } while ((result[0] == 0) & split->is_changed);
+        return result;
 }
 
 static int set_print(OArg_t *m, char *optarg) {
-        OArgStr begin = next_split(&optarg, ' ');
-        OArgStr end = next_split(&optarg, ' ');
-        int error = str_to_num(begin.at, &m->print.row_begin);
-        error |= str_to_num(end.at, &m->print.row_end);
+        int error;
+        OArgSplit split = create_split(optarg, ' ');
+        {
+                error = str_to_num(
+                        next_argument(&split, optarg),
+                        &m->print.row_begin
+                ); 
+                error |= str_to_num(
+                        next_argument(&split, optarg),
+                        &m->print.row_end
+                );
+        }
+        unsplit(&split);
+
         if (error | (m->print.row_begin == m->print.row_end)) {
                 printf("-p error => examples => -p \"43 65\" --print \"43 65\"\n");
-                printf("print row begin %zu\n", m->print.row_begin);
-                printf("print row end %zu\n", m->print.row_end);
                 if (m->print.row_begin == m->print.row_end) {
-                        printf("Must be => begin > end\n");
+                        printf("row begin = %zu must be greater than row end = %zu\n", m->print.row_begin, m->print.row_end);
                 }
                 return 1;
         }
@@ -127,7 +162,6 @@ int OArg_get(OArg_t *m, int argc, char **argv) {
                                 }
                                 putchar ('\n');
                         }
-                        printf("return 0\n"); 
                         return 0;
                 case 0:
                         printf("option=%s flag=%d", options[index].name, verbose_flag);
