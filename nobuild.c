@@ -193,7 +193,7 @@ void ooo_build(bool const clean) {
         #define _CFLAGS  "-Wall", "-Wextra", "-pedantic"
         #define CFLAGS "-ggdb", "-pedantic" 
         #define OOO_INC "tree-sitter/lib/include/" 
-        #define OOO_SRC "./source/main.c", "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c", "./source/ooo_runner.c"
+        #define OOO_SRC "./source/main.c", "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c", "./source/ooo_runner.c", "./source/OArg.c"
         if (clean) {
                 if (PATH_EXISTS("ooo")) RM("ooo");
                 return;

@@ -423,7 +423,7 @@ size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_
         }
 }
 
-char const *shift_args(int *argc, char const ***argv) {
+char const *shift_args(int *argc, char ***argv) {
         assert(*argc > 0);
         char const *result = **argv;
         *argc -= 1;
@@ -431,36 +431,12 @@ char const *shift_args(int *argc, char const ***argv) {
         return result;
 }
 
+#include "OArg.h"
 #define MEM_SIZE 1000*1024
-int main(int argc, char const **argv) {
-        printf("%s\n", shift_args(&argc, &argv));
-        struct { 
-                bool b; 
-                size_t begin;
-                size_t end;
-        } print = { false, 0, 0 }; 
-        while (argc > 0) {
-                if (strcmp(shift_args(&argc, &argv), "p") == 0) {
-                        if (argc > 0) {
-                                errno = 0;
-                                char *endptr;
-                                char const *astr = shift_args(&argc, &argv); 
-                                print.begin = strtol(astr, &endptr, 10); 
-                                if (endptr == astr) break;
-                        } else {
-                                break;
-                        }
-                        if (argc > 0) {
-                                errno = 0;
-                                char *endptr;
-                                char const *astr = shift_args(&argc, &argv); 
-                                print.end = strtol(astr, &endptr, 10); 
-                                if (endptr == astr) break;
-                        } else {
-                                break;
-                        }
-                        print.b = true;
-                }
+int main(int argc, char **argv) {
+        OArg_t oarg = {0};
+        if (OArg_init(&oarg, argc, argv)) {
+                return 1;
         }
 
         char *snk = (char*)malloc(MEM_SIZE);
@@ -479,8 +455,8 @@ int main(int argc, char const **argv) {
                 }
         };
 
-        // const char *file_path = "examples/CipActionDispatcher.c";
-        read_txt_file(&job.source, "examples/CipActionDispatcher.c");
+        printf("input path %s\n", oarg.input_path);
+        read_txt_file(&job.source, oarg.input_path);
 #if 1
         OStr_replace_tabs_with_one_space(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
@@ -495,12 +471,12 @@ int main(int argc, char const **argv) {
                 job.source.at,
                 job.source.size
         );
-        if (print.b) { 
+        if (oarg.action == OARG_PRINT) { 
                 ooo_print_nodes(
                         ts_tree_root_node(tree),
-                        print.begin, // start row
-                        print.end,   // end row
-                        0            // level
+                        oarg.print.row_begin,
+                        oarg.print.row_end, 
+                        0 // level
                 );
                 return 0;
         }

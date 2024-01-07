@@ -1,36 +1,13 @@
-//#ifndef OARGV_H
-//#define OARGV_H
 /* https://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Option-Example.html */
+#include "OArg.h"
 #include <getopt.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
-//#include <string.h>
 
-static int verbose_flag;
 #define OARG_ASSERT(x, msg) assert((x && msg))
-
-typedef enum {
-        OARG_STYLE,
-        OARG_HELP,
-        OARG_PRINT
-} OArg_e;
-
-typedef struct {
-        OArg_e action;
-        union {
-                struct {
-                        size_t row_begin;
-                        size_t row_end;
-                } print;
-                struct {
-                        char *input_path;
-                        char *output_path;
-                } style;
-        };
-} OArg_t;
 
 static void swap_size_t(size_t *x, size_t *y) {
         if (x != y) {
@@ -119,10 +96,7 @@ static int set_print(OArg_t *m, char *optarg) {
         unsplit(&split);
 
         if (error | (m->print.row_begin == m->print.row_end)) {
-                printf("-p error => examples => -p \"43 65\" --print \"43 65\"\n");
-                if (m->print.row_begin == m->print.row_end) {
-                        printf("row begin = %zu must be greater than row end = %zu\n", m->print.row_begin, m->print.row_end);
-                }
+                m->print.failure = 1;
                 return 1;
         }
         if (m->print.row_begin > m->print.row_end) {
@@ -131,10 +105,10 @@ static int set_print(OArg_t *m, char *optarg) {
         return 0;
 }
 
-int OArg_get(OArg_t *m, int argc, char **argv) {
+static int parse(OArg_t *m, int argc, char **argv) {
         while (1) {
                 static struct option options[] = {
-                        {"verbose", required_argument, &verbose_flag, 1},
+                        // {"verbose", required_argument, &verbose_flag, 1},
                         {"help", no_argument, 0, 'h'},
                         {"print", required_argument, NULL, 'p'},
                         {"input", required_argument, NULL, 'i'},
@@ -164,31 +138,27 @@ int OArg_get(OArg_t *m, int argc, char **argv) {
                         }
                         return 0;
                 case 0:
-                        printf("option=%s flag=%d", options[index].name, verbose_flag);
+                        // printf("option=%s flag=%d", options[index].name, verbose_flag);
                         if (optarg) printf(" arg=%s", optarg);
                         printf ("\n");
                         break;
                  case 'h':
                         m->action = OARG_HELP;
-                        puts("option h help\n");
+                        puts("? todo implementation of help\n");
                         break;
                 case '?':
-                        m->action = OARG_HELP;
-                        puts("option ? help\n");
+                        /* if parse error this is called automatically */
+                        puts("? todo implementation of help\n");
                         break;
                 case 'p':
                         m->action = OARG_PRINT;
-                        if (set_print(m, optarg)) {
-                                return 1;
-                        }
+                        set_print(m, optarg);
                         break;
                 case 'i':
-                        m->action = OARG_STYLE;
-                        printf("option -d with value `%s'\n", optarg);
+                        m->input_path = (optarg[0] == 0) ? NULL : optarg;
                         break;
                 case 'o':
-                        m->action = OARG_STYLE;
-                        printf("option -f with value `%s'\n", optarg);
+                        m->output_path = (optarg[0] == 0) ? NULL : optarg;
                         break;
                 default:
                         m = NULL;
@@ -198,11 +168,53 @@ int OArg_get(OArg_t *m, int argc, char **argv) {
         }
 }
 
+static int verify_style(OArg_t *m) {
+        int error = 0;
+        switch (m->action) {
+        case OARG_HELP:
+                return 0;
+        case OARG_STYLE:
+                if (m->input_path == NULL) {
+                        printf("-i Missing input path.\n");
+                        error = 1;
+                }
+                if (m->output_path == NULL) {
+                        printf("-o Missing output path.\n");
+                        error = 1;
+                } 
+                if (error) {
+                        printf("./ooo -i./example/hello.c -o./example/hello.c\n");
+                        return error; 
+                }
+                return 0;
+        case OARG_PRINT:
+                if (m->print.failure == 1) {
+                        printf("-p Row range failure.\n");
+                        error = 1;
+                }
+                if (m->input_path == NULL) {
+                        printf("-i Input path failure.\n");
+                        error = 1;
+                }
+                if (m->output_path == NULL) {
+                        printf("-o Output path failure.\n");
+                        error = 1;
+                } 
+                if (error) {
+                        printf("./ooo -p \"42 56\" -i./example/hello.c -o./tree_output\n");
+                        return error;
+                }
+                return 0;
+        default:
+                return 0;
+        }
+}
 
-int main(int argc, char **argv) {
-        OArg_t oarg = {0};
-        printf("Example for oarg!\n");
-        return OArg_get(&oarg, argc, argv);
+int OArg_init(OArg_t *m, int argc, char **argv) {
+        int error = 0;
+        error |= parse(m, argc, argv);
+        error |= verify_style(m); 
+        return error;
 }
 
 //#endif
