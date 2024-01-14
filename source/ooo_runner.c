@@ -138,6 +138,7 @@ void ooo_set_indentation(
                 /* \n is then not used for indentation             */
                 /* OStrCursor_decrement set the ex index before \n */
                 ex = OStrCursor_decrement(cursor, source);
+                ex = OStrCursor_decrement(cursor, source);
         } 
         for (size_t i = ax; i < ex; i++) {
                 OStr_append_chr(sink, source->at[i]);

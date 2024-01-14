@@ -30,8 +30,11 @@ void OStr_append_spaces(OStr *m, size_t n);
 size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr);
 void OStr_replace_tabs_with_one_space(OStr *B, OStr *A);
-void OStr_remove_indentation(OStr *B, OStr *A);
 
+char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A);
+void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed);
+
+void OStr_remove_indentation(OStr *B, OStr *A);
 void OStrCursor_reset(OStrCursor *m);
 size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p);
 bool OStrCursor_increment(OStrCursor *m, OStr const *s);
@@ -115,6 +118,99 @@ void OStr_replace_tabs_with_one_space(OStr *B, OStr *A) {
                         tab = true;
                 } else {
                         tab = false;
+                        B->at[x++] = A->at[i];
+                }
+                A->at[i] = 0;
+        }
+        B->at[x] = 0;
+        B->size = x;
+        A->size = 0;
+}
+
+char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A) {
+        int rn = 0;
+        int nr = 0;
+        int r = 0;
+        int n = 0;
+        char state = 0;
+        size_t x = 0;
+        for (size_t i = 0; i < A->size; i++) {
+                switch (state) {
+                case 0:
+                        if (A->at[i] == '\r') { state = 'r'; break; }
+                        if (A->at[i] == '\n') { state = 'n'; break; }
+                        B->at[x++] = A->at[i];
+                        break;
+                case 'r':
+                        B->at[x++] = '\n';
+                        if (A->at[i] == '\r') { 
+                                r += 2;
+                                B->at[x++] = '\n';
+                                state = 0; 
+                                break; 
+                        }
+                        if (A->at[i] == '\n') { 
+                                rn++; 
+                                state = 0; 
+                                break; 
+                        }
+                        state = 0;
+                        B->at[x++] = A->at[i];
+                        break;
+                case 'n':
+                        B->at[x++] = '\n';
+                        if (A->at[i] == '\r') { 
+                                nr++; 
+                                state = 0; 
+                                break; 
+                        }
+                        if (A->at[i] == '\n') { 
+                                n += 2;  
+                                B->at[x++] = '\n';
+                                state = 0; 
+                                break; 
+                        }
+                        state = 0;
+                        B->at[x++] = A->at[i];
+                        break;
+                default:
+                        /* never happens */
+                        break;
+                }
+                A->at[i] = 0;
+        }
+        B->at[x] = 0;
+        B->size = x;
+        A->size = 0;
+        if (r>rn & r>nr & r>n) return 'r';
+        if (n>rn & n>nr & n>r) return 'n';
+        if (rn>r & rn>nr & rn>r) return 'R';
+        if (nr>r & nr>rn & nr>n) return 'N';
+}
+
+void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
+        size_t x = 0;
+        for (size_t i = 0; i < A->size; i++) {
+                if (A->at[i] == '\n') {
+                        switch (lineFeed) {
+                        case 'r':
+                                B->at[x++] = '\r';
+                                break;
+                        case 'n':
+                                B->at[x++] = '\n';
+                                break;
+                        case 'R':
+                                B->at[x++] = '\r';
+                                B->at[x++] = '\n';
+                                break;
+                        case 'N':
+                                /* this is not normal */
+                                B->at[x++] = '\n';
+                                B->at[x++] = '\r';
+                                break;
+                        }
+                } else {
+                        //printf("hello");
                         B->at[x++] = A->at[i];
                 }
                 A->at[i] = 0;

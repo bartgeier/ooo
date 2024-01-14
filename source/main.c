@@ -11,6 +11,7 @@
 #include "ooo_runner.h"
 #define OStr_IMPLEMENTAION
 #include "StringView.h"
+#include "OArg.h"
 
 
 // Declare the `tree_sitter_json` function, which is
@@ -35,6 +36,21 @@ bool read_txt_file(OStr *source, char const *path) {
         source->at[source->size] = 0;
         fclose(file);
         return false;
+}
+
+bool write_txt_file(OStr const *source, char const *path) {
+        if (strcmp(path,"-") == 0) { 
+                printf("source_code:\n%s", source->at);
+                return true;
+        } else {
+                FILE *file = fopen(path, "w");
+                if (file == NULL) {
+                        return true;
+                }
+                fprintf(file, "%s", source->at);
+                fclose(file);
+                return false;
+        }
 }
 
 bool is_single_line(TSNode n) {
@@ -273,7 +289,7 @@ bool parenthesize_style_parameter_list(
                 /* void Foo(  */
                 /* '( ' or '(\n' */
                 if (is_single_line(ts_node_parent(node))) {
-                        OStr_append_chr(&job->sink, ' ');
+                        //OStr_append_chr(&job->sink, ' ');
                 } else {
                         OStr_append_chr(&job->sink, '\n');
                 }
@@ -283,7 +299,7 @@ bool parenthesize_style_parameter_list(
                 /* void Foo ( .... ) */
                 /* ' )' or '\n)'     */
                 if (is_single_line(ts_node_parent(node))) {
-                        OStr_append_chr(&job->sink, ' ');
+                        //OStr_append_chr(&job->sink, ' ');
                 } else {
                         OStr_append_chr(&job->sink, '\n');
                 }
@@ -431,7 +447,6 @@ char const *shift_args(int *argc, char ***argv) {
         return result;
 }
 
-#include "OArg.h"
 #define MEM_SIZE 1000*1024
 int main(int argc, char **argv) {
         OArg_t oarg = {0};
@@ -458,7 +473,7 @@ int main(int argc, char **argv) {
         printf("input path %s\n", oarg.input_path);
         read_txt_file(&job.source, oarg.input_path);
 #if 1
-        OStr_replace_tabs_with_one_space(&job.sink, &job.source);
+        char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
         OStr_remove_indentation(&job.sink, &job.source);
         OStr_move(&job.source, &job.sink);
@@ -496,7 +511,6 @@ int main(int argc, char **argv) {
                 job.sink.at,
                 job.sink.size
         );
-        printf("sink_code:\n%s", job.sink.at);
         ooo_set_indentation(
                 &job.cursor,
                 &job.source,
@@ -504,8 +518,12 @@ int main(int argc, char **argv) {
                 ts_tree_root_node(tree),
                 0
         );
-        // job.source.at[2200] = 0;
-        printf("source_code:\n%s", job.source.at);
+        OStr_clear(&job.sink);
+        OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
+        write_txt_file(&job.sink, oarg.output_path);
+        if (strcmp(oarg.output_path,"-")) {
+                printf("output path %s\n", oarg.output_path);
+        }
         ts_tree_delete(tree);
         ts_parser_delete(parser);
         return 0;
