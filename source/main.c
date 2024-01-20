@@ -470,7 +470,7 @@ int main(int argc, char **argv) {
                 }
         };
 
-        printf("input path %s\n", oarg.input_path);
+        // printf("input path %s -> ", oarg.input_path);
         read_txt_file(&job.source, oarg.input_path);
 #if 1
         char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
@@ -522,7 +522,7 @@ int main(int argc, char **argv) {
         OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
         write_txt_file(&job.sink, oarg.output_path);
         if (strcmp(oarg.output_path,"-")) {
-                printf("output path %s\n", oarg.output_path);
+               // printf("output path %s\n", oarg.output_path);
         }
         ts_tree_delete(tree);
         ts_parser_delete(parser);
