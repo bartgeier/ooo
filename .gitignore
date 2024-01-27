@@ -4,10 +4,15 @@
 **/examples
 **/.cache
 **/googletest
+**/ooo_generate
+**/trash
+
 nobuild
 nobuild.old
 nob
 nob.old
+style
+style.old
 ooo
 otest
 output.c
@@ -16,6 +21,8 @@ nobuild.exe
 nobuild.exe.old
 nob.exe
 nob.exe.old
+style.exe
+style.exe.old
 ooo.exe
 otest.exe
 unzip.exe

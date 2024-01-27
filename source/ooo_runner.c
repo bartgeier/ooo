@@ -132,14 +132,15 @@ void ooo_set_indentation(
         }
         size_t ax = cursor->idx;
         size_t ex = OStrCursor_move_to_point(cursor, source, ts_node_end_point(node));
-        if (me == sym_preproc_def 
-        | me == anon_sym_LF & ooo(super(1, node)) == sym_preproc_if) {
+        // if (me == sym_preproc_def 
+        // | me == anon_sym_LF & ooo(super(1, node)) == sym_preproc_if) {
+        //if (me == anon_sym_LF & ooo(super(1, node)) == sym_preproc_if) {
                 /* preproc_def node includes the \n                */
                 /* \n is then not used for indentation             */
                 /* OStrCursor_decrement set the ex index before \n */
-                ex = OStrCursor_decrement(cursor, source);
-                ex = OStrCursor_decrement(cursor, source);
-        } 
+                // ex = OStrCursor_decrement(cursor, source);
+                // ex = OStrCursor_decrement(cursor, source);
+        //} 
         for (size_t i = ax; i < ex; i++) {
                 OStr_append_chr(sink, source->at[i]);
                 // printf("%c", source->at[i]);

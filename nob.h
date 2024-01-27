@@ -92,6 +92,7 @@ typedef enum {
 } Nob_File_Type;
 
 bool nob_mkdir_if_not_exists(const char *path);
+bool nob_rm(const char *path);
 bool nob_copy_file(const char *src_path, const char *dst_path);
 bool nob_copy_directory_recursively(const char *src_path, const char *dst_path);
 bool nob_read_entire_dir(const char *parent, Nob_File_Paths *children);
@@ -737,6 +738,77 @@ Nob_File_Type nob_get_file_type(const char *path)
         default:       return NOB_FILE_OTHER;
     }
 #endif // _WIN32
+}
+
+bool nob_rm(const char *path)
+{
+    bool result = true;
+    size_t temp_checkpoint = nob_temp_save();
+    if (!nob_file_exists(path)) {
+        nob_log(NOB_INFO, "RM: `%s` does not exists", path);
+        return true;
+    }
+    Nob_File_Type type = nob_get_file_type(path);
+    if (type < 0) return false;
+
+    Nob_File_Paths children = {0};
+    Nob_String_Builder sb = {0};
+    switch (type) {
+
+        case NOB_FILE_DIRECTORY: {
+            if (!nob_read_entire_dir(path, &children)) nob_return_defer(false);
+            for (size_t i = 0; i < children.count; ++i) {
+                if (strcmp(children.items[i], ".") == 0) continue;
+                if (strcmp(children.items[i], "..") == 0) continue;
+                sb.count = 0;
+                nob_sb_append_cstr(&sb, path);
+                nob_sb_append_cstr(&sb, "/");
+                nob_sb_append_cstr(&sb, children.items[i]);
+                nob_sb_append_null(&sb);
+                if (!nob_rm(sb.items)) {
+                    nob_return_defer(false);
+                }
+            }
+            if (rmdir(path) < 0) {
+                if (errno == EEXIST) {
+                    errno = 0;
+                    nob_log(NOB_WARNING, "RM: directory %s does not exist", path);
+                    nob_return_defer(false);
+                } else {
+                    nob_log(NOB_ERROR, "RM: could not remove directory %s: %s", path, strerror(errno));
+                }
+            }
+        } break;
+
+        case NOB_FILE_REGULAR: {
+            if (unlink(path) < 0) {
+                if (errno == ENOENT) {
+                    errno = 0;
+                    nob_log(NOB_WARNING, "RM: file %s does not exist",path);
+                } else {
+                    nob_log(NOB_ERROR, "RM: could not remove file %s: %s", path, strerror(errno));
+                    nob_return_defer(false);
+                }
+            }
+        } break;
+
+        case NOB_FILE_SYMLINK: {
+            nob_log(NOB_WARNING, "RM: TODO: Copying symlinks is not supported yet");
+        } break;
+
+        case NOB_FILE_OTHER: {
+            nob_log(NOB_ERROR, "RM: Unsupported type of file %s", path);
+            nob_return_defer(false);
+        } break;
+
+        default: NOB_ASSERT(0 && "RM: unreachable");
+    }
+defer:
+    nob_log(NOB_INFO, "RM: `%s`", path);
+    nob_temp_rewind(temp_checkpoint);
+    nob_sb_free(sb);
+    nob_sb_free(children);
+    return result;
 }
 
 bool nob_copy_directory_recursively(const char *src_path, const char *dst_path)
