@@ -2,8 +2,6 @@
 #include "nobuild.h"
 #include <stdbool.h>
 
-/* For windows download https://gnuwin32.sourceforge.net/packages/unzip.htm */
-
 #define OOO_BUILD_DIR "build"
 
 void create_build_dir(bool const clean) {
@@ -52,35 +50,6 @@ void treesitter_download_build(bool const clean) {
         RM("tree-sitter-"TS_COMMIT);
 }        
 
-
-
-// void treesitter_download_build(bool const clean) {
-//         #define TS_COMMIT "0ff28346be3d27f935d7cde8bbdf6b621c268e1a"
-//         if (clean) {
-//                 if (PATH_EXISTS("tree-sitter.zip")) RM("tree-sitter.zip");
-//                 if (PATH_EXISTS("tree-sitter-"TS_COMMIT)) RM("tree-sitter-"TS_COMMIT);
-//                 if (PATH_EXISTS("tree-sitter")) RM("tree-sitter");
-//                 return;
-//         }
-//         if (PATH_EXISTS("tree-sitter")) return;
-//         INFO("DOWNLOAD BUILD: tree-sitter -> tree-sitter.a");
-//         CMD(
-//             "curl", 
-//             "-L",
-//             "https://github.com/tree-sitter/tree-sitter/archive/"TS_COMMIT".zip",
-//             "--output", "tree-sitter.zip"
-//         );
-//         CMD("unzip", "tree-sitter.zip");
-//         RM("tree-sitter.zip");
-//         CMD("make", "-C", "tree-sitter-"TS_COMMIT);
-//         MKDIRS("tree-sitter");
-//         MKDIRS("tree-sitter/lib");
-//         MKDIRS("tree-sitter/lib/include");
-//         CMD("cp", "tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter/libtree-sitter.a");
-//         CMD("cp", "tree-sitter-"TS_COMMIT"/lib/include/tree_sitter", "-r", "tree-sitter/lib/include");
-//         RM("tree-sitter-"TS_COMMIT);
-// }
-
 void tree_sitter_c_download(bool const clean) {
         #define TS_C_COMMIT "212a80f86452bb1316324fa0db730cf52f29e05a"
         if (clean) {
@@ -105,7 +74,6 @@ void tree_sitter_c_download(bool const clean) {
         RM("tree-sitter-c-"TS_C_COMMIT);
 }
 
-/* curl -L https://github.com/google/googletest/archive/76bb2afb8b522d24496ad1c757a49784fbfa2e42.zip --output googletest.zip */
 void googleTest_download_build(bool const clean) {
         #define GTEST_COMMIT "76bb2afb8b522d24496ad1c757a49784fbfa2e42"
         if (clean) {
