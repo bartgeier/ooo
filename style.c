@@ -6,10 +6,9 @@
 #define GENERATE_PATH "ooo_generate/Double_Page_Flash/"
 #define O_PATH GENERATE_PATH
 
-
 bool create_directorys_ooo_gererate(bool clean) {
         if (clean) {
-                return  nob_rm("./ooo_generate");
+                return  nob_remove("./ooo_generate");
         }
         nob_mkdir_if_not_exists("./ooo_generate");
         nob_mkdir_if_not_exists("./ooo_generate/Double_Page_Flash");
@@ -41,10 +40,17 @@ int ooo_style(const char *file_path) {
 }
 
 int main(int argc, char **argv) {
+        nob_log(NOB_INFO, "version 2");
         int error = 0;
-        NOB_GO_REBUILD_URSELF(argc, argv);
-        error |= !nob_rm("style.old");
-
+        NOB_GO_REBUILD_URSELF(argc, argv);      
+        #ifdef _WIN32
+            error |= !nob_remove("style.exe.old");
+            if (nob_file_exists("style.exe.old")) {                               
+                nob_log(NOB_INFO, "RM: Don't worry `style.exe.old` will be deleted next time!");  
+            }
+        #else
+            error |= !nob_remove("style.old");
+        #endif 
         if (argc > 1) nob_shift_args(&argc, &argv);
         bool clean = strcmp(nob_shift_args(&argc, &argv), "clean") == 0;
 

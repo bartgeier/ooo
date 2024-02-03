@@ -92,11 +92,12 @@ typedef enum {
 } Nob_File_Type;
 
 bool nob_mkdir_if_not_exists(const char *path);
-bool nob_rm(const char *path);
+bool nob_remove(const char *path);                                            // RM bartgeier 03.02.2024
 bool nob_copy_file(const char *src_path, const char *dst_path);
 bool nob_copy_directory_recursively(const char *src_path, const char *dst_path);
 bool nob_read_entire_dir(const char *parent, Nob_File_Paths *children);
 bool nob_write_entire_file(const char *path, const void *data, size_t size);
+bool nob_has_exe(int argc, char **argv);                                   //file has ".exe" extension bartgeier 03.02.2024
 Nob_File_Type nob_get_file_type(const char *path);
 
 #define nob_return_defer(value) do { result = (value); goto defer; } while(0)
@@ -223,7 +224,7 @@ int nob_file_exists(const char *file_path);
 
 // TODO: add MinGW support for Go Rebuild Urself™ Technology
 #ifndef NOB_REBUILD_URSELF
-#  if _WIN32
+#  ifdef _WIN32
 #    if defined(__GNUC__)
 #       define NOB_REBUILD_URSELF(binary_path, source_path) "gcc", "-o", binary_path, source_path
 #    elif defined(__clang__)
@@ -258,6 +259,7 @@ int nob_file_exists(const char *file_path);
 //   do not recommend since the whole idea of nobuild is to keep the process of bootstrapping
 //   as simple as possible and doing all of the actual work inside of the nobuild)
 //
+#ifndef _WIN32
 #define NOB_GO_REBUILD_URSELF(argc, argv)                                                    \
     do {                                                                                     \
         const char *source_path = __FILE__;                                                  \
@@ -288,6 +290,45 @@ int nob_file_exists(const char *file_path);
             exit(0);                                                                         \
         }                                                                                    \
     } while(0)
+#else  
+// bartgeier 03.2.2024
+#define NOB_GO_REBUILD_URSELF(argc, argv)                                                    \
+    do {                                                                                     \
+        const char *source_path = __FILE__;                                                  \
+        assert(argc >= 1);                                                                   \
+        const char *binary_path = argv[0];                                                   \
+                                                                                             \
+        Nob_String_Builder sb_orig = {0};                                                    \
+        nob_sb_append_cstr(&sb_orig, binary_path);                                           \
+        if (!nob_has_exe(argc, argv)) nob_sb_append_cstr(&sb_orig, ".exe");                   \
+        nob_sb_append_null(&sb_orig);                                                        \
+                                                                                             \
+        int rebuild_is_needed = nob_needs_rebuild(sb_orig.items, &source_path, 1);           \
+        if (rebuild_is_needed < 0) exit(1);                                                  \
+        if (rebuild_is_needed) {                                                             \
+            Nob_String_Builder sb_new = {0};                                                 \
+            nob_sb_append_cstr(&sb_new, binary_path);                                        \
+            if (!nob_has_exe(argc, argv)) nob_sb_append_cstr(&sb_new, ".exe");                \
+            nob_sb_append_cstr(&sb_new, ".old");                                             \
+            nob_sb_append_null(&sb_new);                                                     \
+                                                                                             \
+            if (!nob_rename(sb_orig.items, sb_new.items)) exit(1);                           \
+            Nob_Cmd rebuild = {0};                                                           \
+            nob_cmd_append(&rebuild, NOB_REBUILD_URSELF(binary_path, source_path));          \
+            bool rebuild_succeeded = nob_cmd_run_sync(rebuild);                              \
+            nob_cmd_free(rebuild);                                                           \
+            if (!rebuild_succeeded) {                                                        \
+                nob_rename(sb_new.items, sb_orig.items);                                       \
+                exit(1);                                                                     \
+            }                                                                                \
+                                                                                             \
+            Nob_Cmd cmd = {0};                                                               \
+            nob_da_append_many(&cmd, argv, argc);                                            \
+            if (!nob_cmd_run_sync(cmd)) exit(1);                                             \
+            exit(0);                                                                         \
+        }                                                                                    \
+    } while(0)        
+#endif
 // The implementation idea is stolen from https://github.com/zhiayang/nabs
 
 typedef struct {
@@ -740,7 +781,7 @@ Nob_File_Type nob_get_file_type(const char *path)
 #endif // _WIN32
 }
 
-bool nob_rm(const char *path)
+bool nob_remove(const char *path)
 {
     bool result = true;
     size_t temp_checkpoint = nob_temp_save();
@@ -765,7 +806,7 @@ bool nob_rm(const char *path)
                 nob_sb_append_cstr(&sb, "/");
                 nob_sb_append_cstr(&sb, children.items[i]);
                 nob_sb_append_null(&sb);
-                if (!nob_rm(sb.items)) {
+                if (!nob_remove(sb.items)) {
                     nob_return_defer(false);
                 }
             }
@@ -773,9 +814,10 @@ bool nob_rm(const char *path)
                 if (errno == EEXIST) {
                     errno = 0;
                     nob_log(NOB_WARNING, "RM: directory %s does not exist", path);
-                    nob_return_defer(false);
+                    nob_return_defer(true);
                 } else {
                     nob_log(NOB_ERROR, "RM: could not remove directory %s: %s", path, strerror(errno));
+                    nob_return_defer(false);
                 }
             }
         } break;
@@ -785,6 +827,7 @@ bool nob_rm(const char *path)
                 if (errno == ENOENT) {
                     errno = 0;
                     nob_log(NOB_WARNING, "RM: file %s does not exist",path);
+                    nob_return_defer(true);
                 } else {
                     nob_log(NOB_ERROR, "RM: could not remove file %s: %s", path, strerror(errno));
                     nob_return_defer(false);
@@ -794,6 +837,7 @@ bool nob_rm(const char *path)
 
         case NOB_FILE_SYMLINK: {
             nob_log(NOB_WARNING, "RM: TODO: Copying symlinks is not supported yet");
+            nob_return_defer(true);
         } break;
 
         case NOB_FILE_OTHER: {
@@ -803,8 +847,8 @@ bool nob_rm(const char *path)
 
         default: NOB_ASSERT(0 && "RM: unreachable");
     }
-defer:
     nob_log(NOB_INFO, "RM: `%s`", path);
+defer:
     nob_temp_rewind(temp_checkpoint);
     nob_sb_free(sb);
     nob_sb_free(children);
@@ -1012,7 +1056,7 @@ bool nob_rename(const char *old_path, const char *new_path)
 {
     nob_log(NOB_INFO, "renaming %s -> %s", old_path, new_path);
 #ifdef _WIN32
-    if (!MoveFileEx(old_path, new_path, MOVEFILE_REPLACE_EXISTING)) {
+    if (!MoveFileEx(old_path, new_path, MOVEFILE_REPLACE_EXISTING)) {           
         nob_log(NOB_ERROR, "could not rename %s to %s: %lu", old_path, new_path, GetLastError());
         return false;
     }
@@ -1051,6 +1095,21 @@ defer:
     NOB_FREE(buf);
     if (f) fclose(f);
     return result;
+}
+
+bool nob_has_exe(int argc, char **argv) {
+    assert(argc >= 1);
+    char *path = argv[0];
+    int l = strlen(path);
+    if (l <= 4) {
+        return false;
+    }
+    char extension[5];
+    for (size_t i = 0; i < 4; i++) { 
+        extension[i] = path[i + l - 4];
+    }                
+    extension[4] = 0;
+    return (strcmp(extension,".exe") == 0);
 }
 
 Nob_String_View nob_sv_chop_by_delim(Nob_String_View *sv, char delim)
