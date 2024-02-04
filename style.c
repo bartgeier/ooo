@@ -15,11 +15,9 @@ bool create_directorys_ooo_gererate(bool clean) {
         nob_mkdir_if_not_exists("./ooo_generate/Double_Page_Flash/example");
         nob_mkdir_if_not_exists("./ooo_generate/Double_Page_Flash/unitTests");
         return nob_mkdir_if_not_exists("./ooo_generate/Double_Page_Flash/source");
-
 }
 
-int ooo_style(const char *file_path) {
-        int error;
+bool ooo_style(const char *file_path) {
         Nob_String_Builder sbi = {0};
         nob_sb_append_cstr(&sbi, I_PATH);
         nob_sb_append_cstr(&sbi, file_path);
@@ -32,55 +30,59 @@ int ooo_style(const char *file_path) {
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "./ooo");
         nob_cmd_append(&cmd, "-i", sbi.items, "-o", sbo.items);
-        if (!nob_cmd_run_sync(cmd)) error = 1;
+        bool ok = nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
         nob_sb_free(sbi);
         nob_sb_free(sbo);
-        return error;
+        return ok;
 }
 
 int main(int argc, char **argv) {
-        nob_log(NOB_INFO, "version 2");
-        int error = 0;
+        nob_log(NOB_INFO, "version 3");
+        bool ok = true;
         NOB_GO_REBUILD_URSELF(argc, argv);      
         #ifdef _WIN32
-            error |= !nob_remove("style.exe.old");
+            ok |= !nob_remove("style.exe.old");
             if (nob_file_exists("style.exe.old")) {                               
                 nob_log(NOB_INFO, "RM: Don't worry `style.exe.old` will be deleted next time!");  
             }
         #else
-            error |= !nob_remove("style.old");
+            ok |= nob_remove("style.old");
         #endif 
         if (argc > 1) nob_shift_args(&argc, &argv);
         bool clean = strcmp(nob_shift_args(&argc, &argv), "clean") == 0;
-
         if (!create_directorys_ooo_gererate(clean)) return 1;
         if (!clean) {
                 nob_log(NOB_INFO, "source/");
-                error |= ooo_style("source/FlashState.h");
-                error |= ooo_style("source/FlashState.c");
-                error |= ooo_style("source/FlashStream.h");
-                error |= ooo_style("source/FlashStream.c");
-                error |= ooo_style("source/FlashStreamView.h");
+                ok &= ooo_style("source/FlashState.h");
+                ok &= ooo_style("source/FlashState.c");
+                ok &= ooo_style("source/FlashStream.h");
+                ok &= ooo_style("source/FlashStream.c");
+                ok &= ooo_style("source/FlashStreamView.h");
 
                 nob_log(NOB_INFO, "example/");
-                error |= ooo_style("example/FlashConfig.h");
-                error |= ooo_style("example/Flash_impl.h");
-                error |= ooo_style("example/Flash_impl.c");
-                error |= ooo_style("example/LogQueue.h");
-                error |= ooo_style("example/LogQueue.c");
-                error |= ooo_style("example/PERSISTENT.h");
-                error |= ooo_style("example/PERSISTENT.c");
-                error |= ooo_style("example/main.cpp");
-                error |= ooo_style("example/spi_hardware.h");
-                error |= ooo_style("example/spi_hardware.c");
+                ok &= ooo_style("example/FlashConfig.h");
+                ok &= ooo_style("example/Flash_impl.h");
+                ok &= ooo_style("example/Flash_impl.c");
+                ok &= ooo_style("example/LogQueue.h");
+                ok &= ooo_style("example/LogQueue.c");
+                ok &= ooo_style("example/PERSISTENT.h");
+                ok &= ooo_style("example/PERSISTENT.c");
+                ok &= ooo_style("example/main.cpp");
+                ok &= ooo_style("example/spi_hardware.h");
+                ok &= ooo_style("example/spi_hardware.c");
 
                 nob_log(NOB_INFO, "unitTests/");
-                error |= ooo_style("unitTests/stub_TEST_FLASH.h");
-                error |= ooo_style("unitTests/stub_TEST_FLASH.cpp");
-                error |= ooo_style("unitTests/test_FlashState.cpp");
-                error |= ooo_style("unitTests/test_FlashStream.cpp");
-                error |= ooo_style("unitTests/test_FlashStream_read_record.cpp");
+                ok &= ooo_style("unitTests/stub_TEST_FLASH.h");
+                ok &= ooo_style("unitTests/stub_TEST_FLASH.cpp");
+                ok &= ooo_style("unitTests/test_FlashState.cpp");
+                ok &= ooo_style("unitTests/test_FlashStream.cpp");
+                ok &= ooo_style("unitTests/test_FlashStream_read_record.cpp");
         }
-        return error;
+        if (!ok) { 
+                nob_log(NOB_ERROR, "style exit with an error");
+                return 2;
+        }
+        nob_log(NOB_INFO, "style exit successful");
+        return 0;
 }

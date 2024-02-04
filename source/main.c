@@ -18,11 +18,11 @@
 // implemented by the `tree-sitter-json` library.
 TSLanguage *tree_sitter_c();
 
-/* return true => error */ 
+/* return true => success */ 
 bool read_txt_file(OStr *source, char const *path) {
         FILE *file = fopen(path, "r");
         if (file == NULL) {
-                return true;
+                return false;
         }
         source->size = 0;
         source->at[0] = 0;
@@ -35,9 +35,10 @@ bool read_txt_file(OStr *source, char const *path) {
         source->size--; 
         source->at[source->size] = 0;
         fclose(file);
-        return false;
+        return true;
 }
 
+/* return true => successful */
 bool write_txt_file(OStr const *source, char const *path) {
         if (strcmp(path,"-") == 0) { 
                 printf("source_code:\n%s", source->at);
@@ -45,11 +46,11 @@ bool write_txt_file(OStr const *source, char const *path) {
         } else {
                 FILE *file = fopen(path, "w");
                 if (file == NULL) {
-                        return true;
+                        return false;
                 }
                 fprintf(file, "%s", source->at);
                 fclose(file);
-                return false;
+                return true;
         }
 }
 
@@ -470,8 +471,7 @@ int main(int argc, char **argv) {
                 }
         };
 
-        // printf("input path %s -> ", oarg.input_path);
-        read_txt_file(&job.source, oarg.input_path);
+        if (!read_txt_file(&job.source, oarg.input_path)) return 2;
 #if 1
         char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
