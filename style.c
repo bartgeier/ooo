@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     bool result = true;
     NOB_GO_REBUILD_URSELF(argc, argv);      
     #ifdef _WIN32
-        ok |= !nob_remove("style.exe.old");
+        result |= !nob_remove("style.exe.old");
         if (nob_file_exists("style.exe.old")) {                               
             nob_log(NOB_INFO, "RM: Don't worry `style.exe.old` will be deleted next time!");  
         }
