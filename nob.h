@@ -284,6 +284,7 @@ int nob_file_exists(const char *file_path);
                 exit(1);                                                                     \
             }                                                                                \
                                                                                              \
+            nob_sb_free(sb);                                                                 \
             Nob_Cmd cmd = {0};                                                               \
             nob_da_append_many(&cmd, argv, argc);                                            \
             if (!nob_cmd_run_sync(cmd)) exit(1);                                             \
@@ -300,7 +301,7 @@ int nob_file_exists(const char *file_path);
                                                                                              \
         Nob_String_Builder sb_orig = {0};                                                    \
         nob_sb_append_cstr(&sb_orig, binary_path);                                           \
-        if (!nob_has_exe(argc, argv)) nob_sb_append_cstr(&sb_orig, ".exe");                   \
+        if (!nob_has_exe(argc, argv)) nob_sb_append_cstr(&sb_orig, ".exe");                  \
         nob_sb_append_null(&sb_orig);                                                        \
                                                                                              \
         int rebuild_is_needed = nob_needs_rebuild(sb_orig.items, &source_path, 1);           \
@@ -308,7 +309,7 @@ int nob_file_exists(const char *file_path);
         if (rebuild_is_needed) {                                                             \
             Nob_String_Builder sb_new = {0};                                                 \
             nob_sb_append_cstr(&sb_new, binary_path);                                        \
-            if (!nob_has_exe(argc, argv)) nob_sb_append_cstr(&sb_new, ".exe");                \
+            if (!nob_has_exe(argc, argv)) nob_sb_append_cstr(&sb_new, ".exe");               \
             nob_sb_append_cstr(&sb_new, ".old");                                             \
             nob_sb_append_null(&sb_new);                                                     \
                                                                                              \
@@ -318,10 +319,12 @@ int nob_file_exists(const char *file_path);
             bool rebuild_succeeded = nob_cmd_run_sync(rebuild);                              \
             nob_cmd_free(rebuild);                                                           \
             if (!rebuild_succeeded) {                                                        \
-                nob_rename(sb_new.items, sb_orig.items);                                       \
+                nob_rename(sb_new.items, sb_orig.items);                                     \
                 exit(1);                                                                     \
             }                                                                                \
                                                                                              \
+            nob_sb_free(sb_new);                                                             \
+            nob_sb_free(sb_orig);                                                            \
             Nob_Cmd cmd = {0};                                                               \
             nob_da_append_many(&cmd, argv, argc);                                            \
             if (!nob_cmd_run_sync(cmd)) exit(1);                                             \
