@@ -1,197 +1,234 @@
 #define NOB_IMPLEMENTATION
 #include "nob.h"
-#include <stdio.h>
+#include <stdbool.h>
 
-bool nob_rm(const char *path)
-{
-    bool result = true;
-    Nob_File_Paths children = {0};
-    Nob_String_Builder sb = {0};
-    size_t temp_checkpoint = nob_temp_save();
+#define OOO_BUILD_DIR "build"
 
-    Nob_File_Type type = nob_get_file_type(path);
-    if (type < 0) return false;
-
-    switch (type) {
-
-        case NOB_FILE_DIRECTORY: {
-            if (!nob_read_entire_dir(path, &children)) nob_return_defer(false);
-            for (size_t i = 0; i < children.count; ++i) {
-                if (strcmp(children.items[i], ".") == 0) continue;
-                if (strcmp(children.items[i], "..") == 0) continue;
-                sb.count = 0;
-                nob_sb_append_cstr(&sb, path);
-                nob_sb_append_cstr(&sb, "/");
-                nob_sb_append_cstr(&sb, children.items[i]);
-                nob_sb_append_null(&sb);
-                if (!nob_rm(sb.items)) {
-                    nob_return_defer(false);
-                }
-            }
-            if (rmdir(path) < 0) {
-                if (errno == EEXIST) {
-                    errno = 0;
-                    nob_log(NOB_WARNING, "directory %s does not exist", path);
-                    nob_return_defer(false);
-                } else {
-                    nob_log(NOB_ERROR, "could not remove directory %s: %s", path, strerror(errno));
-                }
-            }
-        } break;
-
-        case NOB_FILE_REGULAR: {
-            if (unlink(path) < 0) {
-                if (errno == ENOENT) {
-                    errno = 0;
-                    nob_log(NOB_WARNING, "file %s does not exist",path);
-                } else {
-                    nob_log(NOB_ERROR, "could not remove file %s: %s", path, strerror(errno));
-                    nob_return_defer(false);
-                }
-            }
-        } break;
-
-        case NOB_FILE_SYMLINK: {
-            nob_log(NOB_WARNING, "TODO: Copying symlinks is not supported yet");
-        } break;
-
-        case NOB_FILE_OTHER: {
-            nob_log(NOB_ERROR, "Unsupported type of file %s", path);
-            nob_return_defer(false);
-        } break;
-
-        default: NOB_ASSERT(0 && "unreachable");
-    }
-defer:
-    nob_temp_rewind(temp_checkpoint);
-    nob_da_free(sb);
-    nob_da_free(children);
-    return result;
-}
-
-int ooo_style(const char *input_path, const char *output_path) {
-        Nob_Cmd cmd = {0};
-        nob_cmd_append(&cmd, "./ooo");
-        nob_cmd_append(&cmd, "-i", input_path, "-o", output_path);
-        if (!nob_cmd_run_sync(cmd)) return 1;
-        return 0;
-}
-
-int ooo_style_example(const char *file_path) {
-        int error;
-        Nob_String_Builder sbi = {0};
-        nob_sb_append_cstr(&sbi, "examples/Double_Page_Flash/example/");
-        nob_sb_append_cstr(&sbi, file_path);
-        nob_sb_append_null(&sbi);
-        Nob_String_Builder sbo = {0};
-        nob_sb_append_cstr(&sbo, "ooo_generate/Double_Page_Flash/example/");
-        nob_sb_append_cstr(&sbo, file_path);
-        nob_sb_append_null(&sbo);
-
-        Nob_Cmd cmd = {0};
-        nob_cmd_append(&cmd, "./ooo");
-        nob_cmd_append(&cmd, "-i", sbi.items, "-o", sbo.items);
-        if (!nob_cmd_run_sync(cmd)) error = 1;
-        nob_da_free(sbi);
-        nob_da_free(sbo);
-        return error;
-}
-
-int ooo_style_source(const char *file_path) {
-        int error;
-        Nob_String_Builder sbi = {0};
-        nob_sb_append_cstr(&sbi, "examples/Double_Page_Flash/source/");
-        nob_sb_append_cstr(&sbi, file_path);
-        nob_sb_append_null(&sbi);
-        Nob_String_Builder sbo = {0};
-        nob_sb_append_cstr(&sbo, "ooo_generate/Double_Page_Flash/source/");
-        nob_sb_append_cstr(&sbo, file_path);
-        nob_sb_append_null(&sbo);
-
-        Nob_Cmd cmd = {0};
-        nob_cmd_append(&cmd, "./ooo");
-        nob_cmd_append(&cmd, "-i", sbi.items, "-o", sbo.items);
-        if (!nob_cmd_run_sync(cmd)) error = 1;
-        nob_da_free(sbi);
-        nob_da_free(sbo);
-        return error;
-}
-
-int ooo_style_unitTests(const char *file_path) {
-        int error;
-        Nob_String_Builder sbi = {0};
-        nob_sb_append_cstr(&sbi, "examples/Double_Page_Flash/unitTests/");
-        nob_sb_append_cstr(&sbi, file_path);
-        nob_sb_append_null(&sbi);
-        Nob_String_Builder sbo = {0};
-        nob_sb_append_cstr(&sbo, "ooo_generate/Double_Page_Flash/unitTests/");
-        nob_sb_append_cstr(&sbo, file_path);
-        nob_sb_append_null(&sbo);
-
-        Nob_Cmd cmd = {0};
-        nob_cmd_append(&cmd, "./ooo");
-        nob_cmd_append(&cmd, "-i", sbi.items, "-o", sbo.items);
-        if (!nob_cmd_run_sync(cmd)) error = 1;
-        nob_da_free(sbi);
-        nob_da_free(sbo);
-        return error;
-}
-
-bool create_test_dir(bool clean) {
+void create_build_dir(bool const clean) {
         if (clean) {
-                return  nob_rm("./ooo_generate");
+                nob_remove(OOO_BUILD_DIR);
+                return;
         }
-        nob_mkdir_if_not_exists("./ooo_generate");
-        nob_mkdir_if_not_exists("./ooo_generate/Double_Page_Flash");
-        nob_mkdir_if_not_exists("./ooo_generate/Double_Page_Flash/example");
-        nob_mkdir_if_not_exists("./ooo_generate/Double_Page_Flash/unitTests");
-        return nob_mkdir_if_not_exists("./ooo_generate/Double_Page_Flash/source");
+        nob_mkdir_if_not_exists(OOO_BUILD_DIR);
+}
 
+void treesitter_download_build(bool const clean) {
+        #define TS_COMMIT "0ff28346be3d27f935d7cde8bbdf6b621c268e1a"
+        if (clean) {
+                nob_remove("tree-sitter.zip");
+                nob_remove("tree-sitter-"TS_COMMIT);
+                nob_remove("tree-sitter");
+                return;
+        }
+        if (nob_file_exists("tree-sitter")) return;
+        nob_log(NOB_INFO,"DOWNLOAD BUILD: tree-sitter -> tree-sitter.a");
+
+        Nob_Cmd cmd = {0};
+        nob_cmd_append(&cmd, "curl");
+        nob_cmd_append(&cmd, "-L");
+        nob_cmd_append(&cmd, "https://github.com/tree-sitter/tree-sitter/archive/"TS_COMMIT".zip");
+        nob_cmd_append(&cmd, "--output", "tree-sitter.zip");
+        bool ok = nob_cmd_run_sync(cmd);
+
+        cmd.count = 0;
+        nob_log(NOB_INFO,"unzip");
+        nob_cmd_append(&cmd, "unzip", "tree-sitter.zip");
+        ok = nob_cmd_run_sync(cmd);
+        cmd.count = 0;
+        nob_remove("tree-sitter.zip");
+        #ifdef _WIN32
+                nob_cmd_append(&cmd, "gcc");
+                nob_cmd_append(&cmd, "-I", "tree-sitter-"TS_COMMIT"/lib/src", "-I", "tree-sitter-"TS_COMMIT"/lib/include");
+                nob_cmd_append(&cmd, "-c","-o","tree-sitter-"TS_COMMIT"/lib.o", "tree-sitter-"TS_COMMIT"/lib/src/lib.c");
+                ok = nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+
+                nob_cmd_append(&cmd,"ar", "rcs", "tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter-"TS_COMMIT"/lib.o");
+                ok = nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+        #else
+                nob_cmd_append(&cmd, "make", "-C", "tree-sitter-"TS_COMMIT);
+                ok = nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+        #endif
+        nob_mkdir_if_not_exists("tree-sitter");
+        nob_mkdir_if_not_exists("tree-sitter/lib");
+        nob_mkdir_if_not_exists("tree-sitter/lib/include");
+        nob_rename("tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter/libtree-sitter.a");
+        nob_rename("tree-sitter-"TS_COMMIT"/lib/include/tree_sitter", "tree-sitter/lib/include/tree_sitter/");
+        nob_remove("tree-sitter-"TS_COMMIT);
+        nob_cmd_free(cmd);
+}        
+
+void tree_sitter_c_download(bool const clean) {
+        #define TS_C_COMMIT "212a80f86452bb1316324fa0db730cf52f29e05a"
+        if (clean) {
+                nob_remove("tree-sitter-c.zip");
+                nob_remove("tree-sitter-c-"TS_C_COMMIT);
+                nob_remove("tree-sitter-c"); 
+                return;
+        }
+        if (nob_file_exists("tree-sitter-c")) return;
+        nob_log(NOB_INFO,"DOWNLOAD: tree-sitter-c -> parser.c");
+        Nob_Cmd cmd = {0};
+        nob_cmd_append(&cmd, "curl"); 
+        nob_cmd_append(&cmd, "-L");
+        nob_cmd_append(&cmd, "https://github.com/tree-sitter/tree-sitter-c/archive/"TS_C_COMMIT".zip");
+        nob_cmd_append(&cmd, "--output", "tree-sitter-c.zip");
+        nob_cmd_run_sync(cmd);
+        
+        cmd.count = 0;
+        nob_cmd_append(&cmd, "unzip", "tree-sitter-c.zip");
+        nob_cmd_run_sync(cmd);
+        nob_cmd_free(cmd);
+        nob_remove("tree-sitter-c.zip");
+        nob_mkdir_if_not_exists("tree-sitter-c");
+        nob_mkdir_if_not_exists("tree-sitter-c/src");
+        nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/parser.c", "tree-sitter-c/src/parser.c");
+        nob_remove("tree-sitter-c-"TS_C_COMMIT);
+}
+
+void googleTest_download_build(bool const clean) {
+        #define GTEST_COMMIT "76bb2afb8b522d24496ad1c757a49784fbfa2e42"
+        if (clean) {
+                nob_remove("googletest.zip");
+                nob_remove("googletest-"GTEST_COMMIT);
+                nob_remove("googletest");
+                return;
+        }
+        if (nob_file_exists("googletest")) return;
+        nob_log(NOB_INFO, "DOWNLOAD BUILD: googletest");
+        Nob_Cmd cmd = {0};
+        nob_cmd_append(&cmd, "curl");
+        nob_cmd_append(&cmd, "-L");
+        nob_cmd_append(&cmd, "https://github.com/google/googletest/archive/"GTEST_COMMIT".zip");
+        nob_cmd_append(&cmd, "--output", "googletest.zip");
+        nob_cmd_run_sync(cmd);
+        cmd.count = 0;
+
+        nob_cmd_append(&cmd, "unzip", "googletest.zip");
+        nob_cmd_run_sync(cmd);
+        cmd.count = 0;
+        nob_remove("googletest.zip");
+        nob_mkdir_if_not_exists("googletest-"GTEST_COMMIT"/build");
+        #ifdef _WIN32
+                nob_cmd_append(&cmd, "cmake");
+                nob_cmd_append(&cmd, "-DCMAKE_CXX_COMPILER=g++");
+                nob_cmd_append(&cmd, "-DCMAKE_CC_COMPILER=gcc");
+                nob_cmd_append(&cmd, "-DCMAKE_MAKE_PROGRAM=mingw32-make");
+                nob_cmd_append(&cmd, "-G", "\"MinGW Makefiles\"");
+                nob_cmd_append(&cmd, "-Hgoogletest-"GTEST_COMMIT);
+                nob_cmd_append(&cmd, "-DBUILD_SHARED_LIBS=OFF", "-DBUILD_GMOCK=OFF");
+                nob_cmd_append(&cmd, "-Bgoogletest-"GTEST_COMMIT"/build");
+                nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+
+                nob_cmd_append(&cmd, "mingw32-make", "-C", "googletest-"GTEST_COMMIT"/build");
+                nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+        #else       
+                nob_cmd_append(&cmd, "cmake");
+                nob_cmd_append(&cmd, "-Hgoogletest-"GTEST_COMMIT);
+                nob_cmd_append(&cmd, "-DBUILD_SHARED_LIBS=OFF", "-DBUILD_GMOCK=OFF");
+                nob_cmd_append(&cmd, "-Bgoogletest-"GTEST_COMMIT"/build");
+                nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+
+                nob_cmd_append(&cmd, "make", "-C", "googletest-"GTEST_COMMIT"/build");                
+                nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+        #endif  
+        nob_cmd_free(cmd);
+        nob_mkdir_if_not_exists("googletest");
+        nob_mkdir_if_not_exists("googletest/build");
+        nob_mkdir_if_not_exists("googletest/include");
+        nob_rename("googletest-"GTEST_COMMIT"/build/lib", "googletest/build/lib/");
+        nob_rename("googletest-"GTEST_COMMIT"/googletest/include/gtest", "googletest/include/gtest/");
+        nob_remove("googletest-"GTEST_COMMIT);
+}
+
+
+void unittests_build(bool const clean) {
+        if (clean) {
+                #ifndef _WIN32
+                        nob_remove("otest");
+                #else
+                        nob_remove("otest.exe");
+                #endif
+                return;
+        }
+        nob_log(NOB_INFO, "BUILD: ooo unit tests");
+        #ifndef _WIN32
+                Nob_Cmd cmd = {0};
+                nob_cmd_append(&cmd, "g++", "-Wall", "-Wextra", "-pedantic");
+                nob_cmd_append(&cmd, "-I", "googletest/include/"); 
+                nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
+                nob_cmd_append(&cmd, "-L", "unittests/"); 
+                nob_cmd_append(&cmd, "-o", "otest", "unittests/tst_hello.c");
+                nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
+                nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+        #else
+                nob_cmd_append(&cmd, "g++", "-Wall", "-Wextra", "-pedantic");
+                nob_cmd_append(&cmd, "-I", "googletest/include/");
+                nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
+                nob_cmd_append(&cmd, "-L", "unittests/");
+                nob_cmd_append(&cmd, "-o", "otest", "unittests/tst_hello.c");
+                nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
+                nob_cmd_run_sync(cmd);
+                cmd.count = 0;
+                //(nob_cmd_append(&cmd, "cl.exe", CFLAGS, "-I", OOO_INC, "-o", "main", OOO_SRC);
+        #endif
+        nob_cmd_free(cmd);
+}
+
+void ooo_build(bool const clean) {
+        #define NOT_USED "-ggdb", "-std=c99"
+        #define _CFLAGS  "-Wall", "-Wextra", "-pedantic"
+        #define CFLAGS "-ggdb", "-pedantic" 
+        #define OOO_INC "tree-sitter/lib/include/" 
+        #define OOO_SRC "./source/main.c", "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c", "./source/ooo_runner.c", "./source/OArg.c"
+        if (clean) {
+                nob_remove("ooo");
+                return;
+        }
+        nob_log(NOB_INFO, "BUILD: ooo code styler");
+        Nob_Cmd cmd = {0};
+        //#ifndef _WIN32
+                nob_cmd_append(&cmd, "gcc", CFLAGS, "-I", OOO_INC, "-o", "ooo", OOO_SRC);
+                nob_cmd_run_sync(cmd);
+                nob_cmd_free(cmd);
+        //#else
+        //        CMD("gcc.exe", CFLAGS, "-I", OOO_INC, "-o", "main", OOO_SRC);
+        //#endif
 }
 
 
 int main(int argc, char **argv) {
         NOB_GO_REBUILD_URSELF(argc, argv);
-
-        if (argc > 1) nob_shift_args(&argc, &argv);
-        bool clean = strcmp(nob_shift_args(&argc, &argv), "clean") == 0;
-
-        if (!create_test_dir(clean)) return 1;
-        int error = 0;
-        if (!clean) {
-            error |= ooo_style("examples/CipActionDispatcher.h",    "ooo_generate/CipActionDispatcher.out.h");
-            error |= ooo_style("examples/CipActionDispatcher.c",    "ooo_generate/CipActionDispatcher.out.c");
-            error |= ooo_style("examples/Eventdetection_Heating.h", "ooo_generate/Eventdetection_Heating.out.h");
-            error |= ooo_style("examples/Eventdetection_Heating.c", "ooo_generate/Eventdetection_Heating.out.c");
-
-
-            error |= ooo_style_source("FlashState.h");
-            error |= ooo_style_source("FlashState.c");
-            error |= ooo_style_source("FlashStream.h");
-            error |= ooo_style_source("FlashStream.c");
-            error |= ooo_style_source("FlashStreamView.h");
-
-            error |= ooo_style_example("FlashConfig.h");
-            error |= ooo_style_example("Flash_impl.h");
-            error |= ooo_style_example("Flash_impl.c");
-            error |= ooo_style_example("LogQueue.h");
-            error |= ooo_style_example("LogQueue.c");
-            error |= ooo_style_example("PERSISTENT.h");
-            error |= ooo_style_example("PERSISTENT.c");
-            error |= ooo_style_example("main.cpp");
-            error |= ooo_style_example("spi_hardware.h");
-            error |= ooo_style_example("spi_hardware.c");
-
-
-            error |= ooo_style_unitTests("stub_TEST_FLASH.h");
-            error |= ooo_style_unitTests("stub_TEST_FLASH.cpp");
-            error |= ooo_style_unitTests("test_FlashState.cpp");
-            error |= ooo_style_unitTests("test_FlashStream.cpp");
-            error |= ooo_style_unitTests("test_FlashStream_read_record.cpp");
-
+        #ifdef _WIN32
+                nob_remove("nob.exe.old");
+                if (nob_file_exists("nob.exe.old")) {                               
+                        nob_log(NOB_INFO, "RM: Don't worry `nob.exe.old` will be deleted next time!");  
+                }
+        #else
+                nob_remove("nob.old");
+        #endif 
+        struct {
+                bool clean;
+        } flag = { .clean = false };
+        while (argc > 0) {
+                char const *s = nob_shift_args(&argc, &argv);
+                if (strcmp(s, "clean") == 0) flag.clean = true;
         }
-        if (nob_file_exists("nob.old")) {
-                error |=  nob_rm("nob.old");
-        }
-        return error;
+        create_build_dir(flag.clean);
+        treesitter_download_build(flag.clean);       
+        tree_sitter_c_download(flag.clean);        
+        googleTest_download_build(flag.clean);        
+        unittests_build(flag.clean);
+        ooo_build(flag.clean);
+        nob_log(NOB_INFO ,"Successful done!");
+        return 0;
 }
+
+/* https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives */

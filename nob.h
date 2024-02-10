@@ -85,7 +85,8 @@ typedef struct {
 } Nob_File_Paths;
 
 typedef enum {
-    NOB_FILE_REGULAR = 0,
+    NOB_FILE_ERROR = -1, // bartgeier 10.02.2024
+    NOB_FILE_REGULAR,
     NOB_FILE_DIRECTORY,
     NOB_FILE_SYMLINK,
     NOB_FILE_OTHER,
@@ -97,7 +98,6 @@ bool nob_copy_file(const char *src_path, const char *dst_path);
 bool nob_copy_directory_recursively(const char *src_path, const char *dst_path);
 bool nob_read_entire_dir(const char *parent, Nob_File_Paths *children);
 bool nob_write_entire_file(const char *path, const void *data, size_t size);
-bool nob_has_exe(int argc, char **argv);                                   //file has ".exe" extension bartgeier 03.02.2024
 Nob_File_Type nob_get_file_type(const char *path);
 
 #define nob_return_defer(value) do { result = (value); goto defer; } while(0)
@@ -221,6 +221,7 @@ bool nob_rename(const char *old_path, const char *new_path);
 int nob_needs_rebuild(const char *output_path, const char **input_paths, size_t input_paths_count);
 int nob_needs_rebuild1(const char *output_path, const char *input_path);
 int nob_file_exists(const char *file_path);
+bool nob_has_exe(int argc, char **argv);      // "foo.exe" extension bartgeier 03.02.2024
 
 // TODO: add MinGW support for Go Rebuild Urself™ Technology
 #ifndef NOB_REBUILD_URSELF
@@ -761,8 +762,8 @@ Nob_File_Type nob_get_file_type(const char *path)
 #ifdef _WIN32
     DWORD attr = GetFileAttributesA(path);
     if (attr == INVALID_FILE_ATTRIBUTES) {
-        nob_log(NOB_ERROR, "Could not get file attributes of %s: %lu", path, GetLastError());
-        return -1;
+        //nob_log(NOB_ERROR, "Could not get file attributes of %s: %lu", path, GetLastError());
+        return NOB_FILE_ERROR;  // bartgeier 10.02.2024
     }
 
     if (attr & FILE_ATTRIBUTE_DIRECTORY) return NOB_FILE_DIRECTORY;
@@ -771,8 +772,8 @@ Nob_File_Type nob_get_file_type(const char *path)
 #else // _WIN32
     struct stat statbuf;
     if (stat(path, &statbuf) < 0) {
-        nob_log(NOB_ERROR, "Could not get stat of %s: %s", path, strerror(errno));
-        return -1;
+        //nob_log(NOB_ERROR, "Could not get stat of %s: %s", path, strerror(errno));
+        return NOB_FILE_ERROR; // bartgeier 10.02.2024
     }
 
     switch (statbuf.st_mode & S_IFMT) {
@@ -784,19 +785,16 @@ Nob_File_Type nob_get_file_type(const char *path)
 #endif // _WIN32
 }
 
+
 bool nob_remove(const char *path)
 {
     bool result = true;
-    size_t temp_checkpoint = nob_temp_save();
-    if (!nob_file_exists(path)) {
-        nob_log(NOB_INFO, "RM: `%s` does not exists", path);
-        return true;
-    }
-    Nob_File_Type type = nob_get_file_type(path);
-    if (type < 0) return false;
-
     Nob_File_Paths children = {0};
     Nob_String_Builder sb = {0};
+    size_t temp_checkpoint = nob_temp_save();
+
+    Nob_File_Type type = nob_get_file_type(path);
+
     switch (type) {
 
         case NOB_FILE_DIRECTORY: {
@@ -814,7 +812,7 @@ bool nob_remove(const char *path)
                 }
             }
             if (rmdir(path) < 0) {
-                if (errno == EEXIST) {
+                if (errno == ENOENT) {
                     errno = 0;
                     nob_log(NOB_WARNING, "RM: directory %s does not exist", path);
                     nob_return_defer(true);
@@ -823,34 +821,48 @@ bool nob_remove(const char *path)
                     nob_return_defer(false);
                 }
             }
+            nob_log(NOB_INFO, "RM: dir  `%s`", path);
+            nob_return_defer(true);
         } break;
 
-        case NOB_FILE_REGULAR: {
-            if (unlink(path) < 0) {
-                if (errno == ENOENT) {
-                    errno = 0;
-                    nob_log(NOB_WARNING, "RM: file %s does not exist",path);
-                    nob_return_defer(true);
-                } else {
-                    nob_log(NOB_ERROR, "RM: could not remove file %s: %s", path, strerror(errno));
-                    nob_return_defer(false);
+        case NOB_FILE_ERROR: { // bartgeier 10.02.2024
+            #ifdef _WIN32
+                nob_log(NOB_WARNING, "RM: could not get file attributes of %s: %lu", path, GetLastError());
+            #else
+                switch (errno) {
+                case ENOENT:
+                    break;
+                default:
+                    nob_log(NOB_WARNING, "RM: could not get stat of %s: %s", path, strerror(errno));
+                    break;
                 }
-            }
+            #endif
         } break;
 
         case NOB_FILE_SYMLINK: {
-            nob_log(NOB_WARNING, "RM: TODO: Copying symlinks is not supported yet");
-            nob_return_defer(true);
+            nob_log(NOB_WARNING, "RM: symlink `%s` is not supported yet", path);
         } break;
 
         case NOB_FILE_OTHER: {
             nob_log(NOB_ERROR, "RM: Unsupported type of file %s", path);
-            nob_return_defer(false);
         } break;
 
-        default: NOB_ASSERT(0 && "RM: unreachable");
+        case NOB_FILE_REGULAR:
+        default: break;
     }
-    nob_log(NOB_INFO, "RM: `%s`", path);
+
+    if (unlink(path) < 0) {
+        if (errno == ENOENT) {
+            errno = 0;
+            nob_log(NOB_WARNING, "RM: %s does not exist", path);
+            nob_return_defer(true);
+        } else {
+            nob_log(NOB_ERROR, "RM: could not remove file %s: %s", path, strerror(errno));
+            nob_return_defer(false);
+        }
+    }
+    nob_log(NOB_INFO, "RM: file `%s`", path);
+
 defer:
     nob_temp_rewind(temp_checkpoint);
     nob_sb_free(sb);
@@ -867,7 +879,6 @@ bool nob_copy_directory_recursively(const char *src_path, const char *dst_path)
     size_t temp_checkpoint = nob_temp_save();
 
     Nob_File_Type type = nob_get_file_type(src_path);
-    if (type < 0) return false;
 
     switch (type) {
         case NOB_FILE_DIRECTORY: {
@@ -909,6 +920,16 @@ bool nob_copy_directory_recursively(const char *src_path, const char *dst_path)
         case NOB_FILE_OTHER: {
             nob_log(NOB_ERROR, "Unsupported type of file %s", src_path);
             nob_return_defer(false);
+        } break;
+
+        case NOB_FILE_ERROR: {  // bartgeier 10.02.2024
+            #ifdef _WIN32
+                nob_log(NOB_ERROR, "RM: could not get file attributes of %s: %lu", src_path, GetLastError());
+                nob_return_defer(false);
+            #else
+                nob_log(NOB_ERROR, "RM: could not get stat of %s: %s", src_path, strerror(errno));
+                nob_return_defer(false);
+            #endif
         } break;
 
         default: NOB_ASSERT(0 && "unreachable");
@@ -1100,6 +1121,7 @@ defer:
     return result;
 }
 
+/* foo.exe -> return true / foo -> return false */
 bool nob_has_exe(int argc, char **argv) {
     assert(argc >= 1);
     char *path = argv[0];
