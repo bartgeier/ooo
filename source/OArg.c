@@ -105,6 +105,13 @@ static int set_print(OArg_t *m, char *optarg) {
         return 0;
 }
 
+static void print_help() {
+        printf("./ooo -i./example/hello.c -o./example/hello.c              Apply code style -i input to -o output\n");
+        printf("./ooo -i./example/hello.c -o-                              Print code style to terminal\n");
+        printf("./ooo -p \"42 56\" -i./example/hello.c -o./tree_output       Print tree-sitter lines -p \"firstLine numOfLine\"\n");
+        printf("./ooo -p \"42 56\" -i./example/hello.c -o-                   Print tree-sitter to terminal\n");
+}
+
 static int parse(OArg_t *m, int argc, char **argv) {
         while (1) {
                 static struct option options[] = {
@@ -144,11 +151,11 @@ static int parse(OArg_t *m, int argc, char **argv) {
                         break;
                  case 'h':
                         m->action = OARG_HELP;
-                        puts("? todo implementation of help\n");
+                        print_help();
                         break;
                 case '?':
                         /* if parse error this is called automatically */
-                        puts("? todo implementation of help\n");
+                        // print_help();
                         break;
                 case 'p':
                         m->action = OARG_PRINT;
@@ -183,7 +190,7 @@ static int verify_style(OArg_t *m) {
                         error = 1;
                 } 
                 if (error) {
-                        printf("./ooo -i./example/hello.c -o./example/hello.c\n");
+                        print_help();
                         return error; 
                 }
                 return 0;
@@ -201,7 +208,7 @@ static int verify_style(OArg_t *m) {
                         error = 1;
                 } 
                 if (error) {
-                        printf("./ooo -p \"42 56\" -i./example/hello.c -o./tree_output\n");
+                        print_help();
                         return error;
                 }
                 return 0;
@@ -217,4 +224,3 @@ int OArg_init(OArg_t *m, int argc, char **argv) {
         return error;
 }
 
-//#endif

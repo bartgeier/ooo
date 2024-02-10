@@ -4,23 +4,23 @@
 
 #define OOO_BUILD_DIR "build"
 
-void create_build_dir(bool const clean) {
+bool create_build_dir(bool const clean) {
         if (clean) {
-                nob_remove(OOO_BUILD_DIR);
-                return;
+                return nob_remove(OOO_BUILD_DIR);
         }
-        nob_mkdir_if_not_exists(OOO_BUILD_DIR);
+        return nob_mkdir_if_not_exists(OOO_BUILD_DIR);
 }
 
-void treesitter_download_build(bool const clean) {
+bool treesitter_download_build(bool const clean) {
         #define TS_COMMIT "0ff28346be3d27f935d7cde8bbdf6b621c268e1a"
+        bool ok = true;
         if (clean) {
-                nob_remove("tree-sitter.zip");
-                nob_remove("tree-sitter-"TS_COMMIT);
-                nob_remove("tree-sitter");
-                return;
+                ok &= nob_remove("tree-sitter.zip");
+                ok &= nob_remove("tree-sitter-"TS_COMMIT);
+                ok &= nob_remove("tree-sitter");
+                return ok;
         }
-        if (nob_file_exists("tree-sitter")) return;
+        if (nob_file_exists("tree-sitter")) return true;
         nob_log(NOB_INFO,"DOWNLOAD BUILD: tree-sitter -> tree-sitter.a");
 
         Nob_Cmd cmd = {0};
@@ -28,89 +28,93 @@ void treesitter_download_build(bool const clean) {
         nob_cmd_append(&cmd, "-L");
         nob_cmd_append(&cmd, "https://github.com/tree-sitter/tree-sitter/archive/"TS_COMMIT".zip");
         nob_cmd_append(&cmd, "--output", "tree-sitter.zip");
-        bool ok = nob_cmd_run_sync(cmd);
+        ok &= nob_cmd_run_sync(cmd);
 
         cmd.count = 0;
         nob_log(NOB_INFO,"unzip");
         nob_cmd_append(&cmd, "unzip", "tree-sitter.zip");
-        ok = nob_cmd_run_sync(cmd);
+        ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
-        nob_remove("tree-sitter.zip");
+        ok &= nob_remove("tree-sitter.zip");
         #ifdef _WIN32
                 nob_cmd_append(&cmd, "gcc");
                 nob_cmd_append(&cmd, "-I", "tree-sitter-"TS_COMMIT"/lib/src", "-I", "tree-sitter-"TS_COMMIT"/lib/include");
                 nob_cmd_append(&cmd, "-c","-o","tree-sitter-"TS_COMMIT"/lib.o", "tree-sitter-"TS_COMMIT"/lib/src/lib.c");
-                ok = nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
 
                 nob_cmd_append(&cmd,"ar", "rcs", "tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter-"TS_COMMIT"/lib.o");
-                ok = nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
         #else
                 nob_cmd_append(&cmd, "make", "-C", "tree-sitter-"TS_COMMIT);
-                ok = nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
         #endif
-        nob_mkdir_if_not_exists("tree-sitter");
-        nob_mkdir_if_not_exists("tree-sitter/lib");
-        nob_mkdir_if_not_exists("tree-sitter/lib/include");
-        nob_rename("tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter/libtree-sitter.a");
-        nob_rename("tree-sitter-"TS_COMMIT"/lib/include/tree_sitter", "tree-sitter/lib/include/tree_sitter/");
-        nob_remove("tree-sitter-"TS_COMMIT);
+        ok &= nob_mkdir_if_not_exists("tree-sitter");
+        ok &= nob_mkdir_if_not_exists("tree-sitter/lib");
+        ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include");
+        ok &= nob_rename("tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter/libtree-sitter.a");
+        ok &= nob_rename("tree-sitter-"TS_COMMIT"/lib/include/tree_sitter", "tree-sitter/lib/include/tree_sitter/");
+        ok &= nob_remove("tree-sitter-"TS_COMMIT);
         nob_cmd_free(cmd);
-}        
+        return ok;
+}
 
-void tree_sitter_c_download(bool const clean) {
+bool tree_sitter_c_download(bool const clean) {
         #define TS_C_COMMIT "212a80f86452bb1316324fa0db730cf52f29e05a"
+        bool ok = true;
         if (clean) {
-                nob_remove("tree-sitter-c.zip");
-                nob_remove("tree-sitter-c-"TS_C_COMMIT);
-                nob_remove("tree-sitter-c"); 
-                return;
+                ok &= nob_remove("tree-sitter-c.zip");
+                ok &= nob_remove("tree-sitter-c-"TS_C_COMMIT);
+                ok &= nob_remove("tree-sitter-c"); 
+                return ok;
         }
-        if (nob_file_exists("tree-sitter-c")) return;
+        if (nob_file_exists("tree-sitter-c")) return true;
         nob_log(NOB_INFO,"DOWNLOAD: tree-sitter-c -> parser.c");
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "curl"); 
         nob_cmd_append(&cmd, "-L");
         nob_cmd_append(&cmd, "https://github.com/tree-sitter/tree-sitter-c/archive/"TS_C_COMMIT".zip");
         nob_cmd_append(&cmd, "--output", "tree-sitter-c.zip");
-        nob_cmd_run_sync(cmd);
+        ok &= nob_cmd_run_sync(cmd);
         
         cmd.count = 0;
         nob_cmd_append(&cmd, "unzip", "tree-sitter-c.zip");
-        nob_cmd_run_sync(cmd);
+        ok &= nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
-        nob_remove("tree-sitter-c.zip");
-        nob_mkdir_if_not_exists("tree-sitter-c");
-        nob_mkdir_if_not_exists("tree-sitter-c/src");
-        nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/parser.c", "tree-sitter-c/src/parser.c");
-        nob_remove("tree-sitter-c-"TS_C_COMMIT);
+        ok &= nob_remove("tree-sitter-c.zip");
+        ok &= nob_mkdir_if_not_exists("tree-sitter-c");
+        ok &= nob_mkdir_if_not_exists("tree-sitter-c/src");
+        ok &= nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/parser.c", "tree-sitter-c/src/parser.c");
+        ok &= nob_remove("tree-sitter-c-"TS_C_COMMIT);
+        return ok;
 }
 
-void googleTest_download_build(bool const clean) {
+bool googleTest_download_build(bool const clean) {
         #define GTEST_COMMIT "76bb2afb8b522d24496ad1c757a49784fbfa2e42"
+        bool ok = true;
         if (clean) {
-                nob_remove("googletest.zip");
-                nob_remove("googletest-"GTEST_COMMIT);
-                nob_remove("googletest");
-                return;
+                ok &= nob_remove("googletest.zip");
+                ok &= nob_remove("googletest-"GTEST_COMMIT);
+                ok &= nob_remove("googletest");
+                return ok;
         }
-        if (nob_file_exists("googletest")) return;
+        if (nob_file_exists("googletest")) return true;
         nob_log(NOB_INFO, "DOWNLOAD BUILD: googletest");
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "curl");
         nob_cmd_append(&cmd, "-L");
         nob_cmd_append(&cmd, "https://github.com/google/googletest/archive/"GTEST_COMMIT".zip");
         nob_cmd_append(&cmd, "--output", "googletest.zip");
-        nob_cmd_run_sync(cmd);
+        ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
 
         nob_cmd_append(&cmd, "unzip", "googletest.zip");
-        nob_cmd_run_sync(cmd);
+        ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
-        nob_remove("googletest.zip");
-        nob_mkdir_if_not_exists("googletest-"GTEST_COMMIT"/build");
+        ok &= nob_remove("googletest.zip");
+        ok &= nob_mkdir_if_not_exists("googletest-"GTEST_COMMIT"/build");
         #ifdef _WIN32
                 nob_cmd_append(&cmd, "cmake");
                 nob_cmd_append(&cmd, "-DCMAKE_CXX_COMPILER=g++");
@@ -120,42 +124,43 @@ void googleTest_download_build(bool const clean) {
                 nob_cmd_append(&cmd, "-Hgoogletest-"GTEST_COMMIT);
                 nob_cmd_append(&cmd, "-DBUILD_SHARED_LIBS=OFF", "-DBUILD_GMOCK=OFF");
                 nob_cmd_append(&cmd, "-Bgoogletest-"GTEST_COMMIT"/build");
-                nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
 
                 nob_cmd_append(&cmd, "mingw32-make", "-C", "googletest-"GTEST_COMMIT"/build");
-                nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
         #else       
                 nob_cmd_append(&cmd, "cmake");
                 nob_cmd_append(&cmd, "-Hgoogletest-"GTEST_COMMIT);
                 nob_cmd_append(&cmd, "-DBUILD_SHARED_LIBS=OFF", "-DBUILD_GMOCK=OFF");
                 nob_cmd_append(&cmd, "-Bgoogletest-"GTEST_COMMIT"/build");
-                nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
 
                 nob_cmd_append(&cmd, "make", "-C", "googletest-"GTEST_COMMIT"/build");                
-                nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
         #endif  
         nob_cmd_free(cmd);
-        nob_mkdir_if_not_exists("googletest");
-        nob_mkdir_if_not_exists("googletest/build");
-        nob_mkdir_if_not_exists("googletest/include");
-        nob_rename("googletest-"GTEST_COMMIT"/build/lib", "googletest/build/lib/");
-        nob_rename("googletest-"GTEST_COMMIT"/googletest/include/gtest", "googletest/include/gtest/");
-        nob_remove("googletest-"GTEST_COMMIT);
+        ok &= nob_mkdir_if_not_exists("googletest");
+        ok &= nob_mkdir_if_not_exists("googletest/build");
+        ok &= nob_mkdir_if_not_exists("googletest/include");
+        ok &= nob_rename("googletest-"GTEST_COMMIT"/build/lib", "googletest/build/lib/");
+        ok &= nob_rename("googletest-"GTEST_COMMIT"/googletest/include/gtest", "googletest/include/gtest/");
+        ok &= nob_remove("googletest-"GTEST_COMMIT);
+        return ok;
 }
 
-void unittests_build(bool const clean) {
+bool unittests_build(bool const clean) {
         if (clean) {
                 #ifndef _WIN32
-                        nob_remove("otest");
+                        return nob_remove("otest");
                 #else
-                        nob_remove("otest.exe");
+                        return nob_remove("otest.exe");
                 #endif
-                return;
         }
+        bool ok = true;
         nob_log(NOB_INFO, "BUILD: ooo unit tests");
         #ifndef _WIN32
                 Nob_Cmd cmd = {0};
@@ -165,7 +170,7 @@ void unittests_build(bool const clean) {
                 nob_cmd_append(&cmd, "-L", "unittests/"); 
                 nob_cmd_append(&cmd, "-o", "otest", "unittests/tst_hello.c");
                 nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
-                nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
         #else
                 Nob_Cmd cmd = {0};
@@ -175,44 +180,42 @@ void unittests_build(bool const clean) {
                 nob_cmd_append(&cmd, "-L", "unittests/");
                 nob_cmd_append(&cmd, "-o", "otest", "unittests/tst_hello.c");
                 nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
-                nob_cmd_run_sync(cmd);
+                ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
                 //(nob_cmd_append(&cmd, "cl.exe", CFLAGS, "-I", OOO_INC, "-o", "main", OOO_SRC);
         #endif
         nob_cmd_free(cmd);
+        return ok;
 }
 
-void ooo_build(bool const clean) {
+bool ooo_build(bool const clean) {
         #define NOT_USED "-ggdb", "-std=c99"
         #define _CFLAGS  "-Wall", "-Wextra", "-pedantic"
         #define CFLAGS "-ggdb", "-pedantic" 
         #define OOO_INC "tree-sitter/lib/include/" 
         #define OOO_SRC "./source/main.c", "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c", "./source/ooo_runner.c", "./source/OArg.c"
         if (clean) {
-                nob_remove("ooo");
-                return;
+                return nob_remove("ooo");
         }
         nob_log(NOB_INFO, "BUILD: ooo code styler");
         Nob_Cmd cmd = {0};
-        //#ifndef _WIN32
-                nob_cmd_append(&cmd, "gcc", CFLAGS, "-I", OOO_INC, "-o", "ooo", OOO_SRC);
-                nob_cmd_run_sync(cmd);
-                nob_cmd_free(cmd);
-        //#else
-        //        CMD("gcc.exe", CFLAGS, "-I", OOO_INC, "-o", "main", OOO_SRC);
-        //#endif
+        nob_cmd_append(&cmd, "gcc", CFLAGS, "-I", OOO_INC, "-o", "ooo", OOO_SRC);
+        const bool ok = nob_cmd_run_sync(cmd);
+        nob_cmd_free(cmd);
+        return ok;
 }
 
 
 int main(int argc, char **argv) {
+        bool ok = true;
         NOB_GO_REBUILD_URSELF(argc, argv);
         #ifdef _WIN32
-                nob_remove("nob.exe.old");
+                ok &= nob_remove("nob.exe.old");
                 if (nob_file_exists("nob.exe.old")) {                               
                         nob_log(NOB_INFO, "RM: Don't worry `nob.exe.old` will be deleted next time!");  
                 }
         #else
-                nob_remove("nob.old");
+                ok &= nob_remove("nob.old");
         #endif 
         struct {
                 bool clean;
@@ -221,12 +224,16 @@ int main(int argc, char **argv) {
                 char const *s = nob_shift_args(&argc, &argv);
                 if (strcmp(s, "clean") == 0) flag.clean = true;
         }
-        create_build_dir(flag.clean);
-        treesitter_download_build(flag.clean);       
-        tree_sitter_c_download(flag.clean);        
-        googleTest_download_build(flag.clean);        
-        unittests_build(flag.clean);
-        ooo_build(flag.clean);
+        ok &= create_build_dir(flag.clean);
+        ok &= treesitter_download_build(flag.clean);       
+        ok &= tree_sitter_c_download(flag.clean);        
+        ok &= googleTest_download_build(flag.clean);        
+        ok &= unittests_build(flag.clean);
+        ok &= ooo_build(flag.clean);
+        if (!ok) {
+                nob_log(NOB_FILE_ERROR, "Done => One or more errors occurred!");
+                return false;
+        }
         nob_log(NOB_INFO ,"Successful done!");
         return 0;
 }
