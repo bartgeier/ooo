@@ -116,7 +116,7 @@ void googleTest_download_build(bool const clean) {
                 nob_cmd_append(&cmd, "-DCMAKE_CXX_COMPILER=g++");
                 nob_cmd_append(&cmd, "-DCMAKE_CC_COMPILER=gcc");
                 nob_cmd_append(&cmd, "-DCMAKE_MAKE_PROGRAM=mingw32-make");
-                nob_cmd_append(&cmd, "-G", "\"MinGW Makefiles\"");
+                nob_cmd_append(&cmd, "-G", "MinGW Makefiles");
                 nob_cmd_append(&cmd, "-Hgoogletest-"GTEST_COMMIT);
                 nob_cmd_append(&cmd, "-DBUILD_SHARED_LIBS=OFF", "-DBUILD_GMOCK=OFF");
                 nob_cmd_append(&cmd, "-Bgoogletest-"GTEST_COMMIT"/build");
@@ -147,7 +147,6 @@ void googleTest_download_build(bool const clean) {
         nob_remove("googletest-"GTEST_COMMIT);
 }
 
-
 void unittests_build(bool const clean) {
         if (clean) {
                 #ifndef _WIN32
@@ -169,6 +168,7 @@ void unittests_build(bool const clean) {
                 nob_cmd_run_sync(cmd);
                 cmd.count = 0;
         #else
+                Nob_Cmd cmd = {0};
                 nob_cmd_append(&cmd, "g++", "-Wall", "-Wextra", "-pedantic");
                 nob_cmd_append(&cmd, "-I", "googletest/include/");
                 nob_cmd_append(&cmd, "-L", "googletest/build/lib/");

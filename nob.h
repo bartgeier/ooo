@@ -514,9 +514,15 @@ void nob_cmd_render(Nob_Cmd cmd, Nob_String_Builder *render)
         if (!strchr(arg, ' ')) {
             nob_sb_append_cstr(render, arg);
         } else {
-            nob_da_append(render, '\'');
-            nob_sb_append_cstr(render, arg);
-            nob_da_append(render, '\'');
+            #ifdef _WIN32 // bartgeier 10.02.2024
+                nob_da_append(render, '\"');
+                nob_sb_append_cstr(render, arg);
+                nob_da_append(render, '\"');            
+            #else
+                nob_da_append(render, '\'');
+                nob_sb_append_cstr(render, arg);
+                nob_da_append(render, '\'');
+            #endif
         }
     }
 }
@@ -827,11 +833,16 @@ bool nob_remove(const char *path)
 
         case NOB_FILE_ERROR: { // bartgeier 10.02.2024
             #ifdef _WIN32
-                nob_log(NOB_WARNING, "RM: could not get file attributes of %s: %lu", path, GetLastError());
+                int last_error = GetLastError();
+                switch (last_error) {
+                case 2: break;
+                default:
+                    nob_log(NOB_WARNING, "RM: could not get file attributes of %s: %lu", path, GetLastError());
+                    break;
+                }
             #else
                 switch (errno) {
-                case ENOENT:
-                    break;
+                case ENOENT: break;
                 default:
                     nob_log(NOB_WARNING, "RM: could not get stat of %s: %s", path, strerror(errno));
                     break;
