@@ -3,7 +3,7 @@
 
 #include "tree_sitter/api.h"
 #include "treesitter_symbol_ids.h"
-#include "StringView.h"
+#include "OStr.h"
 
 typedef enum {
         OOO_ENTRY,

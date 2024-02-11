@@ -11,7 +11,6 @@
 typedef struct {
         size_t capacity;
         size_t size;
-        size_t idx;
         char *at;
 } OStr;
 
@@ -37,8 +36,6 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed);
 void OStr_remove_indentation(OStr *B, OStr *A);
 void OStrCursor_reset(OStrCursor *m);
 size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p);
-bool OStrCursor_increment(OStrCursor *m, OStr const *s);
-bool OStrCursor_decrement(OStrCursor *m, OStr const *s);
 
 #endif
 
@@ -51,7 +48,6 @@ void OStr_clear(OStr *s) {
                 s->at[i] = 0;
         }
         s->size = 0;
-        s->idx = 0;
 }
 
 void OStr_move(OStr *B, OStr *A) {
@@ -182,10 +178,23 @@ char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A) {
         B->at[x] = 0;
         B->size = x;
         A->size = 0;
+#if 0 
         if (r>rn & r>nr & r>n) return 'r';
         if (n>rn & n>nr & n>r) return 'n';
         if (rn>r & rn>nr & rn>r) return 'R';
         if (nr>r & nr>rn & nr>n) return 'N';
+#else
+        int max = r;
+        if (n > max) max = n;
+        if (rn > max) max = rn;
+        if (nr > max) max = nr;
+        if (max == r) return 'r';
+        if (max == n) return 'n';
+        if (max == rn) return 'R';
+        if (max == nr) return 'N';
+        assert(true);
+        return 'N';
+#endif
 }
 
 void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
@@ -294,32 +303,4 @@ size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p) {
         return m->idx;
 }
 
-bool OStrCursor_increment(OStrCursor *m, OStr const *s) {
-       if (s->at[m->idx + 1] >= s->size) {
-               return true; // fail
-       }
-       m->idx++;
-       if (s->at[m->idx] == '\n') {
-               m->row++;
-               m->column = 0;
-       } else {
-               m->column++;
-       }
-       return false; // successful
-}
-
-
-bool OStrCursor_decrement(OStrCursor *m, OStr const *s) {
-       if (s->at[m->idx] == 0) {
-               return true; // fail
-       }
-       m->idx--;
-       if (s->at[m->idx] == '\n') {
-               m->row--;
-               m->column = column(m, s);
-       } else {
-               m->column--;
-       }
-       return false; // successful
-}
 #endif
