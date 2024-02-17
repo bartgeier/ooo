@@ -133,7 +133,7 @@ bool googleTest_download_build(bool const clean) {
         #else       
                 nob_cmd_append(&cmd, "cmake");
                 nob_cmd_append(&cmd, "-Hgoogletest-"GTEST_COMMIT);
-                nob_cmd_append(&cmd, "-DBUILD_SHARED_LIBS=OFF", "-DBUILD_GMOCK=OFF");
+                nob_cmd_append(&cmd, "-DBUILD_SHARED_LIBS=OFF", "-DBUILD_GMOCK=OFF", "-Dgtest_disable_pthreads=ON");
                 nob_cmd_append(&cmd, "-Bgoogletest-"GTEST_COMMIT"/build");
                 ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
@@ -164,13 +164,13 @@ bool unittests_build(bool const clean) {
         nob_log(NOB_INFO, "BUILD: ooo unit tests");
         #ifndef _WIN32
                 Nob_Cmd cmd = {0};
-                nob_cmd_append(&cmd, "g++", "-std=c++20", "-Wall", "-Wextra", "-pedantic", "-Wno-parentheses");
+                nob_cmd_append(&cmd, "g++", "-ggdb", "-O0", "-std=c++20", "-Wall", "-Wextra", "-pedantic", "-Wno-parentheses");
                 nob_cmd_append(&cmd, "-I", "googletest/include/"); 
                 nob_cmd_append(&cmd, "-I", "source/"); 
                 nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/"); 
                 nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
                 nob_cmd_append(&cmd, "-L", "unittests/"); 
-                nob_cmd_append(&cmd, "-o", "otest", "unittests/tst_hello.c");
+                nob_cmd_append(&cmd, "-o", "otest");
                 nob_cmd_append(&cmd, "unittests/tst_OStr.c");
                 nob_cmd_append(&cmd, "./tree-sitter/libtree-sitter.a");
                 nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");

@@ -156,13 +156,14 @@ n += 2;
       <x>328</x>
       <y>456</y>
       <w>216</w>
-      <h>64</h>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else
 /
 B-&gt;at[x++] = '\n';
-B-&gt;at[x++] = A-&gt;at[i]</panel_attributes>
+B-&gt;at[x++] = A-&gt;at[i]
+r++;</panel_attributes>
     <additional_attributes>10.0;20.0;250.0;20.0</additional_attributes>
   </element>
   <element>
@@ -178,7 +179,7 @@ else
 / 
 B-&gt;at[x++] = '\n';
 B-&gt;at[x++] = A-&gt;at[i]
-nr++;
+n++;
 
 
 </panel_attributes>

@@ -20,7 +20,6 @@ typedef struct {
         size_t idx;
 } OStrCursor;
 
-
 void OStr_clear(OStr *s);
 void OStr_move(OStr *B, OStr *A);
 void OStr_append_chr(OStr *m, char const chr);
@@ -123,6 +122,14 @@ void OStr_replace_tabs_with_one_space(OStr *B, OStr *A) {
         A->size = 0;
 }
 
+/* B = A; and lineFeeds are replaced with \n            */
+/* A->size = 0;                                         */
+/* return what kind of lineFeed original used in A      */
+/* the moste used one will be returned                  */
+/* \n -> n                                              */
+/* \r -> r                                              */
+/* \r\n -> R                                            */
+/* \n\r -> N                                            */
 char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A) {
         int rn = 0;
         int nr = 0;
@@ -138,52 +145,52 @@ char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A) {
                         B->at[x++] = A->at[i];
                         break;
                 case 'r':
-                        B->at[x++] = '\n';
                         if (A->at[i] == '\r') { 
-                                r += 2;
                                 B->at[x++] = '\n';
+                                B->at[x++] = '\n';
+                                r += 2;
                                 state = 0; 
                                 break; 
                         }
                         if (A->at[i] == '\n') { 
+                                B->at[x++] = '\n';
                                 rn++; 
                                 state = 0; 
                                 break; 
                         }
-                        state = 0;
+                        B->at[x++] = '\n';
                         B->at[x++] = A->at[i];
+                        r++;
+                        state = 0;
                         break;
                 case 'n':
-                        B->at[x++] = '\n';
                         if (A->at[i] == '\r') { 
+                                B->at[x++] = '\n';
                                 nr++; 
                                 state = 0; 
                                 break; 
                         }
                         if (A->at[i] == '\n') { 
-                                n += 2;  
                                 B->at[x++] = '\n';
+                                B->at[x++] = '\n';
+                                n += 2;  
                                 state = 0; 
                                 break; 
                         }
-                        state = 0;
+                        B->at[x++] = '\n';
                         B->at[x++] = A->at[i];
+                        n++;
+                        state = 0;
                         break;
                 default:
                         /* never happens */
                         break;
                 }
-                A->at[i] = 0;
         }
         B->at[x] = 0;
         B->size = x;
         A->size = 0;
-#if 0 
-        if (r>rn & r>nr & r>n) return 'r';
-        if (n>rn & n>nr & n>r) return 'n';
-        if (rn>r & rn>nr & rn>r) return 'R';
-        if (nr>r & nr>rn & nr>n) return 'N';
-#else
+        A->at[0] = 0;
         int max = r;
         if (n > max) max = n;
         if (rn > max) max = rn;
@@ -194,7 +201,6 @@ char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A) {
         if (max == nr) return 'N';
         assert(true);
         return 'N';
-#endif
 }
 
 void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
@@ -262,12 +268,16 @@ void OStrCursor_reset(OStrCursor *m) {
         m->row = 0;
 }
 
-static size_t column(OStrCursor *m, OStr const *s) {
-        size_t count = 1;
-        while ((m->idx - count > 0) & (s->at[m->idx - count] != '\n')) {
+static size_t column_end_of_line(OStrCursor *m, OStr const *s) {
+        assert(s->at[m->idx] == '\n'); // line end
+        size_t count = 0;
+        size_t idx = m->idx;
+        while (idx > 0) {
+                idx--;
+                if (s->at[idx] == '\n') break;
                 count++;
         }
-        return count--;
+        return count;
 }
 
 size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p) {
@@ -278,22 +288,26 @@ size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p) {
         if (increment) {
                 do {
                         if (m->idx >= s->size) {
-                                exit(1);
+                                assert(m->idx < s->size &&  "TSPoint p gos behind the end of text.");
                         }
-                        if (s->at[m->idx++] == '\n') {
+                        if (s->at[m->idx] == '\n') {
+                                assert(m->row < p.row && "TSPoint p gos behind the end of line.");
                                 m->row++;
                                 m->column = 0;
                         } else {
                                 m->column++;
                         }
+                        m->idx++;
                 } while(m->row != p.row | m->column != p.column);
                 return m->idx;
         }
         if (decrement) {
                 do {
-                        if (s->at[m->idx--] == '\n') {
+                        m->idx--;
+                        if (s->at[m->idx] == '\n') {
                                 m->row--;
-                                m->column = column(m, s);
+                                m->column = column_end_of_line(m, s);
+                                assert((m->row >= p.row & m->column >= p.column) && "TSPoint p go behind the end of line.");
                         } else {
                                 m->column--;
                         }
