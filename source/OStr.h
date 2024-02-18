@@ -42,28 +42,25 @@ size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p);
 #ifdef OStr_IMPLEMENTAION
 
 
-void OStr_clear(OStr *s) {
-        for (size_t i = 0; i < s->size; i++) {
-                s->at[i] = 0;
-        }
-        s->size = 0;
+void OStr_clear(OStr *m) {
+        m->size = 0;
+        m->at[0] = 0;
 }
 
 void OStr_move(OStr *B, OStr *A) {
+        assert(A->size < B->capacity - 1);
         for (size_t i = 0; i < A->size; i++) {
                 B->at[i] = A->at[i];
-                A->at[i] = 0;
         }
         B->size = A->size;
         B->at[B->size] = 0;
-        A->size = 0;
+        OStr_clear(A);
 }
 
 void OStr_append_chr(OStr *m, char const chr) {
-        if (m->size < m->capacity) {
-                m->at[m->size++] = chr;
-                m->at[m->size] = 0;
-        }
+        assert(m->size < m->capacity - 1);
+        m->at[m->size++] = chr;
+        m->at[m->size] = 0;
 }
 
 void OStr_append_number_of_char( OStr *m, size_t n, char chr) {
@@ -73,9 +70,7 @@ void OStr_append_number_of_char( OStr *m, size_t n, char chr) {
 }
 
 void OStr_append_spaces(OStr *m, size_t n) {
-        for (size_t i = 0; i < n; i++) {
-                OStr_append_chr(m, ' ');
-        }
+     OStr_append_number_of_char(m, n, ' ');
 }
 
 size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr) {
@@ -115,11 +110,10 @@ void OStr_replace_tabs_with_one_space(OStr *B, OStr *A) {
                         tab = false;
                         B->at[x++] = A->at[i];
                 }
-                A->at[i] = 0;
         }
         B->at[x] = 0;
         B->size = x;
-        A->size = 0;
+        OStr_clear(A);
 }
 
 /* B = A; and lineFeeds are replaced with \n            */
@@ -189,8 +183,7 @@ char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A) {
         }
         B->at[x] = 0;
         B->size = x;
-        A->size = 0;
-        A->at[0] = 0;
+        OStr_clear(A);
         int max = r;
         if (n > max) max = n;
         if (rn > max) max = rn;
@@ -199,7 +192,7 @@ char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A) {
         if (max == n) return 'n';
         if (max == rn) return 'R';
         if (max == nr) return 'N';
-        assert(true);
+        assert(false);
         return 'N';
 }
 
@@ -228,38 +221,29 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
                         //printf("hello");
                         B->at[x++] = A->at[i];
                 }
-                A->at[i] = 0;
         }
         B->at[x] = 0;
         B->size = x;
-        A->size = 0;
+        OStr_clear(A);
 }
 
 void OStr_remove_indentation(OStr *B, OStr *A) {
         bool indentation = false;
         size_t column = 0;
-        size_t row = 0;
         size_t x = 0;
         for (size_t i = 0; i < A->size; i++) {
-                if (A->at[i] == '\n') {
-                        column = 0;
-                        row++;
-                } else {
-                        column++;
-                }
-                if (A->at[i] == ' ' & column == 1) {
+                if (A->at[i] == ' ' & column == 0) {
                        indentation = true; 
-                } else if ((A->at[i] == ' ') & indentation) {
-                       /* nothing */
-                } else {
-                       indentation = false; 
-                       B->at[x++] = A->at[i];
+                } 
+                if ((A->at[i] != ' ') | !indentation) {
+                        indentation = false; 
+                        B->at[x++] = A->at[i];
                 }
-                A->at[i] = 0;
+                column = (A->at[i] == '\n') ? 0 :  column + 1;
         }
         B->at[x] = 0;
         B->size = x;
-        A->size = 0;
+        OStr_clear(A);
 }
 
 void OStrCursor_reset(OStrCursor *m) {

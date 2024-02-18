@@ -161,7 +161,7 @@ bool unittests_build(bool const clean) {
                 #endif
         }
         bool ok = true;
-        nob_log(NOB_INFO, "BUILD: ooo unit tests");
+        nob_log(NOB_INFO, "BUILD: otest ----> unit tests");
         #ifndef _WIN32
                 Nob_Cmd cmd = {0};
                 nob_cmd_append(&cmd, "g++", "-ggdb", "-O0", "-std=c++20", "-Wall", "-Wextra", "-pedantic", "-Wno-parentheses");
@@ -169,20 +169,20 @@ bool unittests_build(bool const clean) {
                 nob_cmd_append(&cmd, "-I", "source/"); 
                 nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/"); 
                 nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
-                nob_cmd_append(&cmd, "-L", "unittests/"); 
                 nob_cmd_append(&cmd, "-o", "otest");
                 nob_cmd_append(&cmd, "unittests/tst_OStr.c");
-                nob_cmd_append(&cmd, "./tree-sitter/libtree-sitter.a");
+                nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a");
                 nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
                 ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
         #else
                 Nob_Cmd cmd = {0};
-                nob_cmd_append(&cmd, "g++", "-Wall", "-Wextra", "-pedantic");
+                nob_cmd_append(&cmd, "g++", "-ggdb", "-O0", "-Wall", "-Wextra", "-pedantic");
                 nob_cmd_append(&cmd, "-I", "googletest/include/");
                 nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
-                nob_cmd_append(&cmd, "-L", "unittests/");
-                nob_cmd_append(&cmd, "-o", "otest", "unittests/tst_hello.c");
+                nob_cmd_append(&cmd, "-o", "otest");
+                nob_cmd_append(&cmd, "unittests/tst_OStr.c");
+                nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a");
                 nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
                 ok &= nob_cmd_run_sync(cmd);
                 cmd.count = 0;
@@ -201,7 +201,7 @@ bool ooo_build(bool const clean) {
         if (clean) {
                 return nob_remove("ooo");
         }
-        nob_log(NOB_INFO, "BUILD: ooo code styler");
+        nob_log(NOB_INFO, "BUILD: ooo ----> code styler");
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "gcc", CFLAGS, "-I", OOO_INC, "-o", "ooo", OOO_SRC);
         const bool ok = nob_cmd_run_sync(cmd);
@@ -232,8 +232,8 @@ int main(int argc, char **argv) {
         ok &= treesitter_download_build(flag.clean);       
         ok &= tree_sitter_c_download(flag.clean);        
         ok &= googleTest_download_build(flag.clean);        
-        ok &= unittests_build(flag.clean);
         ok &= ooo_build(flag.clean);
+        ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_FILE_ERROR, "Done  => One or more errors occurred!");
                 return false;
