@@ -7,9 +7,9 @@
 #include <getopt.h>
 #include "tree_sitter/api.h"
 
-#include "treesitter_symbol_ids.h"
+#include "ooo_treesitter_symbol_ids.h"
 #include "ooo_runner.h"
-#define OStr_IMPLEMENTAION
+#define OSTR_IMPLEMENTAION
 #include "OStr.h"
 #include "OArg.h"
 

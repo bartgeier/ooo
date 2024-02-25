@@ -1,8 +1,8 @@
 #include "gtest/gtest.h"
 #include <stdlib.h>
-#define OStr_IMPLEMENTAION
+#define OSTR_IMPLEMENTAION
 #include "OStr.h"
-// #undef OStr_IMPLEMENTAION
+
 #if 0
 typedef struct {
         size_t capacity;
@@ -25,7 +25,7 @@ typedef struct {
 TEST(OStr_testing, move_cursor_0) {
         char *snk = (char*)malloc(MEM_SIZE);
         const char *s = "The quick brown fox jumps over the lazy dog.\nIs there something.\nHello Sailor! Where are you coming frome.\nOk!";
-                       //^0                                            ^45      ^54      ^63
+                       //^0                                            ^45      ^54      ^63                     
         for (size_t i = 0; i < strlen(s); i++) {
                 snk[i] = s[i];
         } 
@@ -98,14 +98,23 @@ TEST(OStr_testing, move_cursor_0) {
         EXPECT_EQ(cursor.column, (size_t)0);
         EXPECT_EQ(x, (size_t)65);
 
-        point.row = 1;
-        point.column = 19;
+        point.row = 2;
+        point.column = 41;
         x = OStrCursor_move_to_point(&cursor, &str, point);
         EXPECT_EQ(str.at[x], '\n');
-        EXPECT_EQ(cursor.idx, (size_t)64);
-        EXPECT_EQ(cursor.row, (size_t)1);
-        EXPECT_EQ(cursor.column, (size_t)19);
-        EXPECT_EQ(x, (size_t)64);
+        EXPECT_EQ(cursor.idx, (size_t)106);
+        EXPECT_EQ(cursor.row, (size_t)2);
+        EXPECT_EQ(cursor.column, (size_t)41);
+        EXPECT_EQ(x, (size_t)106);
+
+        point.row = 0;
+        point.column = 44; 
+        x = OStrCursor_move_to_point(&cursor, &str, point);
+        EXPECT_EQ(str.at[x], '\n');
+        EXPECT_EQ(cursor.idx, (size_t)44);
+        EXPECT_EQ(cursor.row, (size_t)0);
+        EXPECT_EQ(cursor.column, (size_t)44);
+        EXPECT_EQ(x, (size_t)44);
 
         point.row = 2;
         point.column = 0;

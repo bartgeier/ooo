@@ -2,7 +2,7 @@
 #define OOO_RUNNER_H
 
 #include "tree_sitter/api.h"
-#include "treesitter_symbol_ids.h"
+#include "ooo_treesitter_symbol_ids.h"
 #include "OStr.h"
 
 typedef enum {

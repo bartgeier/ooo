@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #include "tree_sitter/api.h"
 #include <stdlib.h>
@@ -25,6 +26,7 @@ void OStr_move(OStr *B, OStr *A);
 void OStr_append_chr(OStr *m, char const chr);
 void OStr_append_number_of_char(OStr *m, size_t n, char chr);
 void OStr_append_spaces(OStr *m, size_t n);
+void QStr_append_cstring(OStr *m, char const * str);
 size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr);
 void OStr_replace_tabs_with_one_space(OStr *B, OStr *A);
@@ -39,7 +41,7 @@ size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p);
 #endif
 
 //#define OStr_IMPLEMENTAION
-#ifdef OStr_IMPLEMENTAION
+#ifdef OSTR_IMPLEMENTAION
 
 
 void OStr_clear(OStr *m) {
@@ -71,6 +73,12 @@ void OStr_append_number_of_char( OStr *m, size_t n, char chr) {
 
 void OStr_append_spaces(OStr *m, size_t n) {
      OStr_append_number_of_char(m, n, ' ');
+}
+
+void QStr_append_cstring(OStr *m, char const * str) {
+        for (size_t i = 0; i < strlen(str); i++) {
+                OStr_append_chr(m, str[i]);
+        }
 }
 
 size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr) {
@@ -271,11 +279,9 @@ size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p) {
                        | ((m->row == p.row) & (m->column > p.column));
         if (increment) {
                 do {
-                        if (m->idx >= s->size) {
-                                assert(m->idx < s->size &&  "TSPoint p gos behind the end of text.");
-                        }
+                        assert(m->idx < s->size &&  "TSPoint p increments behind the end of text.");
                         if (s->at[m->idx] == '\n') {
-                                assert(m->row < p.row && "TSPoint p gos behind the end of line.");
+                                assert(m->row < p.row && "TSPoint p wants m to increment behind the end of line.");
                                 m->row++;
                                 m->column = 0;
                         } else {
@@ -291,7 +297,9 @@ size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p) {
                         if (s->at[m->idx] == '\n') {
                                 m->row--;
                                 m->column = column_end_of_line(m, s);
-                                assert((m->row >= p.row & m->column >= p.column) && "TSPoint p go behind the end of line.");
+                                if (m->row == p.row) {
+                                        assert(m->column >= p.column && "TSPoint p wants m to decrement behind the end of line.");
+                                }
                         } else {
                                 m->column--;
                         }
