@@ -37,6 +37,8 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed);
 void OStr_remove_indentation(OStr *B, OStr *A);
 void OStrCursor_reset(OStrCursor *m);
 size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p);
+bool OStrCursor_increment(OStrCursor *m, OStr const *s);
+bool OStrCursor_decrement(OStrCursor *m, OStr const *s);
 
 #endif
 
@@ -309,4 +311,32 @@ size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p) {
         return m->idx;
 }
 
+bool OStrCursor_increment(OStrCursor *m, OStr const *s) {
+       if (m->idx + 1 >= s->size) {
+               return true; // fail
+       }
+       m->idx++;
+       if (s->at[m->idx] == '\n') {
+               m->row++;
+               m->column = 0;
+       } else {
+               m->column++;
+       }
+       return false; // successful
+}
+
+
+bool OStrCursor_decrement(OStrCursor *m, OStr const *s) {
+       if (m->idx == 0) {
+               return true; // fail
+       }
+       m->idx--;
+       if (s->at[m->idx] == '\n') {
+               m->row--;
+               m->column = column_end_of_line(m, s);
+       } else {
+               m->column--;
+       }
+       return false; // successful
+}
 #endif
