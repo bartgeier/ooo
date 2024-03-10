@@ -9,6 +9,8 @@
 
 #include "ooo_treesitter_symbol_ids.h"
 #include "ooo_runner.h"
+#include "ooo_job.h"
+#include "indentation.h"
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
 #include "OArg.h"
@@ -642,15 +644,23 @@ int main(int argc, char **argv) {
         };
 
         if (!read_txt_file(&job.source, oarg.input_path)) return 2;
-#if 1
+
         char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
-        OStr_remove_indentation(&job.sink, &job.source);
-        OStr_move(&job.source, &job.sink);
-#endif
+
         TSParser *parser = ts_parser_new();
         ts_parser_set_language(parser, tree_sitter_c());
         TSTree *tree = ts_parser_parse_string(
+                parser,
+                NULL,
+                job.source.at,
+                job.source.size
+        );
+        OStrCursor_reset(&job.cursor);
+        indentation_remove_runner(ts_tree_root_node(tree), &job); 
+        OStr_move(&job.source, &job.sink);
+
+        tree = ts_parser_parse_string(
                 parser,
                 NULL,
                 job.source.at,
@@ -691,9 +701,6 @@ int main(int argc, char **argv) {
         OStr_clear(&job.sink);
         OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
         write_txt_file(&job.sink, oarg.output_path);
-        if (strcmp(oarg.output_path,"-")) {
-               // printf("output path %s\n", oarg.output_path);
-        }
         ts_tree_delete(tree);
         ts_parser_delete(parser);
         return 0;

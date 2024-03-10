@@ -3,6 +3,7 @@
 
 #include "tree_sitter/api.h"
 #include "ooo_treesitter_symbol_ids.h"
+#include "ooo_job.h"
 #include "OStr.h"
 
 typedef enum {
@@ -11,12 +12,6 @@ typedef enum {
         OOO_EXIT
 } OOO_Transition;
 
-typedef struct {
-        OStrCursor cursor;
-        OStr sink;
-        OStr source;
-        size_t indentation_level;
-} OOO_Job;
 
 typedef struct {
         size_t begin;
