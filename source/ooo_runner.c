@@ -1,4 +1,5 @@
 #include "ooo_runner.h"
+#include "OStr.h"
 #include <stdio.h>
 
 TSSymbol ooo(TSNode n) {
@@ -138,12 +139,20 @@ void ooo_set_indentation(
                 ex = cursor->idx;
         } 
 #else
-        if (ooo(super(1, node)) == sym_preproc_if) {
+// anon_sym_LF sym_preproc_if
+        //if (ooo(super(1, node)) == sym_preproc_if) {
+        if (me == anon_sym_LF) {
                 /* preproc_def node includes the \n                */
                 /* \n is then not used for indentation             */
                 /* OStrCursor_decrement set the ex index before \n */
                 OStrCursor_decrement(cursor, source);
                 ex = cursor->idx;
+                for (size_t i = ax; i < ex; i++) {
+                        if (i == ax) OStr_append_chr(sink, 'X');
+                        if (i == ex-1) OStr_append_chr(sink, 'Y');
+                        OStr_append_chr(sink, source->at[i]);
+                }
+                return;
         } 
 #endif
         for (size_t i = ax; i < ex; i++) {
