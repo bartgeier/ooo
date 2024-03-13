@@ -63,6 +63,7 @@ bool treesitter_download_build(bool const clean) {
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib");
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include");
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include/tree_sitter");
+        ok &= nob_rename("tree-sitter-"TS_COMMIT"/LICENSE", "tree-sitter/LICENSE");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter/libtree-sitter.a");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/lib/include/tree_sitter/api.h", "tree-sitter/lib/include/tree_sitter/api.h");
         ok &= nob_remove("tree-sitter-"TS_COMMIT);
@@ -102,6 +103,7 @@ bool tree_sitter_c_download(bool const clean) {
         ok &= nob_mkdir_if_not_exists("tree-sitter-c");
         ok &= nob_mkdir_if_not_exists("tree-sitter-c/src");
         ok &= nob_mkdir_if_not_exists("tree-sitter-c/src/tree_sitter");
+        ok &= nob_rename("tree-sitter-c-"TS_COMMIT"/LICENSE", "tree-sitter-c/LICENSE");
         ok &= nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/tree_sitter/parser.h", "tree-sitter-c/src/tree_sitter/parser.h");
         ok &= nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/parser.c", "tree-sitter-c/src/parser.c");
         ok &= nob_remove("tree-sitter-c-"TS_C_COMMIT);
@@ -169,6 +171,7 @@ bool googleTest_download_build(bool const clean) {
         ok &= nob_mkdir_if_not_exists("googletest");
         ok &= nob_mkdir_if_not_exists("googletest/build");
         ok &= nob_mkdir_if_not_exists("googletest/include");
+        ok &= nob_rename("googletest-"GTEST_COMMIT"/LICENSE", "googletest/LICENSE");
         ok &= nob_rename("googletest-"GTEST_COMMIT"/build/lib", "googletest/build/lib/");
         ok &= nob_rename("googletest-"GTEST_COMMIT"/googletest/include/gtest", "googletest/include/gtest/");
         ok &= nob_remove("googletest-"GTEST_COMMIT);
