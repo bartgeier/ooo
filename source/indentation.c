@@ -1,14 +1,13 @@
 #include "indentation.h"
-#include "ooo_job.h"
 #include "ooo_treesitter_symbol_ids.h"
 #include "ooo_runner.h"
 
-void Indentation_remove(OOO_Job *job, size_t i_column, size_t start_idx, size_t end_idx) {
+#if 0
+void Indentation_remove(OOO_Job *job, size_t column, size_t const start_idx, size_t const end_idx) {
         OStr *A = &job->source;
         OStr *B = &job->sink;
 
         bool indentation = false;
-        size_t column = i_column;
         size_t x = job->sink.size;
         for (size_t i = start_idx; i < end_idx; i++) {
                 if (A->at[i] == ' ' & column == 0) {
@@ -24,6 +23,98 @@ void Indentation_remove(OOO_Job *job, size_t i_column, size_t start_idx, size_t 
         B->size = x;
 }
 
+void Indentation_in_comment_remove(OOO_Job *job, size_t const i_column, size_t const start_idx, size_t const end_idx) {
+        OStr *A = &job->source;
+        OStr *B = &job->sink;
+
+        bool indentation = false;
+        size_t column = i_column;
+        size_t x = job->sink.size;
+        for (size_t i = start_idx; i < end_idx; i++) {
+                if (A->at[i] == ' ' & column == 0) {
+                       indentation = true; 
+                } 
+                if ((A->at[i] != ' ') | (column >= i_column) | !indentation) {
+                        indentation = false; 
+                        B->at[x++] = A->at[i];
+                }
+                column = (A->at[i] == '\n') ? 0 :  column + 1;
+        }
+        B->at[x] = 0;
+        B->size = x;
+}
+#else
+static void truncate_spaces(OOO_Job *job, size_t column, size_t const start_idx, size_t const end_idx) {
+        OStr *A = &job->source;
+        OStr *B = &job->sink;
+
+        bool indentation = false;
+        struct trunc {
+                bool b;
+                size_t idx;
+        } trunc = { .b = false, .idx = 0 };
+        size_t x = job->sink.size;
+        for (size_t i = start_idx; i < end_idx; i++) {
+                if (A->at[i] == ' ' & column == 0) {
+                       indentation = true; 
+                } 
+                if ((A->at[i] == ' ') & !trunc.b) {
+                        trunc.b = true;
+                        trunc.idx = x;
+                }
+                if ((A->at[i] != ' ') | !indentation) {
+                        if ((A->at[i] == '\n') & trunc.b) {
+                                x = trunc.idx;
+                                trunc.b = false;
+                        } else if (A->at[i] != ' ') {
+                                trunc.b = false;
+                        }
+                        indentation = false; 
+                        B->at[x++] = A->at[i];
+                }
+                column = (A->at[i] == '\n') ? 0 :  column + 1;
+        }
+        B->at[x] = 0;
+        B->size = x;
+}
+
+static void truncate_spaces_in_comment(OOO_Job *job, size_t const i_column, size_t const start_idx, size_t const end_idx) {
+        OStr *A = &job->source;
+        OStr *B = &job->sink;
+
+        bool indentation = false;
+        struct trunc {
+                bool b;
+                size_t idx;
+        } trunc = { .b = false, .idx = 0 };
+        size_t column = i_column;
+        size_t x = job->sink.size;
+        for (size_t i = start_idx; i < end_idx; i++) {
+                if (A->at[i] == ' ' & column == 0) {
+                       indentation = true; 
+                } 
+                if ((A->at[i] == ' ') & !trunc.b) {
+                        trunc.b = true;
+                        trunc.idx = x;
+                }
+                if ((A->at[i] != ' ') | (column >= i_column) | !indentation) {
+                        if ((A->at[i] == '\n') & trunc.b) {
+                                x = trunc.idx;
+                                trunc.b = false;
+                        } else if (A->at[i] != ' ') {
+                                trunc.b = false;
+                        }
+                        indentation = false; 
+                        B->at[x++] = A->at[i];
+                }
+                column = (A->at[i] == '\n') ? 0 :  column + 1;
+        }
+        B->at[x] = 0;
+        B->size = x;
+}
+#endif
+
+
 void indentation_remove_runner(
         TSNode node,
         OOO_Job *job
@@ -36,18 +127,34 @@ void indentation_remove_runner(
                         &job->source, 
                         ts_node_start_point(node)
         );
-        Indentation_remove(job, column, last_end_idx, start_idx);
+        truncate_spaces(
+                job,
+                column,
+                last_end_idx,
+                start_idx
+        );
         for (size_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode child = ts_node_child(node, it);
                 indentation_remove_runner(child, job);
         }
+
         last_end_idx = job->cursor.idx;
+        column = job->cursor.column;
         size_t end_idx = OStrCursor_move_to_point(
                         &job->cursor, 
                         &job->source, 
                         ts_node_end_point(node)
         );
-        for (size_t i = last_end_idx; i < end_idx; i++) {
-                OStr_append_chr(&job->sink, job->source.at[i]);
+        if (me == sym_comment) {
+                truncate_spaces_in_comment(
+                        job, 
+                        column,
+                        last_end_idx,
+                        end_idx
+                );
+        } else {
+                for (size_t i = last_end_idx; i < end_idx; i++) {
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                }
         }
 }

@@ -11,7 +11,6 @@ bool create_build_dir(bool const clean) {
         return nob_mkdir_if_not_exists(OOO_BUILD_DIR);
 }
 
-// https://github.com/tree-sitter/tree-sitter/archive/refs/heads/master.zip
 bool treesitter_download_build(bool const clean) {
 #if 1
         #define TS_URL "https://github.com/tree-sitter/tree-sitter/archive/refs/heads/"
@@ -33,7 +32,6 @@ bool treesitter_download_build(bool const clean) {
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "curl");
         nob_cmd_append(&cmd, "-L");
-        //nob_cmd_append(&cmd, "https://github.com/tree-sitter/tree-sitter/archive/"TS_COMMIT".zip");
         nob_cmd_append(&cmd, TS_URL TS_COMMIT".zip");
         nob_cmd_append(&cmd, "--output", "tree-sitter.zip");
         ok &= nob_cmd_run_sync(cmd);

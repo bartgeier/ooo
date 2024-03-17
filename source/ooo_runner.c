@@ -1,5 +1,5 @@
 #include "ooo_runner.h"
-#include "OStr.h"
+#include "ooo_treesitter_symbol_ids.h"
 #include <stdio.h>
 
 TSSymbol ooo(TSNode n) {
@@ -155,8 +155,20 @@ void ooo_set_indentation(
                 return;
         } 
 #endif
-        for (size_t i = ax; i < ex; i++) {
-                OStr_append_chr(sink, source->at[i]);
+        if (me == sym_comment) {
+                /* inside of block comment */
+                for (size_t i = ax; i < ex; i++) {
+                        if (source->at[i] == '\n') {
+                                OStr_append_chr(sink, source->at[i]);
+                                OStr_append_spaces(sink, 4 * indentation_level);
+                        } else {
+                                OStr_append_chr(sink, source->at[i]);
+                        }
+                }
+        } else {
+                for (size_t i = ax; i < ex; i++) {
+                        OStr_append_chr(sink, source->at[i]);
+                }
         }
 }
 
