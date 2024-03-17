@@ -1,21 +1,25 @@
 #ifndef OOO_RUNNER_H
 #define OOO_RUNNER_H
 
-#include "tree_sitter/api.h"
+#include "tree_navigator.h"
 #include "ooo_job.h"
 
+#if 0
 typedef enum {
         OOO_ENTRY,
         OOO_NEXT,
         OOO_EXIT
 } OOO_Transition;
+#endif
 
-
+#if 0 
 typedef struct {
         size_t begin;
         size_t end;
 } OOO_Slice;
+#endif
 
+#if 0
 void ooo_set_indentation(
         OStrCursor *cursor,
         OStr *sink,
@@ -23,6 +27,7 @@ void ooo_set_indentation(
         TSNode node,
         size_t indentation_level
 );
+#endif
 
 void ooo_print_nodes(
         TSNode node,
@@ -31,6 +36,7 @@ void ooo_print_nodes(
         size_t level
 ); 
 
+#if 0
 TSNode ooo_visit_nodes(
         TSNode node,
         TSNode serial_node,
@@ -43,14 +49,10 @@ bool ooo_rule_dispatcher(
         OOO_Slice slice,
         OOO_Job *job
 );
+#endif
 
+#if 0
 size_t ooo_indentation(OOO_Transition const transition, TSNode const node, size_t level);
-
-TSSymbol ooo(TSNode);
-TSNode super(int i, TSNode n); 
-TSNode child(unsigned int const i, TSNode n);
-TSNode child_first(TSNode n);
-TSNode child_last(TSNode n);
-TSNode sibling(int i, TSNode n);
+#endif
 
 #endif

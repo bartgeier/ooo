@@ -223,7 +223,10 @@ bool ooo_build(bool const clean) {
         nob_cmd_append(&cmd, "-o", "ooo");
         nob_cmd_append(&cmd, "./source/main.c");
         nob_cmd_append(&cmd, "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c");;
-        nob_cmd_append(&cmd, "./source/ooo_runner.c", "./source/indentation.c", "./source/OArg.c");
+        nob_cmd_append(&cmd, "./source/ooo_runner.c", "./source/truncate.c", "./source/OArg.c");
+        nob_cmd_append(&cmd, "./source/apply_rules.c");
+        nob_cmd_append(&cmd, "./source/indentation.c");
+        nob_cmd_append(&cmd, "./source/tree_navigator.c");
         const bool ok = nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
         return ok;
