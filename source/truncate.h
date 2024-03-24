@@ -1,10 +1,10 @@
-#ifndef TRUNCATE_H
-#define TRUNCATE_H
+#ifndef TRUNCATE_SPACES_H
+#define TRUNCATE_SPACES_H
 
 #include "tree_navigator.h"
-#include "ooo_job.h"
+#include "OJob.h"
 
-void truncate_spaces(TSNode node, OOO_Job *job); 
+void ooo_truncate_spaces(TSNode node, OJob *job); 
 
 
 

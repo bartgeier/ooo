@@ -8,6 +8,6 @@ typedef struct {
         OStr sink;
         OStr source;
         size_t indentation_level;
-} OOO_Job;
+} OJob;
 
 #endif

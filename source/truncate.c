@@ -1,6 +1,8 @@
 #include "truncate.h"
 
-static void trunc_spaces(OOO_Job *job, size_t column, size_t const start_idx, size_t const end_idx) {
+/* see OStr.h remove_indentation */
+/* see also unit test for remove_indentation */
+static void trunc_spaces(OJob *job, size_t column, size_t const start_idx, size_t const end_idx) {
         OStr *A = &job->source;
         OStr *B = &job->sink;
 
@@ -34,7 +36,7 @@ static void trunc_spaces(OOO_Job *job, size_t column, size_t const start_idx, si
         B->size = x;
 }
 
-static void trunc_spaces_in_comment(OOO_Job *job, size_t const i_column, size_t const start_idx, size_t const end_idx) {
+static void trunc_spaces_in_comment(OJob *job, size_t const i_column, size_t const start_idx, size_t const end_idx) {
         OStr *A = &job->source;
         OStr *B = &job->sink;
 
@@ -69,9 +71,9 @@ static void trunc_spaces_in_comment(OOO_Job *job, size_t const i_column, size_t 
         B->size = x;
 }
 
-void truncate_spaces(
+void ooo_truncate_spaces(
         TSNode node,
-        OOO_Job *job
+        OJob *job
 ) {
         TSSymbol me = ooo(node);
         size_t last_end_idx = job->cursor.idx;
@@ -89,7 +91,7 @@ void truncate_spaces(
         );
         for (size_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode child = ts_node_child(node, it);
-                truncate_spaces(child, job);
+                ooo_truncate_spaces(child, job);
         }
 
         last_end_idx = job->cursor.idx;

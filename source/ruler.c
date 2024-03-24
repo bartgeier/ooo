@@ -1,10 +1,15 @@
-#include "apply_rules.h"
+#include "ruler.h"
+
+typedef struct {
+        size_t begin;
+        size_t end;
+} Slice;
 
 bool curly_brace_compound_statement(
         TSNode node,
         TSNode serial_node,
-        OOO_Slice slice,
-        OOO_Job *job
+        Slice slice,
+        OJob *job
 ) {
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
@@ -118,8 +123,8 @@ bool curly_brace_compound_statement(
 bool curly_brace_field_declaration_list(
         TSNode node,
         TSNode serial_node,
-        OOO_Slice slice,
-        OOO_Job *job
+        Slice slice,
+        OJob *job
 ) {
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
@@ -168,8 +173,8 @@ bool curly_brace_field_declaration_list(
 bool curly_brace_enumerator_list(
         TSNode node,
         TSNode serial_node,
-        OOO_Slice slice,
-        OOO_Job *job
+        Slice slice,
+        OJob *job
 ) {
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
@@ -218,8 +223,8 @@ bool curly_brace_enumerator_list(
 bool curly_brace_initializer_list(
         TSNode node,
         TSNode serial_node,
-        OOO_Slice slice,
-        OOO_Job *job
+        Slice slice,
+        OJob *job
 ) {
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
@@ -260,8 +265,8 @@ bool curly_brace_initializer_list(
 bool parenthesize_parameter_list(
         TSNode node,
         TSNode serial_node,
-        OOO_Slice slice,
-        OOO_Job *job
+        Slice slice,
+        OJob *job
 ) {
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
@@ -297,11 +302,11 @@ bool parenthesize_parameter_list(
         return true;
 }
 
-bool ooo_rule_dispatcher(
+bool dispatcher(
         TSNode node,
         TSNode serial_node,
-        OOO_Slice slice,
-        OOO_Job *job
+        Slice slice,
+        OJob *job
 ) {
         return curly_brace_compound_statement(node, serial_node, slice, job)
         && curly_brace_field_declaration_list(node, serial_node, slice, job)
@@ -311,20 +316,20 @@ bool ooo_rule_dispatcher(
         /* return false -> rule applyed and done */
 }
 
-TSNode ooo_apply_rules(
+TSNode ooo_ruler(
         TSNode node,
         TSNode serial_node,
-        OOO_Job *job
+        OJob *job
 ) {
         static size_t count = 0;
 
         TSPoint start_point = ts_node_start_point(node);
-        OOO_Slice slice = {
+        Slice slice = {
                 .begin = job->cursor.idx,
                 .end = OStrCursor_move_to_point(&job->cursor, &job->source, start_point)
         };
 
-        if (ooo_rule_dispatcher(node, serial_node, slice, job)) {
+        if (dispatcher(node, serial_node, slice, job)) {
                 for (size_t i = slice.begin; i < slice.end; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                 }
@@ -334,7 +339,7 @@ TSNode ooo_apply_rules(
         TSNode serial = node;
         for (size_t it = 0; it < num_of_childs; it++) {
                TSNode child = ts_node_child(node, it);
-                serial = ooo_apply_rules(
+                serial = ooo_ruler(
                         child,
                         serial,
                         job

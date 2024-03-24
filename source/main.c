@@ -6,10 +6,10 @@
 #include <errno.h>
 #include <getopt.h>
 #include "tree_navigator.h"
-#include "apply_rules.h"
+#include "ruler.h"
 #include "indentation.h"
-#include "ooo_runner.h"
-#include "ooo_job.h"
+#include "node_printer.h"
+#include "OJob.h"
 #include "truncate.h"
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
@@ -24,6 +24,7 @@ TSLanguage *tree_sitter_c();
 bool read_txt_file(OStr *source, char const *path) {
         FILE *file = fopen(path, "r");
         if (file == NULL) {
+                fprintf(stderr, "`%s` Error %d %s\n", path, errno, strerror(errno));
                 return false;
         }
         source->size = 0;
@@ -56,14 +57,6 @@ bool write_txt_file(OStr const *source, char const *path) {
         }
 }
 
-char const *shift_args(int *argc, char ***argv) {
-        assert(*argc > 0);
-        char const *result = **argv;
-        *argc -= 1;
-        *argv += 1;
-        return result;
-}
-
 #define MEM_SIZE 1000*1024
 int main(int argc, char **argv) {
         OArg_t oarg = {0};
@@ -73,7 +66,7 @@ int main(int argc, char **argv) {
 
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
-        OOO_Job job = {
+        OJob job = {
                 .cursor = {0},
                 .sink = {
                         .capacity = MEM_SIZE,
@@ -89,6 +82,7 @@ int main(int argc, char **argv) {
 
         if (!read_txt_file(&job.source, oarg.input_path)) return 2;
 
+
         char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
 
@@ -101,7 +95,7 @@ int main(int argc, char **argv) {
                 job.source.size
         );
         OStrCursor_reset(&job.cursor);
-        truncate_spaces(ts_tree_root_node(tree), &job); 
+        ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
         OStr_move(&job.source, &job.sink);
 
         tree = ts_parser_parse_string(
@@ -120,7 +114,7 @@ int main(int argc, char **argv) {
                 return 0;
         }
         OStrCursor_reset(&job.cursor);
-        ooo_apply_rules(
+        ooo_ruler(
                 ts_tree_root_node(tree),
                 ts_tree_root_node(tree),
                 &job

@@ -237,6 +237,8 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
         OStr_clear(A);
 }
 
+/* This function is not used anymore. */
+/* replaced by truncate_spaces.h      */
 void OStr_remove_indentation(OStr *B, OStr *A) {
         bool indentation = false;
         size_t column = 0;
@@ -246,8 +248,7 @@ void OStr_remove_indentation(OStr *B, OStr *A) {
                        indentation = true; 
                 } 
                 if ((A->at[i] != ' ') | !indentation) {
-                        indentation = false; 
-                        B->at[x++] = A->at[i];
+                        indentation = false; B->at[x++] = A->at[i];
                 }
                 column = (A->at[i] == '\n') ? 0 :  column + 1;
         }

@@ -106,10 +106,10 @@ static int set_print(OArg_t *m, char *optarg) {
 }
 
 static void print_help() {
-        printf("./ooo -i./example/hello.c -o./example/hello.c              Apply code style -i input to -o output\n");
-        printf("./ooo -i./example/hello.c -o-                              Print code style to terminal\n");
-        printf("./ooo -p \"42 56\" -i./example/hello.c -o./tree_output       Print tree-sitter lines -p \"firstLine numOfLine\"\n");
-        printf("./ooo -p \"42 56\" -i./example/hello.c -o-                   Print tree-sitter to terminal\n");
+        fprintf(stderr, "./ooo -i./example/hello.c -o./example/hello.c              Apply code style -i input to -o output\n");
+        fprintf(stderr, "./ooo -i./example/hello.c -o-                              Print code style to terminal\n");
+        fprintf(stderr, "./ooo -p \"42 56\" -i./example/hello.c -o./tree_output       Print tree-sitter lines -p \"firstLine numOfLine\"\n");
+        fprintf(stderr, "./ooo -p \"42 56\" -i./example/hello.c -o-                   Print tree-sitter to terminal\n");
 }
 
 static int parse(OArg_t *m, int argc, char **argv) {
@@ -137,17 +137,17 @@ static int parse(OArg_t *m, int argc, char **argv) {
                         if (optind < argc) {
                                 /* Print any remaining                   */ 
                                 /* command line arguments (not options). */
-                                printf("non-option argv-elements: ");
+                                fprintf(stderr, "non-option argv-elements: ");
                                 while (optind < argc) {
-                                        printf ("%s ", argv[optind++]);
+                                        fprintf(stderr, "%s ", argv[optind++]);
                                 }
-                                putchar ('\n');
+                                fprintf(stderr, "\n");
                         }
                         return 0;
                 case 0:
-                        // printf("option=%s flag=%d", options[index].name, verbose_flag);
-                        if (optarg) printf(" arg=%s", optarg);
-                        printf ("\n");
+                        // fprintf(stderr, "option=%s flag=%d", options[index].name, verbose_flag);
+                        if (optarg) fprintf(stderr, " arg=%s", optarg);
+                        fprintf(stderr, "\n");
                         break;
                  case 'h':
                         m->action = OARG_HELP;
@@ -169,7 +169,7 @@ static int parse(OArg_t *m, int argc, char **argv) {
                         break;
                 default:
                         m = NULL;
-                        printf("default");
+                        fprintf(stderr, "default");
                         return 1;
                 }
         }
@@ -182,11 +182,11 @@ static int verify_style(OArg_t *m) {
                 return 0;
         case OARG_STYLE:
                 if (m->input_path == NULL) {
-                        printf("-i Missing input path.\n");
+                        fprintf(stderr, "-i Missing input path.\n");
                         error = 1;
                 }
                 if (m->output_path == NULL) {
-                        printf("-o Missing output path.\n");
+                        fprintf(stderr, "-o Missing output path.\n");
                         error = 1;
                 } 
                 if (error) {
@@ -196,15 +196,15 @@ static int verify_style(OArg_t *m) {
                 return 0;
         case OARG_PRINT:
                 if (m->print.failure == 1) {
-                        printf("-p Row range failure.\n");
+                        fprintf(stderr, "-p Row range failure.\n");
                         error = 1;
                 }
                 if (m->input_path == NULL) {
-                        printf("-i Input path failure.\n");
+                        fprintf(stderr, "-i Input path failure.\n");
                         error = 1;
                 }
                 if (m->output_path == NULL) {
-                        printf("-o Output path failure.\n");
+                        fprintf(stderr, "-o Output path failure.\n");
                         error = 1;
                 } 
                 if (error) {
