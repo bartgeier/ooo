@@ -247,9 +247,12 @@ bool unittests_build(bool const clean) {
         nob_cmd_append(&cmd, "-I", "googletest/include/"); 
         nob_cmd_append(&cmd, "-I", "source/"); 
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/"); 
+        nob_cmd_append(&cmd, "-I", "tree-sitter-c/");
         nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
         nob_cmd_append(&cmd, "-o", "otest");
+        nob_cmd_append(&cmd, "source/tree_navigator.c");
         nob_cmd_append(&cmd, "unittests/tst_OStr.c");
+        nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a");
         nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
         ok &= nob_cmd_run_sync(cmd);
