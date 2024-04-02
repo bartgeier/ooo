@@ -7,11 +7,7 @@
 
 
 
-TSNode ooo_ruler(
-        TSNode node,
-        TSNode serial_node,
-        OJob *job
-);
+void ooo_ruler(Nodes *nodes, OJob *job);
 
 
 

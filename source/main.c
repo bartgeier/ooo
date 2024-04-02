@@ -57,6 +57,7 @@ bool write_txt_file(OStr const *source, char const *path) {
         }
 }
 
+Nodes serial_nodes;
 #define MEM_SIZE 1000*1024
 int main(int argc, char **argv) {
         OArg_t oarg = {0};
@@ -114,9 +115,10 @@ int main(int argc, char **argv) {
                 return 0;
         }
         OStrCursor_reset(&job.cursor);
+        serial_nodes = Nodes_init(20);
+        Nodes_push(&serial_nodes, ts_tree_root_node(tree));
         ooo_ruler(
-                ts_tree_root_node(tree),
-                ts_tree_root_node(tree),
+                &serial_nodes,
                 &job
         );
 

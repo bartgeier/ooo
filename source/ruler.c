@@ -1,24 +1,23 @@
 #include "ruler.h"
+#include "OStr.h"
+#include "tree_navigator.h"
 #include <stdio.h>
 
-typedef struct {
-        size_t begin;
-        size_t end;
-} Slice;
 
 bool curly_brace_compound_statement(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
         TSSymbol prev_parent_sibling = ooo(sibling(-1, super(1, node)));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 
         if (me == sym_compound_statement & parent == sym_function_definition) {
                 /* Curly brace for function K&R-Rule */
@@ -122,17 +121,18 @@ bool curly_brace_compound_statement(
 }
 
 bool curly_brace_field_declaration_list(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 
         if (me == sym_field_declaration_list) {
                 /* struct Foo {  */
@@ -172,17 +172,18 @@ bool curly_brace_field_declaration_list(
 }
 
 bool curly_brace_enumerator_list(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 
         if (me == sym_enumerator_list) {
                 /* enum Foo {  */
@@ -227,17 +228,18 @@ bool curly_brace_enumerator_list(
 }
 
 bool curly_brace_initializer_list(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 
         if (me == sym_initializer_list) {
                 /* int foo[] = {1, 2, 3} */
@@ -274,17 +276,18 @@ bool curly_brace_initializer_list(
 }
 
 bool parenthesize_parameter_list(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 
         if (me == sym_parameter_list) {
                 /* void Foo(  */
@@ -320,17 +323,18 @@ bool parenthesize_parameter_list(
 }
 
 bool parenthesize_argument_list(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 
         if (me == sym_argument_list) {
                 /* foo(  */
@@ -364,17 +368,18 @@ bool parenthesize_argument_list(
 }
 
 bool append_nothing(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 
         if (me == sym_init_declarator) {
                 /* defer append space see also append_space me == sym_identifier */
@@ -435,17 +440,18 @@ bool append_nothing(
 }
 
 bool expression_statement(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 
         if (me == sym_expression_statement) {
                 if (ts_node_start_point(node).column == 0) {
@@ -461,17 +467,18 @@ bool expression_statement(
 }
 
 bool append_space(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol grand = ooo(super(2, node));
         TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol serial = ooo(serial_node);
-        TSSymbol serial_parent = ooo(super(1, serial_node));
+        TSSymbol serial = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
 // aux_sym_preproc_include_token1,
 // sym_preproc_include,
 // sym_string_literal,
@@ -551,32 +558,254 @@ bool append_space(
         return true;
 }
 
+bool append_sym_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
+
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol last = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
+        if (parent != sym_preproc_ifdef) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        if(me == sym_identifier & first_sibling(last_node)) {
+                /* #ifndef FOO_H  */
+                /*        ^       */
+                OStr_append_chr(&job->sink, ' ');
+                return false; 
+        }
+        if (ooo(Nodes_at(nodes, 1)) == sym_identifier 
+        & ooo(Nodes_at(nodes, 2)) == aux_sym_preproc_def_token1
+        & ooo(Nodes_at(nodes, 3)) == sym_preproc_def
+        & ooo(Nodes_at(nodes, 4)) == sym_identifier
+        & ooo(Nodes_at(nodes, 5)) == aux_sym_preproc_ifdef_token2
+        & ooo(Nodes_at(nodes, 6)) == sym_preproc_ifdef) {
+                /* #ifndef FOO_H   */
+                /* #define FOO_H\n\n */
+                /*              ^ ^  */
+                size_t const num_of_LF = _OStr_need_2LF(&job->sink, slice);
+                OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                return false;
+        }
+        if (me == aux_sym_preproc_if_token2 & last_sibling(node)) {
+                /* \n#endif */
+                /* ^        */
+                size_t const num_of_LF = _OStr_need_1_or_2LF(&job->sink, slice);
+                OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                return false;
+        }
+        return true;
+}
+
+bool append_sym_translation_unit(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
+
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol last = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
+        if (parent != sym_translation_unit) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        return true;
+}
+
+bool append_sym_linkage_specification(Nodes *nodes, Slice slice, OJob *job) {
+        /* extern "C" */
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
+
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol last = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
+        if (parent != sym_linkage_specification) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        if (me == sym_string_literal & second_sibling(node)) {
+                /* extern "C" */
+                /*       ^    */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        }
+        if (me == sym_declaration_list) {
+                /* extern "C" { */
+                /*           ^  */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        }
+        return true;
+}
+
+bool append_sym_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
+
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol last = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
+        if (parent != sym_declaration_list) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        if (ooo(Nodes_at(nodes, 1)) == sym_preproc_directive
+        & ooo(Nodes_at(nodes, 2)) == sym_preproc_call
+        & ooo(Nodes_at(nodes, 3)) == anon_sym_LBRACE
+        & ooo(Nodes_at(nodes, 4)) == sym_declaration_list) {
+                /* #ifdef __cplusplus  */
+                /* extern "C" {        */
+                /* #endif\n\n          */
+                /*         ^           */
+                OStr_append_chr(&job->sink, '\n'); // todo preprog_call child preproc_derective mini see FlashState.h
+                return false;
+        }
+        return true;
+}
+
+// num_of_lf = OStr_at_least_1_not_3(
+//         &job->source, 
+//         slice.begin, 
+//         slice.end, 
+//         '\n'
+// );
+bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
+
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol last = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
+
+        if (parent == sym_translation_unit 
+        | parent == sym_preproc_ifdef
+        | parent == sym_linkage_specification
+        | parent == sym_declaration_list
+        ) {
+                size_t num_of_LF;
+                bool b = node_end_with_LF(prev_sibling);
+                switch (me) {
+                // case sym_identifier:
+                //         if (last == aux_sym_preproc_ifdef_token2
+                //         | last == aux_sym_preproc_ifdef_token1
+                //         & first_sibling(node)) {
+                //                 OStr_append_chr(&job->sink, ' ');
+                //                 return false;
+                //         }
+                //         break;
+                // case sym_string_literal:
+                //         OStr_append_chr(&job->sink, ' ');
+                //         return false;
+                // case sym_declaration_list:
+                //         OStr_append_chr(&job->sink, ' ');
+                //         return false;
+                // case anon_sym_LBRACE:
+                //         if (ooo(Nodes_at(nodes, 1)) == sym_declaration_list) {
+                //                 OStr_append_chr(&job->sink, 'X');
+                //         }
+                //         return false;
+                case sym_function_definition:
+                case sym_comment:
+                        num_of_LF = 2;
+                        if (prev_sibling == sym_comment) {
+                                num_of_LF = 1;
+                        }
+                        break;
+                case sym_declaration:
+                        if (!is_single_line(node) 
+                        | !is_single_line(sibling(-1, node)) & prev_sibling != sym_comment 
+                        | prev_sibling != sym_declaration & prev_sibling != sym_comment
+                        ) {
+                                num_of_LF = 2 - b;
+                                OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                                return false;
+                        } 
+                        num_of_LF = 1 - b;
+                        OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                        return false;
+                case sym_type_definition:
+                        if (!is_single_line(node) 
+                        | !is_single_line(sibling(-1, node)) & prev_sibling != sym_comment 
+                        | prev_sibling != sym_type_definition & prev_sibling != sym_comment
+                        ) {
+                                num_of_LF = 2 - b;
+                                OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                                return false;
+                        } 
+                        num_of_LF = 1 - b;
+                        OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                        return false;
+                case anon_sym_RBRACE:
+                        OStr_append_chr(&job->sink, '\n');
+                        return false;
+                default:
+                        num_of_LF = 1;
+                        break;
+                }
+                if (!first_sibling(node)) {
+                        OStr_append_number_of_char(&job->sink, num_of_LF - b, '\n');
+                }
+                return false;
+        }
+        return true;
+}
+
 
 bool dispatcher(
-        TSNode node,
-        TSNode serial_node,
+        Nodes *nodes,
         Slice slice,
         OJob *job
 ) {
         return 
-        append_nothing(node, serial_node, slice, job)
-        && curly_brace_compound_statement(node, serial_node, slice, job)
-        && curly_brace_field_declaration_list(node, serial_node, slice, job)
-        && curly_brace_enumerator_list(node, serial_node, slice, job)
-        && curly_brace_initializer_list(node, serial_node, slice, job)
-        && parenthesize_parameter_list(node, serial_node, slice, job)
-        && parenthesize_argument_list(node, serial_node, slice, job)
-        && expression_statement(node, serial_node, slice, job)
-        && append_space(node, serial_node, slice, job);
+        append_sym_preproc_ifdef(nodes, slice, job) 
+        && append_sym_translation_unit(nodes, slice, job)
+        && append_sym_linkage_specification(nodes, slice, job)
+        && append_sym_declaration_list(nodes, slice, job)
+        && append_roots(nodes, slice, job);
+#if 0
+        && append_nothing(nodes, slice, job)
+        && curly_brace_compound_statement(nodes, slice, job)
+        && curly_brace_field_declaration_list(nodes, slice, job)
+        && curly_brace_enumerator_list(nodes, slice, job)
+        && curly_brace_initializer_list(nodes, slice, job)
+        && parenthesize_parameter_list(nodes, slice, job)
+        && parenthesize_argument_list(nodes, slice, job)
+        && expression_statement(nodes, slice, job)
+        && append_space(nodes, slice, job);
         /* return false -> rule applyed and done */
+#endif
 }
 
-TSNode ooo_ruler(
-        TSNode node,
-        TSNode serial_node,
+void ooo_ruler(
+        Nodes *nodes,
         OJob *job
 ) {
-        static size_t count = 0;
+        //static size_t count = 0;
+        TSNode node = Nodes_at(nodes, 0);
 
         TSPoint start_point = ts_node_start_point(node);
         Slice slice = {
@@ -584,21 +813,18 @@ TSNode ooo_ruler(
                 .end = OStrCursor_move_to_point(&job->cursor, &job->source, start_point)
         };
 
-        if (dispatcher(node, serial_node, slice, job)) {
+        if (dispatcher(nodes, slice, job)) {
                 for (size_t i = slice.begin; i < slice.end; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                 }
         }
 
         size_t num_of_childs = ts_node_child_count(node);
-        TSNode serial = node;
+        //TSNode serial = node;
         for (size_t it = 0; it < num_of_childs; it++) {
                TSNode child = ts_node_child(node, it);
-                serial = ooo_ruler(
-                        child,
-                        serial,
-                        job
-                );
+               Nodes_push(nodes,  child);
+               ooo_ruler(nodes, job);
         }
 
         TSPoint end_point = ts_node_end_point(node);
@@ -607,5 +833,4 @@ TSNode ooo_ruler(
         for (size_t i = slice.begin; i < slice.end; i++) {
                 OStr_append_chr(&job->sink, job->source.at[i]);
         }
-        return serial;
 }

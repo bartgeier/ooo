@@ -9,6 +9,7 @@ extern "C" {
 #include "ooo_treesitter_symbol_ids.h"
 
 
+bool node_end_with_LF(TSSymbol const symbol);
 bool is_single_line(TSNode n);
 TSSymbol ooo(TSNode);
 TSNode super(int i, TSNode n); 
@@ -16,6 +17,9 @@ TSNode child(unsigned int const i, TSNode n);
 TSNode child_first(TSNode n);
 TSNode child_last(TSNode n);
 TSNode sibling(int i, TSNode n);
+bool first_sibling(TSNode const node);
+bool second_sibling(TSNode const node);
+bool last_sibling(TSNode const node);
 
 typedef struct {
         size_t SIZE;

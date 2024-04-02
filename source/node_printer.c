@@ -63,7 +63,7 @@ void ooo_print_nodes(
                         end.column
                 );
                 TSNode x = node;
-                for (size_t i = 0; i < level; i++) {
+                for (size_t i = 0; i <= level; i++) {
                         printf("(%d)%s ", ts_node_symbol(x), ts_node_type(x));
                         x = ts_node_parent(x);
                 }

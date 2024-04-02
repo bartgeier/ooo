@@ -15,6 +15,17 @@ static inline TSNode node_null(void) {
 #endif
 }
 
+bool node_end_with_LF(TSSymbol const symbol) {
+        if (symbol == sym_translation_unit
+        | symbol == sym_preproc_call
+        | symbol == sym_preproc_ifdef
+        | symbol == sym_preproc_include
+        | symbol == sym_preproc_def) {
+                return true;
+        }
+        return false;
+}
+
 bool is_single_line(TSNode n) {
         TSPoint const start = ts_node_start_point(n);
         TSPoint const end = ts_node_end_point(n);
@@ -59,7 +70,7 @@ TSNode child_last(TSNode n) {
 
 TSNode sibling(int i, TSNode n) {
         while (i > 0 & !ts_node_is_null(n)) {
-                n = ts_node_prev_sibling(n);
+                n = ts_node_next_sibling(n);
                 i--;
         }
         while (i < 0 & !ts_node_is_null(n)) {
@@ -67,6 +78,21 @@ TSNode sibling(int i, TSNode n) {
                 i++;
         }
         return n;
+}
+
+bool first_sibling(TSNode const node) {
+        return ts_node_is_null(sibling(-1, node)); 
+}
+
+bool second_sibling(TSNode const node) {
+        if (!ts_node_is_null(sibling(-1, node))) {
+               return ts_node_is_null(sibling(-2, node));
+        }
+        return false;
+}
+
+bool last_sibling(TSNode const node) {
+        return ts_node_is_null(sibling(1, node));
 }
 
 Nodes Nodes_init(size_t const SIZE) {

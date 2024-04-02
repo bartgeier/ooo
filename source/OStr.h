@@ -10,6 +10,11 @@
 #include <stdlib.h>
 
 typedef struct {
+        size_t begin;
+        size_t end;
+} Slice;
+
+typedef struct {
         size_t capacity;
         size_t size;
         char *at;
@@ -29,6 +34,9 @@ void OStr_append_spaces(OStr *m, size_t n);
 void QStr_append_cstring(OStr *m, char const * str);
 size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr);
+size_t _OStr_need_1LF(OStr const *m, Slice const s);
+size_t _OStr_need_2LF(OStr const *m, Slice const s); 
+size_t _OStr_need_1_or_2LF(OStr const *m, Slice const s);
 void OStr_replace_tabs_with_one_space(OStr *B, OStr *A);
 
 char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A);
@@ -77,6 +85,8 @@ void OStr_append_spaces(OStr *m, size_t n) {
      OStr_append_number_of_char(m, n, ' ');
 }
 
+
+
 void QStr_append_cstring(OStr *m, char const * str) {
         for (size_t i = 0; i < strlen(str); i++) {
                 OStr_append_chr(m, str[i]);
@@ -89,6 +99,17 @@ size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr) {
                 if (m->at[i] == chr) count++;
         }
         return (count == 0) ? 1 : count; 
+}
+
+size_t _OStr_need_1LF(OStr const *m, Slice const s) {
+        size_t const begin = s.begin;
+        return (1 - (s.begin > 0) ? m->at[begin -1] == '\n' : false);
+}
+
+size_t _OStr_need_2LF(OStr const *m, Slice const s) {
+        size_t const begin = s.begin;
+        bool const b = (s.begin > 0) ? (m->at[begin -1] == '\n')  : false;
+        return 2 - b;
 }
 
 size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr) {
@@ -105,6 +126,27 @@ size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr) 
         default:
                 return 2;
         }
+}
+
+size_t _OStr_need_1_or_2LF(OStr const *m, Slice const s) {
+        size_t const begin = s.begin;
+        size_t const end = s.end;
+        bool const b = (s.begin > 0) ? m->at[begin -1] == '\n' : false;
+        size_t count = b;
+        for (size_t i = begin; i < end; i++) {
+                if (m->at[i] == '\n') count++;
+        }
+        switch (count) {
+        case 0:
+                return 1;
+        case 1:
+                return 1 - b;
+        case 2:
+                return 2 - b;
+        default:
+                break;
+        }
+        return 2 - b;
 }
 
 void OStr_replace_tabs_with_one_space(OStr *B, OStr *A) {
