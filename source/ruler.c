@@ -105,7 +105,7 @@ bool curly_brace_compound_statement(
                         slice.end, 
                         '\n'
                 );
-                OStr_append_number_of_char(&job->sink, n, '\n');
+                OStr_append_number_of_chr(&job->sink, n, '\n');
                 return false;
         }
         if (prev_sibling == sym_function_definition 
@@ -114,7 +114,7 @@ bool curly_brace_compound_statement(
                 /* end of an function code block compound statement  */
                 /* closed curly brace on a new line         */
                 /* '}\n\n'                                  */
-                OStr_append_number_of_char(&job->sink, 2, '\n');
+                OStr_append_number_of_chr(&job->sink, 2, '\n');
                 return false;
         }
         return true;
@@ -589,15 +589,16 @@ bool append_sym_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
                 /* #ifndef FOO_H   */
                 /* #define FOO_H\n\n */
                 /*              ^ ^  */
-                size_t const num_of_LF = _OStr_need_2LF(&job->sink, slice);
-                OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                size_t const num_of_LF = OStr_need_2LF(&job->source, slice);
+                //printf("ssss %zu\n", num_of_LF);
+                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                 return false;
         }
         if (me == aux_sym_preproc_if_token2 & last_sibling(node)) {
                 /* \n#endif */
                 /* ^        */
-                size_t const num_of_LF = _OStr_need_1_or_2LF(&job->sink, slice);
-                OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                size_t const num_of_LF = OStr_need_1_or_2LF(&job->source, slice);
+                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                 return false;
         }
         return true;
@@ -678,7 +679,8 @@ bool append_sym_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
                 /* extern "C" {        */
                 /* #endif\n\n          */
                 /*         ^           */
-                OStr_append_chr(&job->sink, '\n'); // todo preprog_call child preproc_derective mini see FlashState.h
+                size_t const num_of_LF = OStr_need_2LF(&job->source, slice);
+                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n'); 
                 return false;
         }
         return true;
@@ -741,11 +743,11 @@ bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
                         | prev_sibling != sym_declaration & prev_sibling != sym_comment
                         ) {
                                 num_of_LF = 2 - b;
-                                OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                                 return false;
                         } 
                         num_of_LF = 1 - b;
-                        OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                         return false;
                 case sym_type_definition:
                         if (!is_single_line(node) 
@@ -753,11 +755,11 @@ bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
                         | prev_sibling != sym_type_definition & prev_sibling != sym_comment
                         ) {
                                 num_of_LF = 2 - b;
-                                OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                                 return false;
                         } 
                         num_of_LF = 1 - b;
-                        OStr_append_number_of_char(&job->sink, num_of_LF, '\n');
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                         return false;
                 case anon_sym_RBRACE:
                         OStr_append_chr(&job->sink, '\n');
@@ -767,7 +769,7 @@ bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
                         break;
                 }
                 if (!first_sibling(node)) {
-                        OStr_append_number_of_char(&job->sink, num_of_LF - b, '\n');
+                        OStr_append_number_of_chr(&job->sink, num_of_LF - b, '\n');
                 }
                 return false;
         }

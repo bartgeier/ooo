@@ -29,14 +29,14 @@ typedef struct {
 void OStr_clear(OStr *s);
 void OStr_move(OStr *B, OStr *A);
 void OStr_append_chr(OStr *m, char const chr);
-void OStr_append_number_of_char(OStr *m, size_t n, char chr);
+void OStr_append_number_of_chr(OStr *m, size_t n, char chr);
 void OStr_append_spaces(OStr *m, size_t n);
 void QStr_append_cstring(OStr *m, char const * str);
 size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr);
-size_t _OStr_need_1LF(OStr const *m, Slice const s);
-size_t _OStr_need_2LF(OStr const *m, Slice const s); 
-size_t _OStr_need_1_or_2LF(OStr const *m, Slice const s);
+size_t OStr_need_1LF(OStr const *m, Slice const s);
+size_t OStr_need_2LF(OStr const *m, Slice const s); 
+size_t OStr_need_1_or_2LF(OStr const *m, Slice const s);
 void OStr_replace_tabs_with_one_space(OStr *B, OStr *A);
 
 char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A);
@@ -75,14 +75,14 @@ void OStr_append_chr(OStr *m, char const chr) {
         m->at[m->size] = 0;
 }
 
-void OStr_append_number_of_char( OStr *m, size_t n, char chr) {
+void OStr_append_number_of_chr( OStr *m, size_t n, char chr) {
         for (size_t i = 0; i < n; i++) {
                 OStr_append_chr(m, chr);
         }
 }
 
 void OStr_append_spaces(OStr *m, size_t n) {
-     OStr_append_number_of_char(m, n, ' ');
+     OStr_append_number_of_chr(m, n, ' ');
 }
 
 
@@ -101,12 +101,12 @@ size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr) {
         return (count == 0) ? 1 : count; 
 }
 
-size_t _OStr_need_1LF(OStr const *m, Slice const s) {
+size_t OStr_need_1LF(OStr const *m, Slice const s) {
         size_t const begin = s.begin;
         return (1 - (s.begin > 0) ? m->at[begin -1] == '\n' : false);
 }
 
-size_t _OStr_need_2LF(OStr const *m, Slice const s) {
+size_t OStr_need_2LF(OStr const *m, Slice const s) {
         size_t const begin = s.begin;
         bool const b = (s.begin > 0) ? (m->at[begin -1] == '\n')  : false;
         return 2 - b;
@@ -128,7 +128,7 @@ size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr) 
         }
 }
 
-size_t _OStr_need_1_or_2LF(OStr const *m, Slice const s) {
+size_t OStr_need_1_or_2LF(OStr const *m, Slice const s) {
         size_t const begin = s.begin;
         size_t const end = s.end;
         bool const b = (s.begin > 0) ? m->at[begin -1] == '\n' : false;
