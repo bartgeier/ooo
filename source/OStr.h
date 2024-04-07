@@ -103,12 +103,13 @@ size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr) {
 
 size_t OStr_need_1LF(OStr const *m, Slice const s) {
         size_t const begin = s.begin;
-        return (1 - (s.begin > 0) ? m->at[begin -1] == '\n' : false);
+        bool const b = (begin > 0) ? (m->at[begin -1] == '\n')  : false;
+        return 1 - b;
 }
 
 size_t OStr_need_2LF(OStr const *m, Slice const s) {
         size_t const begin = s.begin;
-        bool const b = (s.begin > 0) ? (m->at[begin -1] == '\n')  : false;
+        bool const b = (begin > 0) ? (m->at[begin -1] == '\n')  : false;
         return 2 - b;
 }
 
