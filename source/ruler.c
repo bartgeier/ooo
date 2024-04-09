@@ -780,16 +780,34 @@ bool append_parameter_list(Nodes *nodes, Slice slice, OJob *job) {
         if (parent != sym_parameter_list) {
                 return true;
         }
-        // todo multi line
         if (first_sibling(node)) {
                 /* void foo(int a, int b) */
                 /*         (              */
                 return false;
         }
         if (second_sibling(node)) {
-                /* void foo(int a, int b) */
-                /*         ^^             */
-                return false;
+                if(is_single_line(ts_node_parent(node))) {
+                        /* void foo(int a  */
+                        /*         ^^      */
+                        return false;
+                } else {
+                        /* void foo(\nint a  */
+                        /*          ^        */
+                        OStr_append_chr(&job->sink, '\n');
+                        return false;
+                }
+        }
+        if (last_sibling(node)) {
+                if(is_single_line(ts_node_parent(node))) {
+                        /* void foo(int a, int b)  */
+                        /*                     ^^  */
+                        return false;
+                } else {
+                        /* void foo(\nint a,\nint b\n)  */
+                        /*                          ^   */
+                        OStr_append_chr(&job->sink, '\n');
+                        return false;
+                }
         }
         if (me == anon_sym_COMMA) {
                 /* void foo(int a, int b) */
@@ -799,10 +817,67 @@ bool append_parameter_list(Nodes *nodes, Slice slice, OJob *job) {
         if (me == sym_parameter_declaration) {
                 /* void foo(int a, int b) */
                 /*                ^       */
-                OStr_append_chr(&job->sink, ' ');
+                char const chr = OStr_need_1LF_or_1Space(&job->source, slice);
+                OStr_append_chr(&job->sink, chr);
                 return false;
         }
         return true;
+}
+
+bool append_parameter_declaration(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSNode last_node = Nodes_at(nodes, 1); 
+
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        TSSymbol prev_sibling = ooo(sibling(-1, node));
+        TSSymbol last = ooo(last_node);
+        TSSymbol serial_parent = ooo(super(1, last_node));
+        if (parent != sym_parameter_declaration) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* void foo(int a, int b) */
+                /*          int             */
+                return false;
+        }
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+bool append_enum_specifier(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_enum_specifier) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* enum alice */
+                /* enum       */
+                return false;
+        }
+        /* enum alice */
+        /*     ^      */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+bool append_union_specifier(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_union_specifier) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* union alice */
+                /* union       */
+                return false;
+        }
+        /* union alice */
+        /*      ^      */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
 }
 
 // num_of_lf = OStr_at_least_1_not_3(
@@ -840,10 +915,14 @@ bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
                         OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                         return false;
                 case sym_declaration:
+                        if (prev_sibling == sym_comment) {
+                                num_of_LF = OStr_need_1_or_2LF(&job->source, slice);
+                                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                                return false;
+                        }
                         if (!is_single_line(node) 
-                        | !is_single_line(sibling(-1, node)) & prev_sibling != sym_comment 
-                        | prev_sibling != sym_declaration & prev_sibling != sym_comment
-                        ) {
+                        | !is_single_line(sibling(-1, node))  
+                        | prev_sibling != sym_declaration ) {
                                 num_of_LF = OStr_need_2LF(&job->source, slice);
                                 OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                                 return false;
@@ -852,10 +931,14 @@ bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
                         OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                         return false;
                 case sym_type_definition:
+                        if (prev_sibling == sym_comment) {
+                                num_of_LF = OStr_need_1_or_2LF(&job->source, slice);
+                                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                                return false;
+                        }
                         if (!is_single_line(node) 
-                        | !is_single_line(sibling(-1, node)) & prev_sibling != sym_comment 
-                        | prev_sibling != sym_type_definition & prev_sibling != sym_comment
-                        ) {
+                        | !is_single_line(sibling(-1, node))
+                        | prev_sibling != sym_type_definition) {
                                 num_of_LF = OStr_need_2LF(&job->source, slice);
                                 OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                                 return false;
@@ -884,6 +967,10 @@ bool dispatcher(
         append_function_definition(nodes, slice, job)
         && append_function_declarator(nodes, slice, job)
         && append_parameter_list(nodes, slice, job)
+        && append_parameter_declaration(nodes, slice, job)
+        && append_enum_specifier(nodes, slice, job)
+        && append_union_specifier(nodes, slice, job)
+todo sym_pointer_declarator
         && append_sym_preproc_ifdef(nodes, slice, job) 
         && append_sym_translation_unit(nodes, slice, job)
         && append_sym_linkage_specification(nodes, slice, job)

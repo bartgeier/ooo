@@ -37,6 +37,7 @@ size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_need_1LF(OStr const *m, Slice const s);
 size_t OStr_need_2LF(OStr const *m, Slice const s); 
 size_t OStr_need_1_or_2LF(OStr const *m, Slice const s);
+char OStr_need_1LF_or_1Space(OStr const *m, Slice const s);
 void OStr_replace_tabs_with_one_space(OStr *B, OStr *A);
 
 char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A);
@@ -148,6 +149,17 @@ size_t OStr_need_1_or_2LF(OStr const *m, Slice const s) {
                 break;
         }
         return 2 - b;
+}
+
+char OStr_need_1LF_or_1Space(OStr const *m, Slice const s) {
+        size_t const begin = s.begin;
+        size_t const end = s.end;
+        bool const b = (s.begin > 0) ? m->at[begin -1] == '\n' : false;
+        size_t count = b;
+        for (size_t i = begin; i < end; i++) {
+                if (m->at[i] == '\n') count++;
+        }
+        return (count > 0) ? '\n' : ' ';
 }
 
 void OStr_replace_tabs_with_one_space(OStr *B, OStr *A) {
