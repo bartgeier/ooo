@@ -558,7 +558,7 @@ bool append_space(
         return true;
 }
 
-bool append_sym_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
+bool append_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -604,7 +604,7 @@ bool append_sym_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_sym_translation_unit(Nodes *nodes, Slice slice, OJob *job) {
+bool append_translation_unit(Nodes *nodes, Slice slice, OJob *job) {
         /* root of an file */
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
@@ -624,7 +624,7 @@ bool append_sym_translation_unit(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_sym_linkage_specification(Nodes *nodes, Slice slice, OJob *job) {
+bool append_linkage_specification(Nodes *nodes, Slice slice, OJob *job) {
         /* extern "C" */
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
@@ -656,7 +656,7 @@ bool append_sym_linkage_specification(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_sym_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
+bool append_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -880,6 +880,74 @@ bool append_union_specifier(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
+
+bool append_compound_statement(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_compound_statement) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* { */
+                /* { */
+                return false;
+        }
+        if (second_sibling(node)) {
+                /* {\n */
+                /*  ^  */
+                size_t num_of_LF = OStr_need_1LF(&job->source, slice);
+                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                return false;
+        }
+        if (last_sibling(node)) {
+                /* \n} */
+                /*  ^  */
+                size_t num_of_LF = OStr_need_1LF(&job->source, slice);
+                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                return false;
+        }
+        return true;
+}
+
+bool append_pointer_declarator(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_pointer_declarator) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* *alice */
+                /* *      */
+                return false;
+        }
+        /* *alice */
+        /* ^^     */
+        return false;
+}
+
+bool append_declaration(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_declaration) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* bool alice */
+                /* bool      */
+                return false;
+        }
+        if (me == anon_sym_SEMI & last_sibling(node)) {
+                /* bool alice; */
+                /*          ^^ */
+                return false;
+        }
+        /* bool alice */
+        /*     ^      */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
 // num_of_lf = OStr_at_least_1_not_3(
 //         &job->source, 
 //         slice.begin, 
@@ -970,11 +1038,15 @@ bool dispatcher(
         && append_parameter_declaration(nodes, slice, job)
         && append_enum_specifier(nodes, slice, job)
         && append_union_specifier(nodes, slice, job)
-todo sym_pointer_declarator
-        && append_sym_preproc_ifdef(nodes, slice, job) 
-        && append_sym_translation_unit(nodes, slice, job)
-        && append_sym_linkage_specification(nodes, slice, job)
-        && append_sym_declaration_list(nodes, slice, job)
+        && append_pointer_declarator(nodes, slice, job)
+        && append_compound_statement(nodes, slice, job)
+
+        && append_declaration(nodes, slice, job)
+
+        && append_preproc_ifdef(nodes, slice, job) 
+        && append_translation_unit(nodes, slice, job)
+        && append_linkage_specification(nodes, slice, job)
+        && append_declaration_list(nodes, slice, job)
         && append_roots(nodes, slice, job);
 #if 0
         && append_nothing(nodes, slice, job)
