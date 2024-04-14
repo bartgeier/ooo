@@ -557,6 +557,36 @@ bool append_space(
         }
         return true;
 }
+///////////////////////////////////////////////////////////////////////////
+
+bool preproc_include(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_preproc_include) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        /* #include "foo.h" */
+        /*         ^        */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+bool preproc_def(Nodes *nodes, Slice slice, OJob *job)  {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_preproc_def) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
 
 bool append_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
@@ -846,7 +876,7 @@ bool append_parameter_declaration(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool append_enum_specifier(Nodes *nodes, Slice slice, OJob *job) {
+bool enum_specifier(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_enum_specifier) {
@@ -857,8 +887,8 @@ bool append_enum_specifier(Nodes *nodes, Slice slice, OJob *job) {
                 /* enum       */
                 return false;
         }
-        /* enum alice */
-        /*     ^      */
+        /* enum alice { */
+        /*     ^     ^  */
         OStr_append_chr(&job->sink, ' ');
         return false;
 }
@@ -937,6 +967,11 @@ bool append_declaration(Nodes *nodes, Slice slice, OJob *job) {
                 /* bool      */
                 return false;
         }
+        if (me == anon_sym_COMMA) {
+                /* int32_t a, b = 1; */
+                /*         ^^        */
+                return false;
+        }
         if (me == anon_sym_SEMI & last_sibling(node)) {
                 /* bool alice; */
                 /*          ^^ */
@@ -948,12 +983,239 @@ bool append_declaration(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-// num_of_lf = OStr_at_least_1_not_3(
-//         &job->source, 
-//         slice.begin, 
-//         slice.end, 
-//         '\n'
-// );
+bool init_declarator(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_init_declarator) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        /* Record a = {1, 2, 3}; */
+        /*         ^ ^           */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+bool struct_specifier(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes,0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_struct_specifier) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        /* struct a { */
+        /*       ^ ^  */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+bool field_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_field_declaration_list) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        /* struct big {\nint a;\nint b;\n} */
+        /*              ^       ^       ^  */
+        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+        return false;
+}
+
+bool field_declaration(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_field_declaration) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        if (last_sibling(node)) {
+                /* uint8_t big; */
+                /*           ^^ */
+                return false;
+        }
+        /* uint8_t big; */
+        /*        ^     */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+bool initializer_list(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_initializer_list) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        if (me == anon_sym_COMMA) {
+                /* {.a = 1, */
+                /*       ^^ */
+                return false;
+        }
+        if (is_single_line(super(1, node))) {
+                if (second_sibling(node)) {
+                        /* {.a = 1, */
+                        /* ^^       */
+                        return false;
+                }
+                if (last_sibling(node)) {
+                        /* .a = 1} */
+                        /*      ^^ */
+                        return false;
+                }
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        } else {
+                if (second_sibling(node)) {
+                        /* {\n.a = 1, */
+                        /* ^^         */
+                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                        return false;
+                }
+                if (me == sym_comment & !is_single_line(node)) {
+                        /* {.a = 1,\n/* comment\n */
+                        /*         ^              */
+                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                        return false;
+                }
+                if (last_sibling(node)) {
+                        /* .a = 1\n} */
+                        /*        ^  */
+                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                        return false;
+                }
+                char ch = OStr_need_1LF_or_1Space(&job->source, slice);
+                OStr_append_chr(&job->sink, ch);
+                return false;
+        }
+        return true;
+}
+
+bool initializer_pair(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_initializer_pair) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        /* .cut = LED_ON, */
+        /*     ^ ^       */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+bool array_declarator(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol me = ooo(node);
+        if (parent != sym_array_declarator) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* a[] */
+                /* a   */
+                return false;
+        }
+        /* a[4] */
+        /* ^^^^ */
+        return false;
+}
+
+bool type_definition(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes,0);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol me = ooo(node);
+        if (parent != sym_type_definition) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* typedef enum { A, B, C } ABC; */
+                /* typedef                       */
+                return false;
+        }
+        if (me == sym_enum_specifier) {
+                /* typedef enum { A, B, C } ABC; */
+                /*        ^                      */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        }
+        if (me == alias_sym_type_identifier) {
+                /* typedef enum { A, B, C } ABC; */
+                /*                         ^     */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+
+        }
+        return true;
+}
+
+bool enumerator_list(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol me = ooo(node);
+        if (parent != sym_enumerator_list) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* enum { */
+                /*      { */
+                return false;
+        }
+        if (me == anon_sym_COMMA) {
+                /* SECTOR_A, */
+                /*        ^^ */
+                return false;
+        }
+        if (is_single_line(super(1, node))) {
+                /* SECTOR_A, SECTOR_B */
+                /*          ^         */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        } else {
+                /* SECTOR_A,\nSECTOR_B */
+                /*          ^          */
+                size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                return false;
+        }
+        return true;
+}
+
+bool enumerator(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_enumerator) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* FlashState_READY = 0 */
+                /* FlashState_READY   */
+                return false;
+        }
+        /* FlashState_READY = 0 */
+        /*                 ^ ^  */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+
 bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
@@ -1032,16 +1294,27 @@ bool dispatcher(
         OJob *job
 ) {
         return 
-        append_function_definition(nodes, slice, job)
+        preproc_include(nodes, slice, job) 
+        && preproc_def(nodes, slice, job)
+        && append_function_definition(nodes, slice, job)
         && append_function_declarator(nodes, slice, job)
         && append_parameter_list(nodes, slice, job)
         && append_parameter_declaration(nodes, slice, job)
-        && append_enum_specifier(nodes, slice, job)
+        && enum_specifier(nodes, slice, job)
         && append_union_specifier(nodes, slice, job)
         && append_pointer_declarator(nodes, slice, job)
         && append_compound_statement(nodes, slice, job)
-
         && append_declaration(nodes, slice, job)
+        && init_declarator(nodes, slice, job)
+        && struct_specifier(nodes, slice, job)
+        && field_declaration_list(nodes, slice, job)
+        && field_declaration(nodes, slice, job)
+        && initializer_list(nodes, slice, job)
+        && initializer_pair(nodes, slice, job)
+        && array_declarator(nodes, slice, job)
+        && type_definition(nodes, slice, job)
+        && enumerator_list(nodes, slice, job)
+        && enumerator(nodes, slice, job)
 
         && append_preproc_ifdef(nodes, slice, job) 
         && append_translation_unit(nodes, slice, job)
