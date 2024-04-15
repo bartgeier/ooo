@@ -3,7 +3,7 @@
 #include "tree_navigator.h"
 #include <stdio.h>
 
-
+#if 0
 bool curly_brace_compound_statement(
         Nodes *nodes,
         Slice slice,
@@ -557,6 +557,7 @@ bool append_space(
         }
         return true;
 }
+#endif
 ///////////////////////////////////////////////////////////////////////////
 
 bool preproc_include(Nodes *nodes, Slice slice, OJob *job) {
@@ -1215,6 +1216,40 @@ bool enumerator(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
+bool expression_statement(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_expression_statement) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* ach(); */
+                /* acht() */
+                return false;
+        }
+        if (last_sibling(node)) {
+                /* ach(); */
+                /*     ^^ */
+                return false;
+        }
+        return true;
+}
+
+bool call_expression(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_call_expression) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* foo(int a) */
+                /* foo        */
+                return false;
+        }
+        /* foo(int a) */
+        /*   ^^       */
+        return false;
+}
 
 bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
@@ -1315,6 +1350,8 @@ bool dispatcher(
         && type_definition(nodes, slice, job)
         && enumerator_list(nodes, slice, job)
         && enumerator(nodes, slice, job)
+        && expression_statement(nodes, slice, job)
+        && call_expression(nodes, slice, job)
 
         && append_preproc_ifdef(nodes, slice, job) 
         && append_translation_unit(nodes, slice, job)
