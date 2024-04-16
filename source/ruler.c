@@ -628,9 +628,13 @@ bool append_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
         if (me == aux_sym_preproc_if_token2 & last_sibling(node)) {
                 /* \n#endif */
                 /* ^        */
-                size_t const num_of_LF = OStr_need_1_or_2LF(&job->source, slice);
-                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
-                return false;
+                if (ts_node_start_byte(node) != ts_node_end_byte(node)) {
+                        size_t const num_of_LF = OStr_need_1_or_2LF(&job->source, slice);
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                        return false;
+                }
+                /* #ifdef __cplusplus #endif              */
+                /*                      ^ node size == 0  */
         }
         return true;
 }
@@ -824,7 +828,8 @@ bool append_parameter_list(Nodes *nodes, Slice slice, OJob *job) {
                 } else {
                         /* void foo(\nint a  */
                         /*          ^        */
-                        OStr_append_chr(&job->sink, '\n');
+                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                         return false;
                 }
         }
@@ -836,7 +841,8 @@ bool append_parameter_list(Nodes *nodes, Slice slice, OJob *job) {
                 } else {
                         /* void foo(\nint a,\nint b\n)  */
                         /*                          ^   */
-                        OStr_append_chr(&job->sink, '\n');
+                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
                         return false;
                 }
         }
@@ -1251,6 +1257,56 @@ bool call_expression(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
+static bool argument_list(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol me = ooo(node);
+        if (parent != sym_argument_list) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* function(alice */
+                /*        ^^      */
+                return false;
+        }
+        if (second_sibling(node)) {
+                if(is_single_line(ts_node_parent(node))) {
+                        /* void foo(alice  */
+                        /*         ^^      */
+                        return false;
+                } else {
+                        /* void foo(\nalice  */
+                        /*          ^        */
+                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                        return false;
+                }
+        }
+        if (me == anon_sym_COMMA) {
+                /* void foo(alice,  */
+                /*              ^^  */
+                return false;
+        }
+        if (last_sibling(node)) {
+                if(is_single_line(ts_node_parent(node))) {
+                        /* void foo(alice, bob)  */
+                        /*                   ^^  */
+                        return false;
+                } else {
+                        /* void foo(\nalice, bob\n)  */
+                        /*                       ^   */
+                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
+                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                        return false;
+                }
+        }
+        /* void foo(int a, int b) */
+        /*                ^       */
+        char const chr = OStr_need_1LF_or_1Space(&job->source, slice);
+        OStr_append_chr(&job->sink, chr);
+        return false;
+}
+
 bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
@@ -1352,11 +1408,12 @@ bool dispatcher(
         && enumerator(nodes, slice, job)
         && expression_statement(nodes, slice, job)
         && call_expression(nodes, slice, job)
+        && argument_list(nodes, slice, job)
 
         && append_preproc_ifdef(nodes, slice, job) 
         && append_translation_unit(nodes, slice, job)
         && append_linkage_specification(nodes, slice, job)
-        && append_declaration_list(nodes, slice, job)
+        //&& append_declaration_list(nodes, slice, job)
         && append_roots(nodes, slice, job);
 #if 0
         && append_nothing(nodes, slice, job)
