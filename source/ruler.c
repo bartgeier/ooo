@@ -560,7 +560,7 @@ bool append_space(
 #endif
 ///////////////////////////////////////////////////////////////////////////
 
-bool preproc_include(Nodes *nodes, Slice slice, OJob *job) {
+static bool preproc_include(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_preproc_include) {
@@ -575,7 +575,7 @@ bool preproc_include(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool preproc_def(Nodes *nodes, Slice slice, OJob *job)  {
+static bool preproc_def(Nodes *nodes, Slice slice, OJob *job)  {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_preproc_def) {
@@ -589,7 +589,7 @@ bool preproc_def(Nodes *nodes, Slice slice, OJob *job)  {
 }
 
 
-bool append_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
+static bool preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -639,7 +639,7 @@ bool append_preproc_ifdef(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_translation_unit(Nodes *nodes, Slice slice, OJob *job) {
+static bool translation_unit(Nodes *nodes, Slice slice, OJob *job) {
         /* root of an file */
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
@@ -659,7 +659,7 @@ bool append_translation_unit(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_linkage_specification(Nodes *nodes, Slice slice, OJob *job) {
+static bool linkage_specification(Nodes *nodes, Slice slice, OJob *job) {
         /* extern "C" */
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
@@ -691,7 +691,7 @@ bool append_linkage_specification(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
+static bool declaration_list(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -730,7 +730,7 @@ bool append_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_function_definition(Nodes *nodes, Slice slice, OJob *job) {
+static bool function_definition(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -776,7 +776,7 @@ bool append_function_definition(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_function_declarator(Nodes *nodes, Slice slice, OJob *job) {
+static bool function_declarator(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -802,7 +802,7 @@ bool append_function_declarator(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_parameter_list(Nodes *nodes, Slice slice, OJob *job) {
+static bool parameter_list(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -861,7 +861,7 @@ bool append_parameter_list(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_parameter_declaration(Nodes *nodes, Slice slice, OJob *job) {
+static bool parameter_declaration(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -883,7 +883,7 @@ bool append_parameter_declaration(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool enum_specifier(Nodes *nodes, Slice slice, OJob *job) {
+static bool enum_specifier(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_enum_specifier) {
@@ -900,7 +900,7 @@ bool enum_specifier(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool append_union_specifier(Nodes *nodes, Slice slice, OJob *job) {
+static bool union_specifier(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_union_specifier) {
@@ -918,7 +918,7 @@ bool append_union_specifier(Nodes *nodes, Slice slice, OJob *job) {
 }
 
 
-bool append_compound_statement(Nodes *nodes, Slice slice, OJob *job) {
+static bool compound_statement(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_compound_statement) {
@@ -946,7 +946,7 @@ bool append_compound_statement(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool append_pointer_declarator(Nodes *nodes, Slice slice, OJob *job) {
+static bool pointer_declarator(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_pointer_declarator) {
@@ -962,7 +962,7 @@ bool append_pointer_declarator(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool append_declaration(Nodes *nodes, Slice slice, OJob *job) {
+static bool declaration(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
@@ -990,7 +990,7 @@ bool append_declaration(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool init_declarator(Nodes *nodes, Slice slice, OJob *job) {
+static bool init_declarator(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_init_declarator) {
@@ -1005,7 +1005,7 @@ bool init_declarator(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool struct_specifier(Nodes *nodes, Slice slice, OJob *job) {
+static bool struct_specifier(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes,0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_struct_specifier) {
@@ -1020,7 +1020,7 @@ bool struct_specifier(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool field_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
+static bool field_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_field_declaration_list) {
@@ -1036,7 +1036,7 @@ bool field_declaration_list(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool field_declaration(Nodes *nodes, Slice slice, OJob *job) {
+static bool field_declaration(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_field_declaration) {
@@ -1056,7 +1056,7 @@ bool field_declaration(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool initializer_list(Nodes *nodes, Slice slice, OJob *job) {
+static bool initializer_list(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
@@ -1082,7 +1082,8 @@ bool initializer_list(Nodes *nodes, Slice slice, OJob *job) {
                         /*      ^^ */
                         return false;
                 }
-                OStr_append_chr(&job->sink, ' ');
+                char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
+                OStr_append_chr(&job->sink, ch);
                 return false;
         } else {
                 if (second_sibling(node)) {
@@ -1113,7 +1114,7 @@ bool initializer_list(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool initializer_pair(Nodes *nodes, Slice slice, OJob *job) {
+static bool initializer_pair(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_initializer_pair) {
@@ -1128,7 +1129,7 @@ bool initializer_pair(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool array_declarator(Nodes *nodes, Slice slice, OJob *job) {
+static bool array_declarator(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol me = ooo(node);
@@ -1145,7 +1146,7 @@ bool array_declarator(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool type_definition(Nodes *nodes, Slice slice, OJob *job) {
+static bool type_definition(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes,0);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol me = ooo(node);
@@ -1157,12 +1158,6 @@ bool type_definition(Nodes *nodes, Slice slice, OJob *job) {
                 /* typedef                       */
                 return false;
         }
-        if (me == sym_enum_specifier) {
-                /* typedef enum { A, B, C } ABC; */
-                /*        ^                      */
-                OStr_append_chr(&job->sink, ' ');
-                return false;
-        }
         if (me == alias_sym_type_identifier) {
                 /* typedef enum { A, B, C } ABC; */
                 /*                         ^     */
@@ -1170,10 +1165,18 @@ bool type_definition(Nodes *nodes, Slice slice, OJob *job) {
                 return false;
 
         }
-        return true;
+        if (last_sibling(node)) {
+                /* typedef struct { A, B, C } ABC; */
+                /*                              ^^ */
+                return false;
+        }
+        /* typedef enum { A, B, C } ABC; */
+        /*        ^                      */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
 }
 
-bool enumerator_list(Nodes *nodes, Slice slice, OJob *job) {
+static bool enumerator_list(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         TSSymbol me = ooo(node);
@@ -1205,7 +1208,7 @@ bool enumerator_list(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool enumerator(Nodes *nodes, Slice slice, OJob *job) {
+static bool enumerator(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_enumerator) {
@@ -1222,7 +1225,7 @@ bool enumerator(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool expression_statement(Nodes *nodes, Slice slice, OJob *job) {
+static bool expression_statement(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_expression_statement) {
@@ -1241,7 +1244,7 @@ bool expression_statement(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-bool call_expression(Nodes *nodes, Slice slice, OJob *job) {
+static bool call_expression(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol parent = ooo(super(1, node));
         if (parent != sym_call_expression) {
@@ -1307,7 +1310,7 @@ static bool argument_list(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
-bool append_roots(Nodes *nodes, Slice slice, OJob *job) {
+static bool roots(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
 
@@ -1387,15 +1390,15 @@ bool dispatcher(
         return 
         preproc_include(nodes, slice, job) 
         && preproc_def(nodes, slice, job)
-        && append_function_definition(nodes, slice, job)
-        && append_function_declarator(nodes, slice, job)
-        && append_parameter_list(nodes, slice, job)
-        && append_parameter_declaration(nodes, slice, job)
+        && function_definition(nodes, slice, job)
+        && function_declarator(nodes, slice, job)
+        && parameter_list(nodes, slice, job)
+        && parameter_declaration(nodes, slice, job)
         && enum_specifier(nodes, slice, job)
-        && append_union_specifier(nodes, slice, job)
-        && append_pointer_declarator(nodes, slice, job)
-        && append_compound_statement(nodes, slice, job)
-        && append_declaration(nodes, slice, job)
+        && union_specifier(nodes, slice, job)
+        && pointer_declarator(nodes, slice, job)
+        && compound_statement(nodes, slice, job)
+        && declaration(nodes, slice, job)
         && init_declarator(nodes, slice, job)
         && struct_specifier(nodes, slice, job)
         && field_declaration_list(nodes, slice, job)
@@ -1410,11 +1413,11 @@ bool dispatcher(
         && call_expression(nodes, slice, job)
         && argument_list(nodes, slice, job)
 
-        && append_preproc_ifdef(nodes, slice, job) 
-        && append_translation_unit(nodes, slice, job)
-        && append_linkage_specification(nodes, slice, job)
-        //&& append_declaration_list(nodes, slice, job)
-        && append_roots(nodes, slice, job);
+        && preproc_ifdef(nodes, slice, job) 
+        && translation_unit(nodes, slice, job)
+        && linkage_specification(nodes, slice, job)
+        && declaration_list(nodes, slice, job)
+        && roots(nodes, slice, job);
 #if 0
         && append_nothing(nodes, slice, job)
         && curly_brace_compound_statement(nodes, slice, job)
