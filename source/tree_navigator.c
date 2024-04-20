@@ -47,6 +47,18 @@ TSNode super(int i, TSNode n) {
         return n;
 }
 
+/* return -1 not found => return >= 0 found child idx */
+int find_child(TSNode const parent, TSSymbol const symbol) {
+        size_t num_of_childs = ts_node_child_count(parent);
+        for (size_t i = 0; i < num_of_childs; i++) {
+               TSNode child = ts_node_child(parent, i);
+               if (symbol == ooo(child)) {
+                       return i;
+               }
+        }
+        return -1;
+}
+
 TSNode child(unsigned int const i, TSNode n) {
         if (!ts_node_is_null(n)) {
                 n = ts_node_child(n, i);
@@ -87,6 +99,41 @@ bool first_sibling(TSNode const node) {
 bool second_sibling(TSNode const node) {
         if (!ts_node_is_null(sibling(-1, node))) {
                return ts_node_is_null(sibling(-2, node));
+        }
+        return false;
+}
+
+bool third_sibling(TSNode const node) {
+        if (!ts_node_is_null(sibling(-2, node))) {
+               return ts_node_is_null(sibling(-3, node));
+        }
+        return false;
+}
+
+bool fourth_sibling(TSNode const node) {
+        if (!ts_node_is_null(sibling(-3, node))) {
+               return ts_node_is_null(sibling(-4, node));
+        }
+        return false;
+}
+
+bool fifth_sibling(TSNode const node) {
+        if (!ts_node_is_null(sibling(-4, node))) {
+               return ts_node_is_null(sibling(-5, node));
+        }
+        return false;
+}
+
+bool sixth_sibling(TSNode const node) {
+        if (!ts_node_is_null(sibling(-5, node))) {
+               return ts_node_is_null(sibling(-6, node));
+        }
+        return false;
+}
+
+bool seventh_sibling(TSNode const node) {
+        if (!ts_node_is_null(sibling(-6, node))) {
+               return ts_node_is_null(sibling(-7, node));
         }
         return false;
 }

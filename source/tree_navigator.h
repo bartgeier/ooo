@@ -13,12 +13,18 @@ bool node_end_with_LF(TSSymbol const symbol);
 bool is_single_line(TSNode n);
 TSSymbol ooo(TSNode);
 TSNode super(int i, TSNode n); 
+int find_child(TSNode const parent, TSSymbol const symbol);
 TSNode child(unsigned int const i, TSNode n);
 TSNode child_first(TSNode n);
 TSNode child_last(TSNode n);
 TSNode sibling(int i, TSNode n);
 bool first_sibling(TSNode const node);
 bool second_sibling(TSNode const node);
+bool third_sibling(TSNode const node);
+bool fourth_sibling(TSNode const node);
+bool fifth_sibling(TSNode const node);
+bool sixth_sibling(TSNode const node);
+bool seventh_sibling(TSNode const node);
 bool last_sibling(TSNode const node);
 
 typedef struct {

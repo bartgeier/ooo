@@ -1310,6 +1310,100 @@ static bool argument_list(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
+static bool for_statement(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol me = ooo(node);
+        TSNode parent_node = super(1, node);
+        TSSymbol parent = ooo(parent_node);
+        if (parent != sym_for_statement) {
+                return true;
+        }
+        bool single_line = false;
+        int l = find_child(parent_node, anon_sym_LPAREN);
+        int r = find_child(parent_node, anon_sym_RPAREN);
+        if ( l >= 0 & r >= 0) {
+                size_t A = ts_node_start_point(child(l, parent_node)).row;
+                size_t B = ts_node_end_point(child(r, parent_node)).row;
+                single_line = ((A - B) == 0);
+        }
+        if (first_sibling(node)) {
+                /* for */
+                return false;
+        }
+        if (second_sibling(node)) {
+                /* for int i; i < max; i++)         */
+                /* for comment(int i; i < max; i++) */
+                /*    ^                             */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        }
+        if (me == anon_sym_LPAREN) {
+                if (ooo(Nodes_at(nodes, 1)) ==  anon_sym_for) {
+                        /* for ( */
+                        /*    ^  */
+                        OStr_append_chr(&job->sink, ' ');
+                        return false;
+                } else {
+                        /* for comment(int i; i < max; i++) */
+                        /*           ^^                     */
+                        return false;
+                }
+        }
+        if (me == anon_sym_SEMI) {
+                /* for (int i; i < max; i++) */
+                /*                   ^^      */
+                return false;
+        }
+        if (single_line) {
+                if (ooo(Nodes_at(nodes, 1)) == anon_sym_LPAREN) {
+                        /* for (int i; i < max; i++) */
+                        /*     ^^                    */
+                        return false;
+                }
+                if (me == anon_sym_RPAREN) {
+                        /* for (int i; i < max; i++) */
+                        /*                        ^^ */
+                        return false;
+                }
+                if (me != sym_compound_statement & ooo(Nodes_at(nodes, 1)) == anon_sym_RPAREN) {
+                        /* for (int i; i < max; i++) doSomething();  */
+                        /* for (int i; i < max; i++)\ndoSomething(); */
+                        /*                          ^                */
+                        char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
+                        OStr_append_chr(&job->sink, ch);
+                        return false;
+                }
+                if (me == sym_compound_statement) {
+                        /* for (int i; i < max; i++) { */
+                        /*                          ^  */
+                        OStr_append_chr(&job->sink, ' ');
+                        return false;
+                }
+                char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
+                OStr_append_chr(&job->sink, ch);
+                return false;
+        } else {
+                /* multi line */
+                if (ooo(Nodes_at(nodes, 1)) == anon_sym_RPAREN) {
+                        /* for (\nint i;\ni < max;\ni++\n) doSomething(); */
+                        /* for (\nint i;\ni < max;\ni++\n) {              */
+                        /*                                ^               */
+                        OStr_append_chr(&job->sink, ' ');
+                        return false;
+                }
+                if (me == sym_comment) {
+                        OStr_append_chr(&job->sink, ' ');
+                        return false;
+                }
+                /*  for (\nint i;\ni < max;\ni++\n) { */
+                /*               ^         ^     ^    */
+                size_t num_of_LF = OStr_need_1LF(&job->source, slice);
+                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                return false;
+        }
+        return true;
+}
+
 static bool roots(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSNode last_node = Nodes_at(nodes, 1); 
@@ -1412,6 +1506,7 @@ bool dispatcher(
         && expression_statement(nodes, slice, job)
         && call_expression(nodes, slice, job)
         && argument_list(nodes, slice, job)
+        && for_statement(nodes, slice, job)
 
         && preproc_ifdef(nodes, slice, job) 
         && translation_unit(nodes, slice, job)

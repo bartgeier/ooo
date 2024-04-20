@@ -1,4 +1,5 @@
 #include "indentation.h"
+#include "stdio.h"
 
 static size_t indent(OOO_Transition const transition, TSNode const node, size_t level) {
         TSSymbol me = ooo(node);
@@ -38,15 +39,15 @@ static size_t indent(OOO_Transition const transition, TSNode const node, size_t 
                         /* ----->do_something(); */
                         return ++level;
                 }
-                if (me != sym_compound_statement 
-                & me != anon_sym_for
-                & prev_sibling == anon_sym_RPAREN
-                & parent == sym_for_statement) { 
-                        /* indent after for wihtout curly brace */
-                        /* for (fuu)              */
-                        /* ----->do_something(); */
-                        return ++level;
-                }
+                // if (me != sym_compound_statement 
+                // & me != anon_sym_for
+                // & prev_sibling == anon_sym_RPAREN
+                // & parent == sym_for_statement) { 
+                //         /* indent after for wihtout curly brace */
+                //         /* for (fuu)              */
+                //         /* ----->do_something(); */
+                //         return ++level;
+                // }
                 if (me == anon_sym_RBRACE 
                 & grand != sym_switch_statement 
                 & grand != sym_case_statement
@@ -87,11 +88,17 @@ static size_t indent(OOO_Transition const transition, TSNode const node, size_t 
                         /* ')'           */
                         return --level;
                 }
+                if (parent == sym_for_statement & me == anon_sym_RPAREN) {
+                        /* for ( ) */ 
+                        /*       ^ */
+                        return --level;
+                }
                 return level;
         case OOO_NEXT:  
                 if ((me == sym_compound_statement 
                 & parent != sym_switch_statement 
-                & parent != sym_case_statement)
+                & parent != sym_case_statement
+                & parent != sym_for_statement)
                 | me == sym_enumerator_list
                 | me == sym_field_declaration_list
                 | me == sym_initializer_list) {
@@ -112,6 +119,10 @@ static size_t indent(OOO_Transition const transition, TSNode const node, size_t 
                 }
                 if (me == sym_parameter_list) {
                         /* after 'void foo('  */
+                        return ++level;
+                }
+                if (me == sym_for_statement ) {//& me == anon_sym_LPAREN) {
+                        /* after 'for ('  */
                         return ++level;
                 }
                 return level;
