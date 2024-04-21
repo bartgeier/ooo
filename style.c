@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
         result &= ooo_style("example/LogQueue.c");
         result &= ooo_style("example/PERSISTENT.h");
         result &= ooo_style("example/PERSISTENT.c");
-        result &= ooo_style("example/main.cpp");
+        result &= ooo_style("example/main.c");
         result &= ooo_style("example/spi_hardware.h");
         result &= ooo_style("example/spi_hardware.c");
 
