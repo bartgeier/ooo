@@ -1330,24 +1330,11 @@ static bool for_statement(Nodes *nodes, Slice slice, OJob *job) {
                 /* for */
                 return false;
         }
-        if (second_sibling(node)) {
-                /* for int i; i < max; i++)         */
-                /* for comment(int i; i < max; i++) */
-                /*    ^                             */
+        if (me == anon_sym_LPAREN) {
+                /* for ( */
+                /*    ^  */
                 OStr_append_chr(&job->sink, ' ');
                 return false;
-        }
-        if (me == anon_sym_LPAREN) {
-                if (ooo(Nodes_at(nodes, 1)) ==  anon_sym_for) {
-                        /* for ( */
-                        /*    ^  */
-                        OStr_append_chr(&job->sink, ' ');
-                        return false;
-                } else {
-                        /* for comment(int i; i < max; i++) */
-                        /*           ^^                     */
-                        return false;
-                }
         }
         if (me == anon_sym_SEMI) {
                 /* for (int i; i < max; i++) */
@@ -1365,27 +1352,27 @@ static bool for_statement(Nodes *nodes, Slice slice, OJob *job) {
                         /*                        ^^ */
                         return false;
                 }
-                if (me != sym_compound_statement 
-                & ooo(Nodes_at(nodes, 1)) == anon_sym_RPAREN) {
-                        /* for (int i; i < max; i++) doSomething();  */
-                        /* for (int i; i < max; i++)\ndoSomething(); */
-                        /*                          ^                */
-                        char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
-                        OStr_append_chr(&job->sink, ch);
-                        return false;
+                if (last_sibling(node)) {
+                        if (me == sym_compound_statement) {
+                                /* for (int i; i < max; i++) { */
+                                /*                          ^  */
+                                OStr_append_chr(&job->sink, ' ');
+                                return false;
+
+                        } else {
+                                /* for (int i; i < max; i++) doSomething();  */
+                                /* for (int i; i < max; i++)\ndoSomething(); */
+                                /*                          ^                */
+                                char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
+                                OStr_append_chr(&job->sink, ch);
+                                return false;
+                        }
                 }
-                if (me == sym_compound_statement) {
-                        /* for (int i; i < max; i++) { */
-                        /*                          ^  */
-                        OStr_append_chr(&job->sink, ' ');
-                        return false;
-                }
-                char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
-                OStr_append_chr(&job->sink, ch);
+                OStr_append_chr(&job->sink, ' ');
                 return false;
         } else {
                 /* multi line */
-                if (ooo(Nodes_at(nodes, 1)) == anon_sym_RPAREN) {
+                if (last_sibling(node)) {
                         /* for (\nint i;\ni < max;\ni++\n) doSomething(); */
                         /* for (\nint i;\ni < max;\ni++\n) {              */
                         /*                                ^               */
@@ -1407,41 +1394,51 @@ static bool for_statement(Nodes *nodes, Slice slice, OJob *job) {
 
 static bool while_statement(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
-        TSSymbol me = ooo(node);
-        TSNode parent_node = super(1, node);
-        TSSymbol parent = ooo(parent_node);
+        TSSymbol parent = ooo(super(1, node));
         if (parent != sym_while_statement) {
                 return true;
         }
         if (first_sibling(node)) {
+                /* while */
                 return false;
         }
-        if (me == sym_parenthesized_expression) {
-                /* while ( */
-                /*      ^  */
-                OStr_append_chr(&job->sink, ' ');
-                return false;
-        } 
-        if (ooo(Nodes_at(nodes, 1)) == anon_sym_while) {
-                /* while comment ( */
-                /*      ^          */
-                OStr_append_chr(&job->sink, ' ');
+        if (last_sibling(node)) {
+                TSSymbol me = ooo(node);
+                if (me == sym_compound_statement) {
+                        /* while (true) { */
+                        /*             ^  */
+                        OStr_append_chr(&job->sink, ' ');
+                        return false;
+                } else {
+                        /* while (true) doSomething(); */
+                        /*             ^               */
+                        char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
+                        OStr_append_chr(&job->sink, ch);
+                        return false;
+                }
+        }
+        /* while comment ( */
+        /*      ^       ^  */
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+static bool do_statement(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_do_statement) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                /* do */
                 return false;
         }
-        if (me == sym_comment & ooo(child_last(parent_node)) == sym_compound_statement) {
-                /* while comment comment ( ) comment comment { */
-                /*              ^           ^       ^          */
-                OStr_append_chr(&job->sink, ' ');
+        if (last_sibling(node)) {
+                /* while (1); */
+                /*         ^^ */
                 return false;
         }
-        if (me == sym_compound_statement) {
-                /* while ( ) { */
-                /*          ^  */
-                OStr_append_chr(&job->sink, ' ');
-                return false;
-        }
-        char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
-        OStr_append_chr(&job->sink, ch);
+        OStr_append_chr(&job->sink, ' ');
         return false;
 }
 
@@ -1471,7 +1468,7 @@ static bool parentesized_expression(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-static bool binary_espression(Nodes *nodes, Slice slice, OJob *job) {
+static bool binary_expression(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol me = ooo(node);
         TSNode parent_node = super(1, node);
@@ -1480,23 +1477,32 @@ static bool binary_espression(Nodes *nodes, Slice slice, OJob *job) {
                 return true;
         }
         if (first_sibling(node)) {
-                /* (a != 0) */
-                /*  a       */
+                /* a != 0 */
+                /* a      */
                 return false;
         }
         if (is_single_line(parent_node)) {
+                /* a != 0 */
+                /*  ^  ^  */
                 OStr_append_chr(&job->sink, ' ');
                 return false;  
         } else {
                 if (last_sibling(node)) {
+                        /* a\n!= 0 */
+                        /*      ^  */
                         OStr_append_chr(&job->sink, ' ');
                         return false;
                 }
                 if (me != sym_comment) {
+                        /* a\n!= 0 */
+                        /*  ^      */
                         /* todo comment destroys code //comment -> block comment */ 
+                        /* todo is_operator(node) would be better because of macros and comments */
                         OStr_append_chr(&job->sink, '\n');
                         return false;  
                 }
+                /* a\n!= 0 */
+                /*      ^  */
                 OStr_append_chr(&job->sink, ' ');
                 return false;
         }
@@ -1607,8 +1613,9 @@ bool dispatcher(
         && argument_list(nodes, slice, job)
         && for_statement(nodes, slice, job)
         && while_statement(nodes, slice, job)
+        && do_statement(nodes, slice, job)
         && parentesized_expression(nodes, slice, job)
-        && binary_espression(nodes, slice, job)
+        && binary_expression(nodes, slice, job)
 
         && preproc_ifdef(nodes, slice, job) 
         && translation_unit(nodes, slice, job)
