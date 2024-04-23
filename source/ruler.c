@@ -19,21 +19,21 @@ bool curly_brace_compound_statement(
         TSSymbol serial = ooo(last_node);
         TSSymbol serial_parent = ooo(super(1, last_node));
 
-        if (me == sym_compound_statement & parent == sym_function_definition) {
-                /* Curly brace for function K&R-Rule */
-                /* function(bool example)\n{         */
-                /* '\n{'                             */
-                if (is_single_line(ts_node_parent(node))) {
-                        OStr_append_chr(&job->sink, '\n'); 
-                } else {
-                        OStr_append_chr(&job->sink, ' '); 
-                }
-                return false;
+if (me == sym_compound_statement & parent == sym_function_definition) {
+        /* Curly brace for function K&R-Rule */
+        /* function(bool example)\n{         */
+        /* '\n{'                             */
+        if (is_single_line(ts_node_parent(node))) {
+                OStr_append_chr(&job->sink, '\n'); 
+        } else {
+                OStr_append_chr(&job->sink, ' '); 
         }
-        if (me == sym_compound_statement & parent != sym_function_definition 
-        & (parent == sym_compound_statement
-        | parent == sym_case_statement & prev_sibling !=  anon_sym_COLON)) {
-                /* Curly brace not function  */
+        return false;
+}
+if (me == sym_compound_statement & parent != sym_function_definition 
+& (parent == sym_compound_statement
+| parent == sym_case_statement & prev_sibling !=  anon_sym_COLON)) {
+        /* Curly brace not function  */
                 /* nested code block compound statement  */
                 /* '\n{'                                 */
                 OStr_append_chr(&job->sink, '\n'); 
@@ -1341,6 +1341,7 @@ static bool for_statement(Nodes *nodes, Slice slice, OJob *job) {
                 /*                   ^^      */
                 return false;
         }
+        /* todo comment between ) and las_sibling and then \n */
         if (single_line) {
                 if (ooo(Nodes_at(nodes, 1)) == anon_sym_LPAREN) {
                         /* for (int i; i < max; i++) */
@@ -1411,12 +1412,15 @@ static bool while_statement(Nodes *nodes, Slice slice, OJob *job) {
                         return false;
                 } else {
                         /* while (true) doSomething(); */
+                        /* while (true)\ndoSomething(); */
                         /*             ^               */
                         char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
                         OStr_append_chr(&job->sink, ch);
                         return false;
                 }
         }
+        /* todo comment between ) and las_sibling and then \n */
+
         /* while comment ( */
         /*      ^       ^  */
         OStr_append_chr(&job->sink, ' ');
@@ -1438,6 +1442,52 @@ static bool do_statement(Nodes *nodes, Slice slice, OJob *job) {
                 /*         ^^ */
                 return false;
         }
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+static bool if_statement(Nodes *nodes, Slice slice, OJob *job) {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_if_statement) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        TSSymbol me = ooo(node);
+        if (me == sym_compound_statement) {
+                /* if (true) { */
+                /*          ^  */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        } 
+        if (me == sym_else_clause) {
+                /* if (true) else */
+                /*          ^  */
+                OStr_append_chr(&job->sink, ' ');
+                return false;
+        } 
+        if (last_sibling(node)) {
+                if (me == sym_compound_statement) {
+                        /* if (true) { */
+                        /*          ^  */
+                        OStr_append_chr(&job->sink, ' ');
+                        return false;
+                } else {
+                        /* if (true) doSomething();  */
+                        /* if (true)\ndoSomething(); */
+                        /*           ^               */
+                        char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
+                        OStr_append_chr(&job->sink, ch);
+                        return false;
+                }
+        }
+        /* todo comment between ) and last_sibling and then \n */
+
+        /* if comment ( ) {                      */
+        /* if comment ( ) comment doSomething(); */
+        /*   ^       ^   ^                       */
         OStr_append_chr(&job->sink, ' ');
         return false;
 }
@@ -1614,6 +1664,7 @@ bool dispatcher(
         && for_statement(nodes, slice, job)
         && while_statement(nodes, slice, job)
         && do_statement(nodes, slice, job)
+        && if_statement(nodes, slice, job)
         && parentesized_expression(nodes, slice, job)
         && binary_expression(nodes, slice, job)
 
