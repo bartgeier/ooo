@@ -1492,6 +1492,20 @@ static bool if_statement(Nodes *nodes, Slice slice, OJob *job) {
         return false;
 }
 
+static bool else_clause(Nodes *nodes, Slice slice, OJob *job)  {
+        TSNode node = Nodes_at(nodes, 0);
+        TSSymbol parent = ooo(super(1, node));
+        if (parent != sym_else_clause) {
+                return true;
+        }
+        if (first_sibling(node)) {
+                return false;
+        }
+        OStr_append_chr(&job->sink, ' ');
+        return false;
+}
+
+
 static bool parentesized_expression(Nodes *nodes, Slice slice, OJob *job) {
         TSNode node = Nodes_at(nodes, 0);
         TSSymbol me = ooo(node);
@@ -1636,6 +1650,9 @@ bool dispatcher(
         Slice slice,
         OJob *job
 ) {
+        Relation relation = {0}; 
+        Relation_init(&relation, nodes); 
+
         return 
         preproc_include(nodes, slice, job) 
         && preproc_def(nodes, slice, job)
@@ -1667,6 +1684,7 @@ bool dispatcher(
         && if_statement(nodes, slice, job)
         && parentesized_expression(nodes, slice, job)
         && binary_expression(nodes, slice, job)
+        && else_clause(nodes, slice, job)
 
         && preproc_ifdef(nodes, slice, job) 
         && translation_unit(nodes, slice, job)

@@ -165,3 +165,18 @@ TSNode Nodes_at(Nodes *m, size_t const idx) {
         size_t i = (m->last >= idx) ? m->last - idx : m->SIZE - idx + m->last;
         return m->at[i];
 }
+
+void Relation_init(Relation *m, Nodes *nodes) {
+        m->nodes = nodes;
+        TSNode node = Nodes_at(nodes, 0);
+        m->parent = super(1, node);
+        m->num_of_childs = ts_node_child_count(m->parent);
+        for (uint32_t i = 0; i < m->num_of_childs; i++) {
+                if (node.id == ts_node_child(m->parent, i).id) {
+                        m->idx = i;
+                        return;
+                }
+        }
+        m->idx = 0;
+}
+

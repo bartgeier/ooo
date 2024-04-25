@@ -33,9 +33,19 @@ typedef struct {
         TSNode *at;
 } Nodes;
 
+
 Nodes Nodes_init(size_t const SIZE);
 void Nodes_push(Nodes *m, TSNode const node);
 TSNode Nodes_at(Nodes *m, size_t const idx);
+
+typedef struct {
+        TSNode parent;
+        uint32_t idx;
+        uint32_t num_of_childs;
+        Nodes *nodes;
+} Relation;
+
+void Relation_init(Relation *m, Nodes *nodes);
 
 #ifdef __cplusplus
 }
