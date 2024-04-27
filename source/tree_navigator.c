@@ -166,17 +166,55 @@ TSNode Nodes_at(Nodes *m, size_t const idx) {
         return m->at[i];
 }
 
-void Relation_init(Relation *m, Nodes *nodes) {
-        m->nodes = nodes;
+void Relation_init(Relation *r, Nodes *nodes) {
+        r->nodes = nodes;
         TSNode node = Nodes_at(nodes, 0);
-        m->parent = super(1, node);
-        m->num_of_childs = ts_node_child_count(m->parent);
-        for (uint32_t i = 0; i < m->num_of_childs; i++) {
-                if (node.id == ts_node_child(m->parent, i).id) {
-                        m->idx = i;
+        r->parent = super(1, node);
+        if (ts_node_is_null(r->parent)) {
+                return;
+        }
+        r->grand = super(1, r->parent);
+        r->num_of_childs = ts_node_child_count(r->parent);
+        for (uint32_t i = 0; i < r->num_of_childs; i++) {
+                if (node.id == ts_node_child(r->parent, i).id) {
+                        r->child_idx = i;
                         return;
                 }
         }
-        m->idx = 0;
+        r->child_idx = 0;
 }
 
+bool first_child(Relation const *r) {
+        return r->child_idx == 0;
+}
+
+bool last_child(Relation const *r) {
+        return r->child_idx == r->num_of_childs - 1;
+}
+
+bool after_child(TSSymbol symbol, Relation const *r) {
+        for (uint32_t i = r->child_idx - 1; i < r->num_of_childs; i--) {
+                if (ooo(ts_node_child(r->parent, i)) == symbol) {
+                        return true;
+                }
+        }
+        return false;
+}
+
+bool before_child(Relation const *r, TSSymbol symbol) {
+        for (uint32_t i = r->child_idx + 1; i < r->num_of_childs; i++) {
+                if (ooo(ts_node_child(r->parent, i)) == symbol) {
+                        return true;
+                }
+        }
+        return false;
+}
+
+bool has_child(Relation const *r, TSSymbol symbol) {
+        for (uint32_t i = 0; i < r->num_of_childs; i++) {
+                if (ooo(ts_node_child(r->parent, i)) == symbol) {
+                        return true;
+                }
+        }
+        return false;
+}
