@@ -32,6 +32,7 @@ void OStr_append_chr(OStr *m, char const chr);
 void OStr_append_number_of_chr(OStr *m, size_t n, char chr);
 void OStr_append_spaces(OStr *m, size_t n);
 void QStr_append_cstring(OStr *m, char const * str);
+bool OStr_last_has_LF(OStr const *m, Slice const s);
 size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_need_1LF(OStr const *m, Slice const s);
@@ -93,6 +94,12 @@ void QStr_append_cstring(OStr *m, char const * str) {
         for (size_t i = 0; i < strlen(str); i++) {
                 OStr_append_chr(m, str[i]);
         }
+}
+
+bool OStr_last_has_LF(OStr const *m, Slice const s) {
+        size_t const begin = s.begin;
+        bool const b = (begin > 0) ? (m->at[begin -1] == '\n')  : false;
+        return b;
 }
 
 size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr) {
@@ -172,11 +179,11 @@ size_t OStr_need_1_or_2LF(OStr const *m, Slice const s) {
         return 2 - b;
 }
 
+/* Before using this function check with OStr_last_has_LF */
 char OStr_need_1LF_or_1Space(OStr const *m, Slice const s) {
         size_t const begin = s.begin;
         size_t const end = s.end;
-        bool const b = (s.begin > 0) ? m->at[begin -1] == '\n' : false;
-        size_t count = b;
+        size_t count = 0;
         for (size_t i = begin; i < end; i++) {
                 if (m->at[i] == '\n') count++;
         }
@@ -418,3 +425,4 @@ bool OStrCursor_decrement(OStrCursor *m, OStr const *s) {
        return false; // successful
 }
 #endif
+#undef OSTR_IMPLEMENTAION

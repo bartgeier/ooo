@@ -9,11 +9,12 @@
 #include "ruler.h"
 #include "indentation.h"
 #include "node_printer.h"
-#include "OJob.h"
 #include "truncate.h"
+#include "OArg.h"
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
-#include "OArg.h"
+#define OJOB_IMPLEMENTATION
+#include "OJob.h"
 
 
 // Declare the `tree_sitter_json` function, which is

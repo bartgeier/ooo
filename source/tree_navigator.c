@@ -184,15 +184,23 @@ void Relation_init(Relation *r, Nodes *nodes) {
         r->child_idx = 0;
 }
 
-bool first_child(Relation const *r) {
+TSSymbol me(Relation const *r) {
+        return ooo(Nodes_at(r->nodes, 0));
+}
+
+TSSymbol parent(Relation const *r) {
+        return ooo(r->parent);
+}
+
+bool is_first_child(Relation const *r) {
         return r->child_idx == 0;
 }
 
-bool last_child(Relation const *r) {
+bool is_last_child(Relation const *r) {
         return r->child_idx == r->num_of_childs - 1;
 }
 
-bool after_child(TSSymbol symbol, Relation const *r) {
+bool is_after_child(TSSymbol symbol, Relation const *r) {
         for (uint32_t i = r->child_idx - 1; i < r->num_of_childs; i--) {
                 if (ooo(ts_node_child(r->parent, i)) == symbol) {
                         return true;
@@ -201,7 +209,7 @@ bool after_child(TSSymbol symbol, Relation const *r) {
         return false;
 }
 
-bool before_child(Relation const *r, TSSymbol symbol) {
+bool is_before_child(Relation const *r, TSSymbol symbol) {
         for (uint32_t i = r->child_idx + 1; i < r->num_of_childs; i++) {
                 if (ooo(ts_node_child(r->parent, i)) == symbol) {
                         return true;
@@ -217,4 +225,15 @@ bool has_child(Relation const *r, TSSymbol symbol) {
                 }
         }
         return false;
+}
+
+uint32_t me_size(Relation const *r) {
+        TSNode n = Nodes_at(r->nodes, 0);
+        return (ts_node_end_byte(n) - ts_node_start_byte(n));
+}
+
+uint32_t parent_num_of_lines(Relation const *r) {
+        TSPoint const start = ts_node_start_point(r->parent);
+        TSPoint const end = ts_node_end_point(r->parent);
+        return start.row - end.row;
 }
