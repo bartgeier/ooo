@@ -4,6 +4,8 @@
 #include "tree_navigator.h"
 #include <stdio.h>
 
+#define SYM_ERROR 65535
+
 static bool preproc_include(Relation const *node, Slice const slice, OJob *job) {
         if (parent(node) != sym_preproc_include) {
                 return true;
@@ -254,102 +256,97 @@ static bool parameter_list(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-static bool parameter_declaration(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSNode last_node = Nodes_at(nodes, 1); 
-
-        TSSymbol me = ooo(node);
-        TSSymbol parent = ooo(super(1, node));
-        TSSymbol grand = ooo(super(2, node));
-        TSSymbol prev_sibling = ooo(sibling(-1, node));
-        TSSymbol last = ooo(last_node);
-        TSSymbol serial_parent = ooo(super(1, last_node));
-        if (parent != sym_parameter_declaration) {
+static bool parameter_declaration(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_parameter_declaration) {
                 return true;
         }
-        if (first_sibling(node)) {
+        if (is_first_child(node)) {
                 /* void foo(int a, int b) */
                 /*          int             */
                 return false;
         }
-        OStr_append_chr(&job->sink, ' ');
-        return false;
-}
-
-static bool enum_specifier(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        if (parent != sym_enum_specifier) {
-                return true;
-        }
-        if (first_sibling(node)) {
-                /* enum alice */
-                /* enum       */
-                return false;
-        }
-        /* enum alice { */
-        /*     ^     ^  */
-        OStr_append_chr(&job->sink, ' ');
-        return false;
-}
-
-static bool union_specifier(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        if (parent != sym_union_specifier) {
-                return true;
-        }
-        if (first_sibling(node)) {
-                /* union alice */
-                /* union       */
-                return false;
-        }
-        /* union alice */
-        /*      ^      */
-        OStr_append_chr(&job->sink, ' ');
-        return false;
-}
-
-
-static bool compound_statement(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        if (parent != sym_compound_statement) {
-                return true;
-        }
-        if (first_sibling(node)) {
-                /* { */
-                /* { */
-                return false;
-        }
-        if (is_single_line(super(1, node))) {
-                OStr_append_chr(&job->sink, ' ');
-                return false;
-        }
-        if (second_sibling(node)) {
-                /* {\n */
-                /*  ^  */
-                size_t num_of_LF = OStr_need_1LF(&job->source, slice);
-                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
-                return false;
-        }
-        if (last_sibling(node)) {
-                /* \n} */
-                /*  ^  */
-                size_t num_of_LF = OStr_need_1LF(&job->source, slice);
-                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+        if (is_last_child(node)) {
+                /* void foo(int a, int b) */
+                /*             ^      ^   */
+                OJob_space(job);
                 return false;
         }
         return true;
 }
 
-static bool pointer_declarator(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        if (parent != sym_pointer_declarator) {
+static bool enum_specifier(Relation const *node, Slice slice, OJob *job) {
+        if (parent(node) != sym_enum_specifier) {
                 return true;
         }
-        if (first_sibling(node)) {
+        if (is_first_child(node)) {
+                /* enum alice */
+                /* enum       */
+                return false;
+        }
+        if (is_last_child(node)) {
+                /* enum alice { */
+                /*     ^     ^  */
+                OJob_space(job);
+                return false;
+        }
+        return true;
+}
+
+static bool union_specifier(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_union_specifier) {
+                return true;
+        }
+        if (is_first_child(node)) {
+                /* union alice */
+                /* union       */
+                return false;
+        }
+        if (is_last_child(node)) {
+                /* union alice */
+                /*      ^      */
+                OJob_space(job);
+                return false;
+        }
+        return true;
+}
+
+static bool compound_statement(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_compound_statement) {
+                return true;
+        }
+        if (is_first_child(node)) {
+                /* { */
+                /* { */
+                return false;
+        }
+        if (me(node) == sym_comment | me(node) == SYM_ERROR) {
+                return true;
+        }
+        if (parent_num_of_lines(node) == 0) {
+                OJob_space(job);
+                return false;
+        }
+        if (node->child_idx == 1) {
+                /* second child */
+                /* {\n */
+                /*  ^  */
+                OJob_LF(job, slice);
+                return false;
+        }
+        if (is_last_child(node)) {
+                /* \n} */
+                /*  ^  */
+                OJob_LF(job, slice);
+                return false;
+        }
+        return true;
+}
+
+static bool pointer_declarator(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_pointer_declarator) {
+                return true;
+        }
+        if (is_first_child(node)) {
                 /* *alice */
                 /* *      */
                 return false;
@@ -1068,11 +1065,11 @@ bool dispatcher(
         && function_definition(&relation, slice, job)
         && function_declarator(&relation, slice, job)
         && parameter_list(&relation, slice, job)
-        && parameter_declaration(nodes, slice, job)
-        && enum_specifier(nodes, slice, job)
-        && union_specifier(nodes, slice, job)
-        && pointer_declarator(nodes, slice, job)
-        && compound_statement(nodes, slice, job)
+        && parameter_declaration(&relation, slice, job)
+        && enum_specifier(&relation, slice, job)
+        && union_specifier(&relation, slice, job)
+        && pointer_declarator(&relation, slice, job)
+        && compound_statement(&relation, slice, job)
         && declaration(nodes, slice, job)
         && init_declarator(nodes, slice, job)
         && struct_specifier(nodes, slice, job)
