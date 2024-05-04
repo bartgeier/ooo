@@ -52,6 +52,7 @@ TSSymbol parent(Relation const *r);
 bool is_first_child(Relation const *r);
 bool is_last_child(Relation const *r);
 bool is_after_child(TSSymbol symbol, Relation const *r);
+bool is_middle_child(TSSymbol symbol_a, Relation const *r, TSSymbol symbol_b);
 bool is_before_child(Relation const *r, TSSymbol symbol);
 bool has_child(Relation const *r, TSSymbol symbol);
 uint32_t me_size(Relation const *r);

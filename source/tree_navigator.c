@@ -209,6 +209,10 @@ bool is_after_child(TSSymbol symbol, Relation const *r) {
         return false;
 }
 
+bool is_middle_child(TSSymbol symbol_a, Relation const *r, TSSymbol symbol_b) {
+        return is_after_child(symbol_a, r) && is_before_child(r, symbol_b); 
+}
+
 bool is_before_child(Relation const *r, TSSymbol symbol) {
         for (uint32_t i = r->child_idx + 1; i < r->num_of_childs; i++) {
                 if (ooo(ts_node_child(r->parent, i)) == symbol) {

@@ -537,97 +537,98 @@ static bool array_declarator(Relation const *node, Slice const slice, OJob *job)
         return false;
 }
 
-static bool type_definition(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes,0);
-        TSSymbol parent = ooo(super(1, node));
-        TSSymbol me = ooo(node);
-        if (parent != sym_type_definition) {
+static bool type_definition(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_type_definition) {
                 return true;
         }
-        if (first_sibling(node)) {
+        if (is_first_child(node)) {
                 /* typedef enum { A, B, C } ABC; */
                 /* typedef                       */
                 return false;
         }
-        if (me == alias_sym_type_identifier) {
+        if (me(node) == sym_comment | me(node) == SYM_ERROR) {
+                return true;
+        }
+        if (me(node) == alias_sym_type_identifier) {
                 /* typedef enum { A, B, C } ABC; */
                 /*                         ^     */
-                OStr_append_chr(&job->sink, ' ');
+                OJob_space(job);
                 return false;
 
         }
-        if (last_sibling(node)) {
+        if (me(node) == anon_sym_SEMI) {
                 /* typedef struct { A, B, C } ABC; */
                 /*                              ^^ */
                 return false;
         }
         /* typedef enum { A, B, C } ABC; */
-        /*        ^                      */
-        OStr_append_chr(&job->sink, ' ');
+        /*        ^                ^     */
+        OJob_space(job);
         return false;
 }
 
-static bool enumerator_list(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        TSSymbol me = ooo(node);
-        if (parent != sym_enumerator_list) {
+static bool enumerator_list(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_enumerator_list) {
                 return true;
         }
-        if (first_sibling(node)) {
+        if (is_first_child(node)) {
                 /* enum { */
                 /*      { */
                 return false;
         }
-        if (me == anon_sym_COMMA) {
+        if (me(node) == sym_comment | me(node) == SYM_ERROR) {
+                return true;
+        }
+        if (me(node) == anon_sym_COMMA) {
                 /* SECTOR_A, */
                 /*        ^^ */
                 return false;
         }
-        if (is_single_line(super(1, node))) {
-                /* SECTOR_A, SECTOR_B */
-                /*          ^         */
-                OStr_append_chr(&job->sink, ' ');
+        if (parent_num_of_lines(node) == 0) {
+                /* { SECTOR_A, SECTOR_B } */
+                /*  ^         ^        ^  */
+                OJob_space(job);
                 return false;
         } else {
-                /* SECTOR_A,\nSECTOR_B */
-                /*          ^          */
-                size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
-                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                /* {\nSECTOR_A,\nSECTOR_B\n} */
+                /*  ^          ^         ^   */
+                OJob_LF(job, slice);
                 return false;
         }
         return true;
 }
 
-static bool enumerator(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        if (parent != sym_enumerator) {
+static bool enumerator(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_enumerator) {
                 return true;
         }
-        if (first_sibling(node)) {
+        if (is_first_child(node)) {
                 /* FlashState_READY = 0 */
                 /* FlashState_READY   */
                 return false;
         }
+        if (me(node) == sym_comment | me(node) == SYM_ERROR) {
+                return true;
+        }
         /* FlashState_READY = 0 */
         /*                 ^ ^  */
-        OStr_append_chr(&job->sink, ' ');
+        OJob_space(job);
         return false;
 }
 
-static bool expression_statement(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        if (parent != sym_expression_statement) {
+static bool expression_statement(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_expression_statement) {
                 return true;
         }
-        if (first_sibling(node)) {
+        if (is_first_child(node)) {
                 /* ach(); */
                 /* acht() */
                 return false;
         }
-        if (last_sibling(node)) {
+        if (me(node) == sym_comment | me(node) == SYM_ERROR) {
+                return true;
+        }
+        if (me(node) == anon_sym_SEMI) {
                 /* ach(); */
                 /*     ^^ */
                 return false;
@@ -635,150 +636,140 @@ static bool expression_statement(Nodes *nodes, Slice slice, OJob *job) {
         return true;
 }
 
-static bool call_expression(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        if (parent != sym_call_expression) {
+static bool call_expression(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_call_expression) {
                 return true;
         }
-        if (first_sibling(node)) {
+        if (is_first_child(node)) {
                 /* foo(int a) */
                 /* foo        */
                 return false;
         }
-        /* foo(int a) */
-        /*   ^^       */
-        return false;
-}
-
-static bool argument_list(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol parent = ooo(super(1, node));
-        TSSymbol me = ooo(node);
-        if (parent != sym_argument_list) {
+        if (me(node) == sym_comment | me(node) == SYM_ERROR) {
                 return true;
         }
-        if (first_sibling(node)) {
-                /* function(alice */
-                /*        ^^      */
+        if (me(node) == sym_argument_list) {
+        /* foo(int a) */
+        /*   ^^       */
                 return false;
         }
-        if (second_sibling(node)) {
-                if(is_single_line(ts_node_parent(node))) {
+        return true;
+}
+
+static bool argument_list(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_argument_list) {
+                return true;
+        }
+        if (is_first_child(node)) {
+                /* function(alice */
+                /*         (      */
+                return false;
+        }
+        if (me(node) == sym_comment | me(node) == SYM_ERROR) {
+                return true;
+        }
+        if (node->child_idx == 1) {
+                /* second child */
+                if(parent_num_of_lines(node) == 0) {
                         /* void foo(alice  */
                         /*         ^^      */
                         return false;
                 } else {
                         /* void foo(\nalice  */
                         /*          ^        */
-                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
-                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                        OJob_LF(job, slice);
                         return false;
                 }
         }
-        if (me == anon_sym_COMMA) {
+        if (me(node) == anon_sym_COMMA) {
                 /* void foo(alice,  */
                 /*              ^^  */
                 return false;
         }
-        if (last_sibling(node)) {
-                if(is_single_line(ts_node_parent(node))) {
+        if (me(node) == anon_sym_RPAREN) {
+                if(parent_num_of_lines(node) == 0) {
                         /* void foo(alice, bob)  */
                         /*                   ^^  */
                         return false;
                 } else {
                         /* void foo(\nalice, bob\n)  */
                         /*                       ^   */
-                        size_t const num_of_LF = OStr_need_1LF(&job->source, slice);
-                        OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+                        OJob_LF(job, slice);
                         return false;
                 }
         }
-        /* void foo(int a, int b) */
-        /*                ^       */
-        char const chr = OStr_need_1LF_or_1Space(&job->source, slice);
-        OStr_append_chr(&job->sink, chr);
+        /* void foo(int a, int b)  */
+        /* void foo(int a,\nint b) */
+        /*                ^        */
+        OJob_LF_or_space(job, slice);
         return false;
 }
 
-static bool for_statement(Nodes *nodes, Slice slice, OJob *job) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol me = ooo(node);
-        TSNode parent_node = super(1, node);
-        TSSymbol parent = ooo(parent_node);
-        if (parent != sym_for_statement) {
+static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_for_statement) {
                 return true;
         }
-        bool single_line = false;
-        int l = find_child(parent_node, anon_sym_LPAREN);
-        int r = find_child(parent_node, anon_sym_RPAREN);
-        if ( l >= 0 & r >= 0) {
-                size_t A = ts_node_start_point(child(l, parent_node)).row;
-                size_t B = ts_node_end_point(child(r, parent_node)).row;
-                single_line = ((A - B) == 0);
-        }
-        if (first_sibling(node)) {
+        if (is_first_child(node)) {
                 /* for */
                 return false;
         }
-        if (me == anon_sym_LPAREN) {
+        bool single_line_PAREN = false;
+        int l = find_child(node->parent, anon_sym_LPAREN);
+        int r = find_child(node->parent, anon_sym_RPAREN);
+        if ( l >= 0 & r >= 0) {
+                size_t A = ts_node_start_point(child(l, node->parent)).row;
+                size_t B = ts_node_end_point(child(r, node->parent)).row;
+                single_line_PAREN = ((A - B) == 0);
+        }
+        if (me(node) == sym_comment | me(node) == SYM_ERROR) {
+                return true;
+        }
+        if (me(node) == anon_sym_LPAREN) {
                 /* for ( */
                 /*    ^  */
                 OStr_append_chr(&job->sink, ' ');
                 return false;
         }
-        if (me == anon_sym_SEMI) {
-                /* for (int i; i < max; i++) */
-                /*                   ^^      */
+        if (me(node) == anon_sym_SEMI) {
+                /* for (int i = 0; i < max; i++) */
+                /*                       ^^      */
                 return false;
         }
-        /* todo comment between ) and las_sibling and then \n */
-        if (single_line) {
-                if (ooo(Nodes_at(nodes, 1)) == anon_sym_LPAREN) {
-                        /* for (int i; i < max; i++) */
-                        /*     ^^                    */
-                        return false;
-                }
-                if (me == anon_sym_RPAREN) {
-                        /* for (int i; i < max; i++) */
-                        /*                        ^^ */
-                        return false;
-                }
-                if (last_sibling(node)) {
-                        if (me == sym_compound_statement) {
-                                /* for (int i; i < max; i++) { */
-                                /*                          ^  */
-                                OStr_append_chr(&job->sink, ' ');
-                                return false;
-
-                        } else {
-                                /* for (int i; i < max; i++) doSomething();  */
-                                /* for (int i; i < max; i++)\ndoSomething(); */
-                                /*                          ^                */
-                                char const ch = OStr_need_1LF_or_1Space(&job->source, slice);
-                                OStr_append_chr(&job->sink, ch);
+        if (me(node) == anon_sym_RPAREN
+        | is_middle_child(anon_sym_LPAREN, node, anon_sym_RPAREN)) {
+                if (single_line_PAREN) {
+                        if (ooo(Nodes_at(node->nodes, 1)) == anon_sym_LPAREN) {
+                                /* (int i = 0; i < max; i++) */
+                                /* ^^                        */
                                 return false;
                         }
+                        if (me(node) == anon_sym_RPAREN) {
+                                /* for (int i = 0; i < max; i++) */
+                                /*                            ^^ */
+                                return false;
+                        }
+                        /*  (\nint i; i < max; i++) */
+                        /*           ^        ^     */
+                        OJob_space(job);
+                        return false;
+                } else {
+                        /*  (\nint i;\ni < max;\ni++\n) */
+                        /*           ^         ^     ^  */
+                        OJob_LF(job, slice);
+                        return false;
                 }
-                OStr_append_chr(&job->sink, ' ');
+        }
+        if (me(node) == sym_compound_statement) {
+                /* for (\nint i;\ni < max;\ni++\n) { */
+                /*                                ^  */
+                OJob_space(job);
                 return false;
-        } else {
-                /* multi line */
-                if (last_sibling(node)) {
-                        /* for (\nint i;\ni < max;\ni++\n) doSomething(); */
-                        /* for (\nint i;\ni < max;\ni++\n) {              */
-                        /*                                ^               */
-                        OStr_append_chr(&job->sink, ' ');
-                        return false;
-                }
-                if (me == sym_comment) {
-                        OStr_append_chr(&job->sink, ' ');
-                        return false;
-                }
-                /*  for (\nint i;\ni < max;\ni++\n) { */
-                /*               ^         ^     ^    */
-                size_t num_of_LF = OStr_need_1LF(&job->source, slice);
-                OStr_append_number_of_chr(&job->sink, num_of_LF, '\n');
+        }
+        if (is_last_child(node)) {
+                /* for (int i; i < max; i++) doSomething();  */
+                /* for (int i; i < max; i++)\ndoSomething(); */
+                /*                          ^                */
+                OJob_LF_or_space(job, slice);
                 return false;
         }
         return true;
@@ -1075,13 +1066,13 @@ bool dispatcher(
         && initializer_list(&relation, slice, job)
         && initializer_pair(&relation, slice, job)
         && array_declarator(&relation, slice, job)
-        && type_definition(nodes, slice, job)
-        && enumerator_list(nodes, slice, job)
-        && enumerator(nodes, slice, job)
-        && expression_statement(nodes, slice, job)
-        && call_expression(nodes, slice, job)
-        && argument_list(nodes, slice, job)
-        && for_statement(nodes, slice, job)
+        && type_definition(&relation, slice, job)
+        && enumerator_list(&relation, slice, job)
+        && enumerator(&relation, slice, job)
+        && expression_statement(&relation, slice, job)
+        && call_expression(&relation, slice, job)
+        && argument_list(&relation, slice, job)
+        && for_statement(&relation, slice, job)
         && while_statement(nodes, slice, job)
         && do_statement(nodes, slice, job)
         && if_statement(&relation, slice, job)
