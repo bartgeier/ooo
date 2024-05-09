@@ -98,12 +98,21 @@ TSNode child(Relation const *r, unsigned int const i) {
         return r->parent;
 }
 
+TSSymbol unknown(Relation const *r) {
+        return SYM_UNKNOWN(me(r));
+}
+
 TSSymbol me(Relation const *r) {
         return ooo(Nodes_at(r->nodes, 0));
 }
 
 TSSymbol parent(Relation const *r) {
         return ooo(r->parent);
+}
+
+bool is_error(Relation const *r) {
+        TSNode n = Nodes_at(r->nodes, 0);
+        return ts_node_has_error(n) || ts_node_is_error(n);
 }
 
 bool is_first_child(Relation const *r) {

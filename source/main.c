@@ -1,3 +1,4 @@
+#include "indentation.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
@@ -7,7 +8,6 @@
 #include <getopt.h>
 #include "tree_navigator.h"
 #include "ruler.h"
-#include "indentation.h"
 #include "node_printer.h"
 #include "truncate.h"
 #include "OArg.h"
@@ -69,6 +69,7 @@ int main(int argc, char **argv) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
+                .idx = 0,
                 .cursor = {0},
                 .sink = {
                         .capacity = MEM_SIZE,
@@ -79,7 +80,8 @@ int main(int argc, char **argv) {
                         .capacity = MEM_SIZE,
                         .size = 0,
                         .at = src
-                }
+                },
+                .indentation_level = 0,
         };
 
         if (!read_txt_file(&job.source, oarg.input_path)) return 2;
@@ -132,13 +134,24 @@ int main(int argc, char **argv) {
                 job.sink.at,
                 job.sink.size
         );
+        OJob_swap(&job);
+#if 1
         ooo_set_indentation(
                 &job.cursor,
-                &job.source,
                 &job.sink,
+                &job.source,
                 ts_tree_root_node(tree),
                 0
         );
+        OJob_swap(&job);
+#else
+        ooo_set_indentation(
+                &job,
+                ts_tree_root_node(tree),
+                0
+        );
+        OJob_swap(&job);
+#endif
         OStr_clear(&job.sink);
         OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
         write_txt_file(&job.sink, oarg.output_path);

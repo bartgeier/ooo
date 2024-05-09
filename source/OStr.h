@@ -409,8 +409,7 @@ bool OStrCursor_increment(OStrCursor *m, OStr const *s) {
        }
        return false; // successful
 }
-
-
+#if 1
 bool OStrCursor_decrement(OStrCursor *m, OStr const *s) {
        if (m->idx == 0) {
                return true; // fail
@@ -424,5 +423,7 @@ bool OStrCursor_decrement(OStrCursor *m, OStr const *s) {
        }
        return false; // successful
 }
+#endif
+
 #endif
 #undef OSTR_IMPLEMENTAION

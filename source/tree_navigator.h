@@ -33,9 +33,11 @@ typedef struct {
 
 void Relation_init(Relation *r, Nodes *nodes);
 TSNode child(Relation const *r, unsigned int const i);
+TSSymbol unknown(Relation const *r);
 TSSymbol me(Relation const *r);
 uint32_t me_size(Relation const *r);
 TSSymbol parent(Relation const *r);
+bool is_error(Relation const *r);
 bool is_first_child(Relation const *r);
 bool is_last_child(Relation const *r);
 bool is_after_child(TSSymbol symbol, Relation const *r);
