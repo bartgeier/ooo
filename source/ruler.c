@@ -18,7 +18,6 @@ static bool preproc_include(Relation const *node, Slice const slice, OJob *job) 
                 /* #include "foo.h" */
                 /*         ^        */
                 OJob_space(job);
-                //OStr_append_chr(&job->sink, ' ');
                 return false;
         }
         if (me(node) == sym_system_lib_string) {
@@ -532,6 +531,8 @@ static bool initializer_list(Relation const *node, Slice const slice, OJob *job)
                         /*      ^^ */
                         return false;
                 }
+                /* {.a = 1, .b = 2}  */
+                /*         ^         */
                 OJob_space(job);
                 return false;
         } else {
@@ -547,6 +548,9 @@ static bool initializer_list(Relation const *node, Slice const slice, OJob *job)
                         OJob_LF(job, slice);
                         return false;
                 }
+                /* {.a = 1, .b = 2\n}  */
+                /* {.a = 1,\n.b = 2\n} */
+                /*         ^           */
                 OJob_LF_or_space(job, slice);
                 return false;
         }
@@ -776,7 +780,7 @@ static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
         if (me(node) == anon_sym_LPAREN) {
                 /* for ( */
                 /*    ^  */
-                OStr_append_chr(&job->sink, ' ');
+                OJob_space(job);
                 return false;
         }
         if (me(node) == anon_sym_SEMI) {

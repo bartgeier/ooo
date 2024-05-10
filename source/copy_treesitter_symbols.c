@@ -8,7 +8,6 @@
 TSLanguage *tree_sitter_c();
 
 typedef struct {
-        OStrCursor cursor;
         OStr sink;
         OStr source;
 } Job;

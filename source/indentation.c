@@ -131,88 +131,6 @@ static size_t indent(OOO_Transition const transition, TSNode const node, size_t 
         }
 }
 
-#if 1
-void ooo_set_indentation(
-        OStrCursor *cursor,
-        OStr *sink,
-        OStr *source,
-        TSNode node,
-        size_t indentation_level
-) {
-        TSSymbol me = ooo(node);
-
-        size_t cx = cursor->idx;
-        size_t sx = OStrCursor_move_to_point(
-                cursor, 
-                source, 
-                ts_node_start_point(node)
-        );
-        indentation_level = indent(OOO_ENTRY, node, indentation_level);
-        for (size_t i = cx; i < sx; i++) {
-                if (source->at[i] == '\n') {
-                        OStr_append_chr(sink, source->at[i]);
-                        OStr_append_spaces(sink, 4 * indentation_level); // <-- her plays the magic
-                } else {
-                        OStr_append_chr(sink, source->at[i]);
-                }
-        }
-
-        indentation_level = indent(OOO_NEXT, node, indentation_level);
-        for (size_t it = 0; it < ts_node_child_count(node); it++) {
-                TSNode child = ts_node_child(node, it);
-                ooo_set_indentation(
-                        cursor,
-                        sink,
-                        source,
-                        child,
-                        indentation_level
-                );
-        }
-        size_t ax = cursor->idx;
-        size_t ex = OStrCursor_move_to_point(cursor, source, ts_node_end_point(node));
-#if 0
-        if (me == sym_preproc_def 
-        | me == anon_sym_LF & ooo(super(1, node)) == sym_preproc_if) {
-                /* preproc_def node includes the \n                */
-                /* \n is then not used for indentation             */
-                /* OStrCursor_decrement set the ex index before \n */
-                OStrCursor_decrement(cursor, source);
-                ex = cursor->idx;
-        } 
-#else
-// anon_sym_LF sym_preproc_if
-        //if (ooo(super(1, node)) == sym_preproc_if) {
-        if (me == anon_sym_LF) {
-                /* preproc_def node includes the \n                */
-                /* \n is then not used for indentation             */
-                /* OStrCursor_decrement set the ex index before \n */
-                OStrCursor_decrement(cursor, source);
-                ex = cursor->idx;
-                for (size_t i = ax; i < ex; i++) {
-                        if (i == ax) OStr_append_chr(sink, 'X');
-                        if (i == ex-1) OStr_append_chr(sink, 'Y');
-                        OStr_append_chr(sink, source->at[i]);
-                }
-                return;
-        } 
-#endif
-        if (me == sym_comment) {
-                /* inside of block comment */
-                for (size_t i = ax; i < ex; i++) {
-                        if (source->at[i] == '\n') {
-                                OStr_append_chr(sink, source->at[i]);
-                                OStr_append_spaces(sink, 4 * indentation_level);
-                        } else {
-                                OStr_append_chr(sink, source->at[i]);
-                        }
-                }
-        } else {
-                for (size_t i = ax; i < ex; i++) {
-                        OStr_append_chr(sink, source->at[i]);
-                }
-        }
-}
-#else 
 void ooo_set_indentation(
         OJob *job,
         TSNode node,
@@ -222,11 +140,6 @@ void ooo_set_indentation(
 
         size_t cx = job->idx;
         size_t sx = OJob_cursor(job, ts_node_start_byte(node));
-        // size_t sx = OStrCursor_move_to_point(
-        //         &job->cursor, 
-        //         &job->source, 
-        //         ts_node_start_point(node)
-        // );
         indentation_level = indent(OOO_ENTRY, node, indentation_level);
         for (size_t i = cx; i < sx; i++) {
                 if (job->source.at[i] == '\n') {
@@ -248,38 +161,33 @@ void ooo_set_indentation(
         }
         size_t ax = job->idx;
         size_t ex = OJob_cursor(job, ts_node_end_byte(node));
-        // size_t ex = OStrCursor_move_to_point(&job->cursor, &job->source, ts_node_end_point(node));
         // anon_sym_LF sym_preproc_if
         //if (ooo(super(1, node)) == sym_preproc_if) {
         if (me == anon_sym_LF) {
                 /* preproc_def node includes the \n                */
                 /* \n is then not used for indentation             */
-                /* OStrCursor_decrement set the ex index before \n */
-                        //OStrCursor_decrement(&job->idx, &job->source);
-                        
-                        job->idx = (job->idx > 0) ? job->idx - 1 : 0;
-                        ex = job->idx;
-                        for (size_t i = ax; i < ex; i++) {
-                                if (i == ax) OStr_append_chr(&job->sink, 'X');
-                                if (i == ex-1) OStr_append_chr(&job->sink, 'Y');
+                job->idx = (job->idx > 0) ? job->idx - 1 : 0;
+                ex = job->idx;
+                for (size_t i = ax; i < ex; i++) {
+                        if (i == ax) OStr_append_chr(&job->sink, 'X');
+                        if (i == ex-1) OStr_append_chr(&job->sink, 'Y');
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                }
+                return;
+        } 
+        if (me == sym_comment) {
+                /* inside of block comment */
+                for (size_t i = ax; i < ex; i++) {
+                        if (job->source.at[i] == '\n') {
                                 OStr_append_chr(&job->sink, job->source.at[i]);
-                        }
-                        return;
-                } 
-                if (me == sym_comment) {
-                        /* inside of block comment */
-                        for (size_t i = ax; i < ex; i++) {
-                                if (job->source.at[i] == '\n') {
-                                        OStr_append_chr(&job->sink, job->source.at[i]);
-                                        OStr_append_spaces(&job->sink, 4 * indentation_level);
-                                } else {
-                                        OStr_append_chr(&job->sink, job->source.at[i]);
-                                }
-                        }
-                } else {
-                        for (size_t i = ax; i < ex; i++) {
+                                OStr_append_spaces(&job->sink, 4 * indentation_level);
+                        } else {
                                 OStr_append_chr(&job->sink, job->source.at[i]);
                         }
                 }
+        } else {
+                for (size_t i = ax; i < ex; i++) {
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                }
+        }
 }
-#endif

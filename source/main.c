@@ -70,7 +70,6 @@ int main(int argc, char **argv) {
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
                 .idx = 0,
-                .cursor = {0},
                 .sink = {
                         .capacity = MEM_SIZE,
                         .size = 0,
@@ -81,7 +80,6 @@ int main(int argc, char **argv) {
                         .size = 0,
                         .at = src
                 },
-                .indentation_level = 0,
         };
 
         if (!read_txt_file(&job.source, oarg.input_path)) return 2;
@@ -98,13 +96,12 @@ int main(int argc, char **argv) {
                 job.source.at,
                 job.source.size
         );
-        OStrCursor_reset(&job.cursor);
         ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
         OStr_move(&job.source, &job.sink);
 
         tree = ts_parser_parse_string(
                 parser,
-                NULL,
+                ,
                 job.source.at,
                 job.source.size
         );
@@ -117,7 +114,6 @@ int main(int argc, char **argv) {
                 );
                 return 0;
         }
-        OStrCursor_reset(&job.cursor);
         serial_nodes = Nodes_init(20);
         Nodes_push(&serial_nodes, ts_tree_root_node(tree));
         ooo_ruler(
@@ -127,7 +123,6 @@ int main(int argc, char **argv) {
 
         OStr_clear(&job.source);
 
-        OStrCursor_reset(&job.cursor);
         tree = ts_parser_parse_string(
                 parser,
                 NULL,
@@ -135,7 +130,7 @@ int main(int argc, char **argv) {
                 job.sink.size
         );
         OJob_swap(&job);
-#if 1
+#if 0
         ooo_set_indentation(
                 &job.cursor,
                 &job.sink,

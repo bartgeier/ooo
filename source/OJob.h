@@ -4,11 +4,9 @@
 #include "OStr.h"
 
 typedef struct {
-        OStrCursor cursor;
         size_t idx;
         OStr sink;
         OStr source;
-        size_t indentation_level;
 } OJob;
 
 void OJob_swap(OJob *m);
@@ -24,9 +22,7 @@ void OJob_LF_or_space(OJob *m, Slice const slice);
 #ifdef OJOB_IMPLEMENTATION 
 
 void OJob_swap(OJob *m) {
-        OStrCursor_reset(&m->cursor);
         m->idx = 0;
-        m->indentation_level = 0;
         m->sink.capacity ^= m->source.capacity;
         m->source.capacity ^= m->sink.capacity;
         m->sink.capacity ^= m->source.capacity;

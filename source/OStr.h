@@ -20,12 +20,6 @@ typedef struct {
         char *at;
 } OStr;
 
-typedef struct {
-        size_t row;
-        size_t column;
-        size_t idx;
-} OStrCursor;
-
 void OStr_clear(OStr *s);
 void OStr_move(OStr *B, OStr *A);
 void OStr_append_chr(OStr *m, char const chr);
@@ -37,25 +31,16 @@ size_t OStr_at_least_1(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr);
 size_t OStr_need_1LF(OStr const *m, Slice const s);
 size_t OStr_need_2LF(OStr const *m, Slice const s); 
-size_t OStr_need_0_or_1LF(OStr const *m, Slice const s);
 size_t OStr_need_1_or_2LF(OStr const *m, Slice const s);
 char OStr_need_1LF_or_1Space(OStr const *m, Slice const s);
-void OStr_replace_tabs_with_one_space(OStr *B, OStr *A);
 
+void OStr_replace_tabs_with_one_space(OStr *B, OStr *A);
 char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A);
 void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed);
 
-void OStr_remove_indentation(OStr *B, OStr *A);
-void OStrCursor_reset(OStrCursor *m);
-size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p);
-bool OStrCursor_increment(OStrCursor *m, OStr const *s);
-bool OStrCursor_decrement(OStrCursor *m, OStr const *s);
-
 #endif
 
-//#define OStr_IMPLEMENTAION
 #ifdef OSTR_IMPLEMENTAION
-
 
 void OStr_clear(OStr *m) {
         m->size = 0;
@@ -136,26 +121,6 @@ size_t OStr_at_least_1_not_3(OStr const *m, size_t begin, size_t end, char chr) 
         default:
                 return 2;
         }
-}
-
-
-size_t OStr_need_0_or_1LF(OStr const *m, Slice const s) {
-        size_t const begin = s.begin;
-        size_t const end = s.end;
-        bool const b = (s.begin > 0) ? m->at[begin -1] == '\n' : false;
-        size_t count = b;
-        for (size_t i = begin; i < end; i++) {
-                if (m->at[i] == '\n') count++;
-        }
-        switch (count) {
-        case 0:
-                return 0;
-        case 1:
-                return 1 - b;
-        default:
-                break;
-        }
-        return 1 - b;
 }
 
 size_t OStr_need_1_or_2LF(OStr const *m, Slice const s) {
@@ -320,110 +285,5 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
         B->size = x;
         OStr_clear(A);
 }
-
-/* This function is not used anymore. */
-/* replaced by truncate_spaces.h      */
-void OStr_remove_indentation(OStr *B, OStr *A) {
-        bool indentation = false;
-        size_t column = 0;
-        size_t x = 0;
-        for (size_t i = 0; i < A->size; i++) {
-                if (A->at[i] == ' ' & column == 0) {
-                       indentation = true; 
-                } 
-                if ((A->at[i] != ' ') | !indentation) {
-                        indentation = false; B->at[x++] = A->at[i];
-                }
-                column = (A->at[i] == '\n') ? 0 :  column + 1;
-        }
-        B->at[x] = 0;
-        B->size = x;
-        OStr_clear(A);
-}
-
-void OStrCursor_reset(OStrCursor *m) {
-        m->idx = 0;
-        m->column = 0;
-        m->row = 0;
-}
-
-static size_t column_end_of_line(OStrCursor *m, OStr const *s) {
-        assert(s->at[m->idx] == '\n'); // line end
-        size_t count = 0;
-        size_t idx = m->idx;
-        while (idx > 0) {
-                idx--;
-                if (s->at[idx] == '\n') break;
-                count++;
-        }
-        return count;
-}
-
-size_t OStrCursor_move_to_point(OStrCursor *m, OStr const *s, TSPoint const p) {
-        bool increment = (m->row < p.row) 
-                       | ((m->row == p.row) & (m->column < p.column));
-        bool decrement = (m->row > p.row) 
-                       | ((m->row == p.row) & (m->column > p.column));
-        if (increment) {
-                do {
-                        assert(m->idx < s->size &&  "TSPoint p increments behind the end of text.");
-                        if (s->at[m->idx] == '\n') {
-                                assert(m->row < p.row && "TSPoint p wants m to increment behind the end of line.");
-                                m->row++;
-                                m->column = 0;
-                        } else {
-                                m->column++;
-                        }
-                        m->idx++;
-                } while(m->row != p.row | m->column != p.column);
-                return m->idx;
-        }
-        if (decrement) {
-                do {
-                        m->idx--;
-                        if (s->at[m->idx] == '\n') {
-                                m->row--;
-                                m->column = column_end_of_line(m, s);
-                                if (m->row == p.row) {
-                                        assert(m->column >= p.column && "TSPoint p wants m to decrement behind the end of line.");
-                                }
-                        } else {
-                                m->column--;
-                        }
-                } while(m->row != p.row | m->column != p.column);
-                return m->idx;
-        }
-        return m->idx;
-}
-
-bool OStrCursor_increment(OStrCursor *m, OStr const *s) {
-       if (m->idx + 1 >= s->size) {
-               return true; // fail
-       }
-       m->idx++;
-       if (s->at[m->idx] == '\n') {
-               m->row++;
-               m->column = 0;
-       } else {
-               m->column++;
-       }
-       return false; // successful
-}
-#if 1
-bool OStrCursor_decrement(OStrCursor *m, OStr const *s) {
-       if (m->idx == 0) {
-               return true; // fail
-       }
-       m->idx--;
-       if (s->at[m->idx] == '\n') {
-               m->row--;
-               m->column = column_end_of_line(m, s);
-       } else {
-               m->column--;
-       }
-       return false; // successful
-}
-#endif
-
 #endif
 #undef OSTR_IMPLEMENTAION
