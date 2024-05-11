@@ -232,32 +232,6 @@ TEST(OStr, append) {
         EXPECT_TRUE(ok);
 }
 
-TEST(OStr, move) {
-        char *src = (char*)malloc(MEM_SIZE);
-        char *snk = (char*)malloc(MEM_SIZE);
-        const char *a = "The quick brown fox jumps over the lazy dog.\nIs there something.\nHello Sailor! Where are you coming frome.\nOk!";
-        for (size_t i = 0; i < strlen(a); i++) {
-                src[i] = a[i];
-        } 
-        src[strlen(a)] = 0;
-        OStr source_str = {
-                .capacity = MEM_SIZE,
-                .size = strlen(a),
-                .at = src
-        };
-        snk[0] = 0;
-        OStr sink_str = {
-                .capacity = MEM_SIZE,
-                .size = 0,
-                .at = snk
-        };
-        EXPECT_EQ(source_str.size, (size_t)strlen(a));
-        EXPECT_EQ(sink_str.size, (size_t)0);
-        OStr_move(&sink_str,&source_str);
-        EXPECT_EQ(source_str.size, (size_t)0);
-        EXPECT_EQ(sink_str.size, (size_t)strlen(a));
-}
-
 TEST(OStr, at_least_1_not_3__zero) {
         char *src = (char*)malloc(MEM_SIZE);
         const char *a = "Thequick  ";

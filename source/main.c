@@ -90,67 +90,65 @@ int main(int argc, char **argv) {
 
         TSParser *parser = ts_parser_new();
         ts_parser_set_language(parser, tree_sitter_c());
-        TSTree *tree = ts_parser_parse_string(
-                parser,
-                NULL,
-                job.source.at,
-                job.source.size
-        );
-        ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
-        OStr_move(&job.source, &job.sink);
-
-        tree = ts_parser_parse_string(
-                parser,
-                ,
-                job.source.at,
-                job.source.size
-        );
-        if (oarg.action == OARG_PRINT) { 
-                ooo_print_nodes(
-                        ts_tree_root_node(tree),
-                        oarg.print.row_begin,
-                        oarg.print.row_end, 
-                        0 // level
+        {
+                TSTree *tree = ts_parser_parse_string(
+                        parser,
+                        NULL,
+                        job.source.at,
+                        job.source.size
                 );
-                return 0;
+                ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
+                OJob_swap(&job);
+                //ts_parser_reset(parser);
+                ts_tree_delete(tree);
         }
-        serial_nodes = Nodes_init(20);
-        Nodes_push(&serial_nodes, ts_tree_root_node(tree));
-        ooo_ruler(
-                &serial_nodes,
-                &job
-        );
+        {
+                TSTree *tree = ts_parser_parse_string(
+                        parser,
+                        NULL,
+                        job.source.at,
+                        job.source.size
+                );
+                if (oarg.action == OARG_PRINT) { 
+                        ooo_print_nodes(
+                                ts_tree_root_node(tree),
+                                oarg.print.row_begin,
+                                oarg.print.row_end, 
+                                0 // tree-branch level
+                        );
+                        return 0;
+                }
+                serial_nodes = Nodes_init(20);
+                Nodes_push(&serial_nodes, ts_tree_root_node(tree));
+                ooo_ruler(
+                        &serial_nodes,
+                        &job
+                );
+                OJob_swap(&job);
+                //ts_parser_reset(parser);
+                ts_tree_delete(tree);
+        }
+        {
+                TSTree *tree = ts_parser_parse_string(
+                        parser,
+                        NULL,
+                        job.source.at,
+                        job.source.size
+                );
+                ooo_set_indentation(
+                        &job,
+                        ts_tree_root_node(tree),
+                        0
+                );
+                OJob_swap(&job);
+                OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
+                OJob_swap(&job);
+                //ts_parser_reset(parser);
+                ts_tree_delete(tree);
+        }
 
-        OStr_clear(&job.source);
-
-        tree = ts_parser_parse_string(
-                parser,
-                NULL,
-                job.sink.at,
-                job.sink.size
-        );
-        OJob_swap(&job);
-#if 0
-        ooo_set_indentation(
-                &job.cursor,
-                &job.sink,
-                &job.source,
-                ts_tree_root_node(tree),
-                0
-        );
-        OJob_swap(&job);
-#else
-        ooo_set_indentation(
-                &job,
-                ts_tree_root_node(tree),
-                0
-        );
-        OJob_swap(&job);
-#endif
-        OStr_clear(&job.sink);
-        OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
-        write_txt_file(&job.sink, oarg.output_path);
-        ts_tree_delete(tree);
+        write_txt_file(&job.source, oarg.output_path);
+        //ts_tree_delete(tree);
         ts_parser_delete(parser);
         return 0;
 }

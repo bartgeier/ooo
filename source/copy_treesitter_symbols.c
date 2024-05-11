@@ -179,21 +179,18 @@ int main(int argc, char **argv) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         Job job = {
-                .cursor = {0},
-                .sink =  {
+                .sink = {
                         .capacity = MEM_SIZE,
                         .size = 0,
                         .at = snk
                 },
-                .source =  {
+                .source = {
                         .capacity = MEM_SIZE,
                         .size = 0,
                         .at = src
                 }
         };
         if (!read_txt_file(&job.source, "./tree-sitter-c/src/parser.c")) return 1;
-        OStr_remove_indentation(&job.sink, &job.source);
-        OStr_move(&job.source, &job.sink);
         TSParser *parser = ts_parser_new();
         ts_parser_set_language(parser, tree_sitter_c());
         TSTree *tree = ts_parser_parse_string(

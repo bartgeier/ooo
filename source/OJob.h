@@ -34,6 +34,8 @@ void OJob_swap(OJob *m) {
         char *p = m->sink.at;
         m->sink.at = m->source.at;
         m->source.at = p;
+
+        OStr_clear(&m->sink);
 }
 
 size_t OJob_cursor(OJob *m, size_t const idx) {

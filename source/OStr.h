@@ -21,7 +21,6 @@ typedef struct {
 } OStr;
 
 void OStr_clear(OStr *s);
-void OStr_move(OStr *B, OStr *A);
 void OStr_append_chr(OStr *m, char const chr);
 void OStr_append_number_of_chr(OStr *m, size_t n, char chr);
 void OStr_append_spaces(OStr *m, size_t n);
@@ -47,16 +46,6 @@ void OStr_clear(OStr *m) {
         m->at[0] = 0;
 }
 
-void OStr_move(OStr *B, OStr *A) {
-        assert(A->size < B->capacity - 1);
-        for (size_t i = 0; i < A->size; i++) {
-                B->at[i] = A->at[i];
-        }
-        B->size = A->size;
-        B->at[B->size] = 0;
-        OStr_clear(A);
-}
-
 void OStr_append_chr(OStr *m, char const chr) {
         assert(m->size < m->capacity - 1);
         m->at[m->size++] = chr;
@@ -72,7 +61,6 @@ void OStr_append_number_of_chr( OStr *m, size_t n, char chr) {
 void OStr_append_spaces(OStr *m, size_t n) {
      OStr_append_number_of_chr(m, n, ' ');
 }
-
 
 
 void QStr_append_cstring(OStr *m, char const * str) {
