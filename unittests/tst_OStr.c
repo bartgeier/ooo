@@ -232,7 +232,7 @@ TEST(OStr, append) {
         EXPECT_TRUE(ok);
 }
 
-TEST(OStr, at_least_1_not_3__zero) {
+TEST(OStr, OStr_need_1_or_2LF_GOT_ONE) {
         char *src = (char*)malloc(MEM_SIZE);
         const char *a = "Thequick  ";
         //                  ^
@@ -246,15 +246,16 @@ TEST(OStr, at_least_1_not_3__zero) {
                 .size = strlen(a),
                 .at = src
         };
-        size_t x = OStr_at_least_1_not_3(&source_str, 3, 3, ' ');
+        Slice s = {.begin = 3, .end = 3};
+        size_t x = OStr_need_1_or_2LF(&source_str, s);
         EXPECT_EQ(x, (size_t)1);
 }
 
-TEST(OStr, at_least_1_not_3__one) {
+TEST(OStr, OStr_need_1_or_2LF_GOT_NONE) {
         char *src = (char*)malloc(MEM_SIZE);
-        const char *a = "The quick  ";
-        //                  ^^
-        //                  34
+        const char *a = "The\n quick  ";
+        //                    ^^
+        //                    45
         for (size_t i = 0; i < strlen(a); i++) {
                 src[i] = a[i];
         } 
@@ -264,15 +265,16 @@ TEST(OStr, at_least_1_not_3__one) {
                 .size = strlen(a),
                 .at = src
         };
-        size_t x = OStr_at_least_1_not_3(&source_str, 3, 4, ' ');
-        EXPECT_EQ(x, (size_t)1);
+        Slice s = {.begin = 4, .end = 5};
+        size_t x = OStr_need_1_or_2LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)0);
 }
 
-TEST(OStr, at_least_1_not_3__two) {
+TEST(OStr, OStr_need_1_or_2LF_GOT_TWO) {
         char *src = (char*)malloc(MEM_SIZE);
-        const char *a = "The  quick  ";
-        //                  ^ ^
-        //                  3 5
+        const char *a = "The\n\n\nquick  ";
+        //                  ^     ^
+        //                  3     6
         for (size_t i = 0; i < strlen(a); i++) {
                 src[i] = a[i];
         } 
@@ -282,10 +284,50 @@ TEST(OStr, at_least_1_not_3__two) {
                 .size = strlen(a),
                 .at = src
         };
-        size_t x = OStr_at_least_1_not_3(&source_str, 3, 5, ' ');
+        Slice s = {.begin = 3, .end = 6};
+        size_t x = OStr_need_1_or_2LF(&source_str, s);
         EXPECT_EQ(x, (size_t)2);
 }
 
+TEST(OStr, OStr_need_1_or_2LF_GOT_ANOTHER_ONE) {
+        char *src = (char*)malloc(MEM_SIZE);
+        const char *a = "The\n\n\nquick  ";
+        //                    ^   ^
+        //                    4   6
+        for (size_t i = 0; i < strlen(a); i++) {
+                src[i] = a[i];
+        } 
+        src[strlen(a)] = 0;
+        OStr source_str = {
+                .capacity = MEM_SIZE,
+                .size = strlen(a),
+                .at = src
+        };
+        Slice s = {.begin = 4, .end = 6};
+        size_t x = OStr_need_1_or_2LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)1);
+}
+
+TEST(OStr, OStr_need_1_or_2LF_GOT_ANOTHER_ONE_) {
+        char *src = (char*)malloc(MEM_SIZE);
+        const char *a = "The\n\n\n\nquick  ";
+        //                      ^   ^
+        //                      5   7
+        for (size_t i = 0; i < strlen(a); i++) {
+                src[i] = a[i];
+        } 
+        src[strlen(a)] = 0;
+        OStr source_str = {
+                .capacity = MEM_SIZE,
+                .size = strlen(a),
+                .at = src
+        };
+        Slice s = {.begin = 5, .end = 7};
+        size_t x = OStr_need_1_or_2LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)1);
+}
+
+#if 0
 TEST(OStr, at_least_1_not_3__three) {
         char *src = (char*)malloc(MEM_SIZE);
         const char *a = "The   quick  ";
@@ -303,8 +345,9 @@ TEST(OStr, at_least_1_not_3__three) {
         size_t x = OStr_at_least_1_not_3(&source_str, 3, 6, ' ');
         EXPECT_EQ(x, (size_t)2);
 }
+#endif
 
-TEST(OStr, at_least_1__zero) {
+TEST(OStr, OStr_need_1LF_GET_ONE) {
         char *src = (char*)malloc(MEM_SIZE);
         const char *a = "Thequick  ";
         //                  ^ 
@@ -318,15 +361,16 @@ TEST(OStr, at_least_1__zero) {
                 .size = strlen(a),
                 .at = src
         };
-        size_t x = OStr_at_least_1(&source_str, 3, 3, ' ');
+        Slice s = {.begin = 3, .end = 3};
+        size_t x = OStr_need_1LF(&source_str, s);
         EXPECT_EQ(x, (size_t)1);
 }
 
-TEST(OStr, at_least_1__one) {
+TEST(OStr, OStr_need_1LF_GET_ANOTHER_ONE) {
         char *src = (char*)malloc(MEM_SIZE);
-        const char *a = "The   quick  ";
-        //                  ^  ^
-        //                  3  6
+        const char *a = "The\n\n\nquick  ";
+        //                  ^     ^ 
+        //                  3     6
         for (size_t i = 0; i < strlen(a); i++) {
                 src[i] = a[i];
         } 
@@ -336,6 +380,103 @@ TEST(OStr, at_least_1__one) {
                 .size = strlen(a),
                 .at = src
         };
-        size_t x = OStr_at_least_1(&source_str, 3, 6, ' ');
-        EXPECT_EQ(x, (size_t)3);
+        Slice s = {.begin = 3, .end = 6};
+        size_t x = OStr_need_1LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)1);
+}
+
+TEST(OStr, OStr_need_1LF_GET_NONE) {
+        char *src = (char*)malloc(MEM_SIZE);
+        const char *a = "The\n\n\nquick  ";
+        //                    ^   ^
+        //                    4   6
+        for (size_t i = 0; i < strlen(a); i++) {
+                src[i] = a[i];
+        } 
+        src[strlen(a)] = 0;
+        OStr source_str = {
+                .capacity = MEM_SIZE,
+                .size = strlen(a),
+                .at = src
+        };
+        Slice s = {.begin = 4, .end = 6};
+        size_t x = OStr_need_1LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)0);
+}
+
+//size_t OStr_need_2LF(OStr const *m, Slice const s); 
+TEST(OStr, OStr_need_2LF_GOT_TWO) {
+        char *src = (char*)malloc(MEM_SIZE);
+        const char *a = "Thequick  ";
+        //                  ^ 
+        //                 3 3
+        for (size_t i = 0; i < strlen(a); i++) {
+                src[i] = a[i];
+        } 
+        src[strlen(a)] = 0;
+        OStr source_str = {
+                .capacity = MEM_SIZE,
+                .size = strlen(a),
+                .at = src
+        };
+        Slice s = {.begin = 3, .end = 3};
+        size_t x = OStr_need_2LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)2);
+}
+
+TEST(OStr, OStr_need_2LF_GET_ANOTHER_TWO) {
+        char *src = (char*)malloc(MEM_SIZE);
+        const char *a = "The\n\n\nquick  ";
+        //                  ^     ^ 
+        //                  3     6
+        for (size_t i = 0; i < strlen(a); i++) {
+                src[i] = a[i];
+        } 
+        src[strlen(a)] = 0;
+        OStr source_str = {
+                .capacity = MEM_SIZE,
+                .size = strlen(a),
+                .at = src
+        };
+        Slice s = {.begin = 3, .end = 6};
+        size_t x = OStr_need_2LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)2);
+}
+
+TEST(OStr, OStr_need_2LF_GET_ONE) {
+        char *src = (char*)malloc(MEM_SIZE);
+        const char *a = "The\n\n\nquick  ";
+        //                    ^   ^
+        //                    4   6
+        for (size_t i = 0; i < strlen(a); i++) {
+                src[i] = a[i];
+        } 
+        src[strlen(a)] = 0;
+        OStr source_str = {
+                .capacity = MEM_SIZE,
+                .size = strlen(a),
+                .at = src
+        };
+        Slice s = {.begin = 4, .end = 6};
+        size_t x = OStr_need_2LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)1);
+}
+
+TEST(OStr, OStr_need_2LF_GET_ONE_) {
+        char *src = (char*)malloc(MEM_SIZE);
+        const char *a = "The\n\n\n\nquick  ";
+        //                      ^   ^
+        //                      4   6
+        for (size_t i = 0; i < strlen(a); i++) {
+                src[i] = a[i];
+        } 
+        src[strlen(a)] = 0;
+        OStr source_str = {
+                .capacity = MEM_SIZE,
+                .size = strlen(a),
+                .at = src
+        };
+        Slice s = {.begin = 4, .end = 6};
+        size_t x = OStr_need_2LF(&source_str, s);
+        EXPECT_EQ(x, (size_t)1);
 }

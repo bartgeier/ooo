@@ -15,8 +15,13 @@ static size_t fn_column(OStr const *str, size_t idx) {
         return result;
 }
 
-/* see OStr.h remove_indentation */
-/* see also unit test for remove_indentation */
+/* source funcA();   \n         funcB();    */
+/*      start_idx ^     end_idx ^           */
+/* ---------------------------------------- */
+/* sink   funcA(); <--before trunc_space    */
+/*      sink.size ^                         */
+/* sink   funcA();\n <--after trunc_space   */
+/*        sink.size ^                       */
 static void trunc_spaces(OJob *job, size_t const start_idx, size_t const end_idx) {
         OStr *A = &job->source;
         OStr *B = &job->sink;
@@ -52,7 +57,7 @@ static void trunc_spaces(OJob *job, size_t const start_idx, size_t const end_idx
         B->size = x;
 }
 
-static void trunc_spaces_in_comment(OJob *job, size_t const start_idx, size_t const end_idx) {
+static size_t trunc_spaces_in_comment(OJob *job, size_t const start_idx, size_t const end_idx) {
         OStr *A = &job->source;
         OStr *B = &job->sink;
 
@@ -86,8 +91,10 @@ static void trunc_spaces_in_comment(OJob *job, size_t const start_idx, size_t co
                 }
                 column = (A->at[i] == '\n') ? 0 :  column + 1;
         }
+        size_t const new_comment_size = x - B->size;
         B->at[x] = 0;
         B->size = x;
+        return new_comment_size;
 }
 
 
@@ -112,11 +119,20 @@ void ooo_truncate_spaces(
         last_end_idx = job->idx;
         size_t end_idx = OJob_cursor(job, ts_node_end_byte(node));
         if (me == sym_comment) {
-                trunc_spaces_in_comment(
-                        job, 
+                size_t const new_comment_size = trunc_spaces_in_comment(
+                        job,
                         last_end_idx,
                         end_idx
                 );
+                if (job->sink.at[job->sink.size - 1] != '/') {
+                        /* line comment becomes a block comment */
+                        // a comment
+                        /* a comment */
+                        size_t const idx = job->sink.size - new_comment_size;
+                        job->sink.at[idx] = '/';
+                        job->sink.at[idx + 1] = '*';
+                        OStr_append_cstring(&job->sink, " */");
+                }
         } else {
                 for (size_t i = last_end_idx; i < end_idx; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);

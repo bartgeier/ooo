@@ -180,7 +180,7 @@ bool ooo_copy_treesitter_symbols_build(bool clean) {
         if (clean) {
                 return nob_remove("copy_treesitter_symbols");
         }
-        //if (nob_file_exists("tree-sitter-c/ooo_treesitter_symbol_ids.h")) return true;
+        if (nob_file_exists("tree-sitter-c/ooo_treesitter_symbol_ids.h")) return true;
         nob_log(NOB_INFO, "BUILD: copy_treesitter_symbols ----> copy enumerator");
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "gcc");
