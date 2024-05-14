@@ -1,6 +1,7 @@
 #include "indentation.h"
 #include "stdio.h"
 
+#if 0
 static size_t indent(OOO_Transition const transition, TSNode const node, size_t level) {
         TSSymbol me = ooo(node);
         TSSymbol parent = ooo(super(1, node));
@@ -191,3 +192,87 @@ void ooo_set_indentation(
                 }
         }
 }
+
+#else
+
+static size_t compound_statement(OOO_Transition const transition, TSNode const node, size_t level) {
+        TSSymbol me = ooo(node);
+        TSSymbol parent = ooo(super(1, node));
+        TSSymbol grand = ooo(super(2, node));
+        if (parent != sym_compound_statement) {
+               return level;
+        }
+        if (me == anon_sym_LBRACE) {
+                return level;
+        }
+        if (me == anon_sym_RBRACE) {
+                return level;
+        }
+        return ++level;
+}
+
+static size_t indent(OOO_Transition const transition, TSNode const node, size_t level) {
+        return compound_statement(transition, node, level);
+}
+
+void ooo_set_indentation(
+        OJob *job,
+        TSNode node,
+        size_t indentation_level
+) {
+        TSSymbol me = ooo(node);
+
+        size_t cx = job->idx;
+        size_t sx = OJob_cursor(job, ts_node_start_byte(node));
+        indentation_level = indent(OOO_ENTRY, node, indentation_level);
+        for (size_t i = cx; i < sx; i++) {
+                if (job->source.at[i] == '\n') {
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                        OStr_append_spaces(&job->sink, 4 * indentation_level); // <-- her plays the magic
+                } else {
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                }
+        }
+
+        //indentation_level = indent(OOO_NEXT, node, indentation_level);
+        for (size_t it = 0; it < ts_node_child_count(node); it++) {
+                TSNode child = ts_node_child(node, it);
+                ooo_set_indentation(
+                        job,
+                        child,
+                        indentation_level
+                );
+        }
+        size_t ax = job->idx;
+        size_t ex = OJob_cursor(job, ts_node_end_byte(node));
+        // anon_sym_LF sym_preproc_if
+        //if (ooo(super(1, node)) == sym_preproc_if) {
+        if (me == anon_sym_LF) {
+                /* preproc_def node includes the \n                */
+                /* \n is then not used for indentation             */
+                job->idx = (job->idx > 0) ? job->idx - 1 : 0;
+                ex = job->idx;
+                for (size_t i = ax; i < ex; i++) {
+                        if (i == ax) OStr_append_chr(&job->sink, 'X');
+                        if (i == ex-1) OStr_append_chr(&job->sink, 'Y');
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                }
+                return;
+        } 
+        if (me == sym_comment) {
+                /* inside of block comment */
+                for (size_t i = ax; i < ex; i++) {
+                        if (job->source.at[i] == '\n') {
+                                OStr_append_chr(&job->sink, job->source.at[i]);
+                                OStr_append_spaces(&job->sink, 4 * indentation_level);
+                        } else {
+                                OStr_append_chr(&job->sink, job->source.at[i]);
+                        }
+                }
+        } else {
+                for (size_t i = ax; i < ex; i++) {
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                }
+        }
+}
+#endif
