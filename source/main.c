@@ -135,9 +135,11 @@ int main(int argc, char **argv) {
                         job.source.at,
                         job.source.size
                 );
+                Nodes_clear(&serial_nodes);
+                Nodes_push(&serial_nodes, ts_tree_root_node(tree));
                 ooo_set_indentation(
                         &job,
-                        ts_tree_root_node(tree),
+                        &serial_nodes,
                         0
                 );
                 OJob_swap(&job);

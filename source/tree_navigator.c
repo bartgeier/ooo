@@ -61,6 +61,13 @@ Nodes Nodes_init(size_t const SIZE) {
         return m;
 }
 
+void Nodes_clear(Nodes *m) {
+        m->last = 0;
+        for (size_t i = 0; i < m->SIZE; i++) {
+                m->at[i] = node_null();
+        }
+}
+
 void Nodes_push(Nodes *m, TSNode const node) {
         m->last = (m->last + 1) % m->SIZE;
         m->at[m->last] = node;
@@ -108,6 +115,10 @@ TSSymbol me(Relation const *r) {
 
 TSSymbol parent(Relation const *r) {
         return ooo(r->parent);
+}
+
+TSSymbol grand(Relation const *r) {
+        return ooo(r->grand);
 }
 
 bool is_error(Relation const *r) {

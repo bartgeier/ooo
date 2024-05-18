@@ -195,36 +195,171 @@ void ooo_set_indentation(
 
 #else
 
-static size_t compound_statement(OOO_Transition const transition, TSNode const node, size_t level) {
-        TSSymbol me = ooo(node);
-        TSSymbol parent = ooo(super(1, node));
-        TSSymbol grand = ooo(super(2, node));
-        if (parent != sym_compound_statement) {
-               return level;
+static bool compound_statement(Relation const *node, size_t *level) {
+        if (parent(node) != sym_compound_statement) {
+               return false;
         }
-        if (me == anon_sym_LBRACE) {
-                return level;
+        if (grand(node) == sym_switch_statement) {
+                return true;
         }
-        if (me == anon_sym_RBRACE) {
-                return level;
+        if (me(node) == anon_sym_LBRACE) {
+                return true;
         }
-        return ++level;
+        if (me(node) == anon_sym_RBRACE) {
+                return true;
+        }
+        *level += 1;
+        return true;
 }
 
-static size_t indent(OOO_Transition const transition, TSNode const node, size_t level) {
-        return compound_statement(transition, node, level);
+static bool field_declaration_list(Relation const *node, size_t *level) {
+        if (parent(node) != sym_field_declaration_list) {
+               return false;
+        }
+        if (me(node) == anon_sym_LBRACE) {
+                return true;
+        }
+        if (me(node) == anon_sym_RBRACE) {
+                return true;
+        }
+        *level += 1;
+        return true;
+}
+
+static bool enumerator_list(Relation const *node, size_t *level) {
+        if (parent(node) != sym_enumerator_list) {
+               return false;
+        }
+        if (me(node) == anon_sym_LBRACE) {
+                return true;
+        }
+        if (me(node) == anon_sym_RBRACE) {
+                return true;
+        }
+        *level += 1;
+        return true;
+}
+
+static bool parameter_list(Relation const *node, size_t *level) {
+        if (parent(node) != sym_parameter_list) {
+               return false;
+        }
+        if (me(node) == anon_sym_LPAREN) {
+                return true;
+        }
+        if (me(node) == anon_sym_RPAREN) {
+                return true;
+        }
+        *level += 1;
+        return true;
+}
+
+static bool argument_list(Relation const *node, size_t *level) {
+        if (parent(node) != sym_argument_list) {
+               return false;
+        }
+        if (me(node) == anon_sym_LPAREN) {
+                return true;
+        }
+        if (me(node) == anon_sym_RPAREN) {
+                return true;
+        }
+        *level += 1;
+        return true;
+}
+
+static bool case_statement(Relation const *node, size_t *level) {
+        if (parent(node) != sym_case_statement) {
+                return false;
+        }
+        *level += 1;
+        return true;
+}
+
+static bool for_statement(Relation const *node, size_t *level) {
+        if (parent(node) != sym_for_statement) {
+                return false;
+        }
+        if (me(node) == anon_sym_LPAREN) {
+                return true;
+        }
+        if (me(node) == anon_sym_RPAREN) {
+                return true;
+        }
+        if (me(node) == sym_compound_statement) {
+                return true;
+        }
+        *level += 1;
+        return true;
+}
+
+static bool while_statement(Relation const *node, size_t *level) {
+        if (parent(node) != sym_while_statement) {
+                return false;
+        }
+        if (find_child(node, sym_compound_statement) < 0) {
+                *level += 1;
+                return true;
+        }
+        return true;
+}
+
+static bool if_statement(Relation const *node, size_t *level) {
+        if (parent(node) != sym_if_statement) {
+                return false;
+        }
+        if (me(node) == sym_else_clause) {
+                return true;
+        }
+        if (find_child(node, sym_compound_statement) < 0) {
+                *level += 1;
+                return true;
+        }
+        return true;
+}
+
+static bool else_clause(Relation const *node, size_t *level) {
+        if (parent(node) != sym_else_clause) {
+                return false;
+        }
+        if (find_child(node, sym_compound_statement) < 0) {
+                *level += 1;
+                return true;
+        }
+        return true;
+}
+
+static size_t indent(Nodes *nodes, size_t level) {
+        Relation node;
+        Relation_init(&node, nodes);
+        if (compound_statement(&node, &level)
+        || field_declaration_list(&node, &level)
+        || enumerator_list(&node, &level)
+        || parameter_list(&node, &level)
+        || argument_list(&node, &level)
+        || case_statement(&node, &level)
+        || for_statement(&node, &level)
+        || while_statement(&node, &level)
+        || if_statement(&node, &level)
+        || else_clause(&node, &level)
+        ) {
+                return level;
+        } else {
+                return level;
+        }
 }
 
 void ooo_set_indentation(
         OJob *job,
-        TSNode node,
+        Nodes *nodes,
         size_t indentation_level
 ) {
+        TSNode node = Nodes_at(nodes, 0);
         TSSymbol me = ooo(node);
 
         size_t cx = job->idx;
         size_t sx = OJob_cursor(job, ts_node_start_byte(node));
-        indentation_level = indent(OOO_ENTRY, node, indentation_level);
+        indentation_level = indent(nodes, indentation_level);
         for (size_t i = cx; i < sx; i++) {
                 if (job->source.at[i] == '\n') {
                         OStr_append_chr(&job->sink, job->source.at[i]);
@@ -234,12 +369,12 @@ void ooo_set_indentation(
                 }
         }
 
-        //indentation_level = indent(OOO_NEXT, node, indentation_level);
         for (size_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode child = ts_node_child(node, it);
+                Nodes_push(nodes,  child);
                 ooo_set_indentation(
                         job,
-                        child,
+                        nodes,
                         indentation_level
                 );
         }

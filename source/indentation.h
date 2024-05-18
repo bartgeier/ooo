@@ -11,10 +11,19 @@ typedef enum {
         OOO_EXIT
 } OOO_Transition;
 
+#if 0
 void ooo_set_indentation(
         OJob *job,
         TSNode node,
         size_t indentation_level
 );
+#else
+
+void ooo_set_indentation(
+        OJob *job,
+        Nodes *nodes,
+        size_t indentation_level
+);
+#endif
 
 #endif

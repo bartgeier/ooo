@@ -20,6 +20,7 @@ typedef struct {
 } Nodes;
 
 Nodes Nodes_init(size_t const SIZE);
+void Nodes_clear(Nodes *m);
 void Nodes_push(Nodes *m, TSNode const node);
 TSNode Nodes_at(Nodes *m, size_t const idx);
 
@@ -37,6 +38,7 @@ TSSymbol unknown(Relation const *r);
 TSSymbol me(Relation const *r);
 uint32_t me_size(Relation const *r);
 TSSymbol parent(Relation const *r);
+TSSymbol grand(Relation const *r);
 bool is_error(Relation const *r);
 bool is_first_child(Relation const *r);
 bool is_last_child(Relation const *r);

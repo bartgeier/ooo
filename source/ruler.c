@@ -1048,6 +1048,64 @@ static bool binary_expression(Relation const *node, Slice const slice, OJob *job
         return true;
 }
 
+static bool switch_statement(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_switch_statement) {
+                return true;
+        }
+        if (is_first_child(node)) {
+                /* switch */
+                return false;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return true;
+        }
+        if (me(node) == sym_parenthesized_expression) {
+                /* switch (true) { */
+                /*       ^         */
+                OJob_space(job);
+                return false;
+        }
+        if (me(node) == sym_compound_statement) {
+                /* switch (true) { */
+                /*              ^  */
+                OJob_space(job);
+                return false;
+        }
+        return true;
+}
+
+static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_case_statement) {
+                return true;
+        }
+        if (is_first_child(node)) {
+                /* case */
+                return false;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return true;
+        }
+        if (is_before_child(node, anon_sym_COLON)) {
+                /* case ABC: */
+                /*     ^     */
+                OJob_space(job);
+                return false;
+        }
+        if (me(node) == anon_sym_COLON) {
+                /* case ABC: */
+                /*        ^^ */
+                return false;
+        }
+        // if (me(node) == sym_compound_statement) {
+        //         /* switch (true) { */
+        //         /*              ^  */
+        //         OJob_space(job);
+        //         return false;
+        // }
+        OJob_1_or_2LF(job, slice);
+        return false;
+}
+
 static bool roots(Relation const *node, Slice const slice, OJob *job) {
         if (parent(node) != sym_translation_unit 
         & parent(node) != sym_preproc_ifdef
@@ -1112,6 +1170,8 @@ bool dispatcher(
         && parentesized_expression(&relation, slice, job)
         && binary_expression(&relation, slice, job)
         && else_clause(&relation, slice, job)
+        && switch_statement(&relation, slice, job)
+        && case_statement(&relation, slice, job)
 
         && preproc_ifdef(&relation, slice, job) 
         && translation_unit(&relation, slice, job)
