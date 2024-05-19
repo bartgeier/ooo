@@ -1144,7 +1144,6 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
         && ooo(child(node, node->child_idx - 2)) == anon_sym_COLON) {
                 /* case ABC: { .... } break; case */
                 /*                   ^            */
-                printf("hello");
                 OJob_space(job);
                 return false;
         }
@@ -1154,7 +1153,6 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
         && ooo(child(node, node->child_idx - 2)) == anon_sym_COLON) {
                 /* case ABC: { .... } return; case */
                 /*                   ^            */
-                printf("hello");
                 OJob_space(job);
                 return false;
         }
