@@ -84,7 +84,6 @@ int main(int argc, char **argv) {
 
         if (!read_txt_file(&job.source, oarg.input_path)) return 2;
 
-
         char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
 
@@ -99,7 +98,6 @@ int main(int argc, char **argv) {
                 );
                 ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
                 OJob_swap(&job);
-                //ts_parser_reset(parser);
                 ts_tree_delete(tree);
         }
         {
@@ -125,7 +123,6 @@ int main(int argc, char **argv) {
                         &job
                 );
                 OJob_swap(&job);
-                //ts_parser_reset(parser);
                 ts_tree_delete(tree);
         }
         {
@@ -145,12 +142,9 @@ int main(int argc, char **argv) {
                 OJob_swap(&job);
                 OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
                 OJob_swap(&job);
-                //ts_parser_reset(parser);
                 ts_tree_delete(tree);
         }
-
         write_txt_file(&job.source, oarg.output_path);
-        //ts_tree_delete(tree);
         ts_parser_delete(parser);
         return 0;
 }
