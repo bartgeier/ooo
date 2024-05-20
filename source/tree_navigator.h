@@ -8,7 +8,7 @@ extern "C" {
 #include "tree_sitter/api.h"
 #include "ooo_treesitter_symbol_ids.h"
 
-TSSymbol ooo(TSNode);
+TSSymbol ooo(TSNode n);
 bool is_single_line(TSNode n);
 TSNode super(int i, TSNode n); 
 TSNode sibling(int i, TSNode n);

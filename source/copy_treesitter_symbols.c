@@ -1,4 +1,3 @@
-#include <c++/11/bits/fs_fwd.h>
 #include <stdio.h>
 #include <string.h>
 #include "tree_sitter/api.h"
@@ -115,16 +114,16 @@ void generate_sym_unknown(
                         }
                         start_idx = ts_node_start_byte(first_enum_identifier);
                         end_idx = ts_node_end_byte(first_enum_identifier);
-                        QStr_append_cstring(&job->sink, "\n");
-                        QStr_append_cstring(&job->sink, "#define SYM_UNKNOWN(symbol) ");
-                        QStr_append_cstring(&job->sink, "((symbol) < "); 
+                        OStr_append_cstring(&job->sink, "\n");
+                        OStr_append_cstring(&job->sink, "#define SYM_UNKNOWN(symbol) ");
+                        OStr_append_cstring(&job->sink, "((symbol) < "); 
                         append_slice(
                                 &job->sink,
                                 &job->source,
                                 start_idx,
                                 end_idx
                         );
-                        QStr_append_cstring(&job->sink, " | (symbol) > "); 
+                        OStr_append_cstring(&job->sink, " | (symbol) > "); 
                         start_idx = ts_node_start_byte(last_enum_identifier);
                         end_idx = ts_node_end_byte(last_enum_identifier);
                         append_slice(
@@ -133,8 +132,8 @@ void generate_sym_unknown(
                                 start_idx,
                                 end_idx
                         );
-                        QStr_append_cstring(&job->sink, ")\n\n");
-                        QStr_append_cstring(&job->sink, "#endif\n");
+                        OStr_append_cstring(&job->sink, ")\n\n");
+                        OStr_append_cstring(&job->sink, "#endif\n");
                 }
         }
 }
@@ -151,11 +150,11 @@ void tree_runner(
                 size_t start_idx = ts_node_start_byte(node);
                 size_t end_idx = ts_node_end_byte(node);
                 if (equal_slice("ts_symbol_identifiers", &job->source, start_idx, end_idx)) {
-                        QStr_append_cstring(&job->sink, "#ifndef OOO_TREESITTER_SYMBOL_IDS_H\n");
-                        QStr_append_cstring(&job->sink, "#define OOO_TREESITTER_SYMBOL_IDS_H\n\n");
-                        QStr_append_cstring(&job->sink, "/* This is an automatically generated file! */\n");
-                        QStr_append_cstring(&job->sink, "/* Copyed from treesitter-c/src/parser.c    */\n");
-                        QStr_append_cstring(&job->sink, "/* with source/copy_treesitter_symbols.c    */\n\n");
+                        OStr_append_cstring(&job->sink, "#ifndef OOO_TREESITTER_SYMBOL_IDS_H\n");
+                        OStr_append_cstring(&job->sink, "#define OOO_TREESITTER_SYMBOL_IDS_H\n\n");
+                        OStr_append_cstring(&job->sink, "/* This is an automatically generated file! */\n");
+                        OStr_append_cstring(&job->sink, "/* Copyed from treesitter-c/src/parser.c    */\n");
+                        OStr_append_cstring(&job->sink, "/* with source/copy_treesitter_symbols.c    */\n\n");
                         start_idx = ts_node_start_byte(parent_node);
                         end_idx = ts_node_end_byte(parent_node);
                         append_slice(
@@ -164,7 +163,7 @@ void tree_runner(
                                 ts_node_start_byte(parent_node), // -> start idx
                                 ts_node_end_byte(parent_node)    // -> end idx
                         );
-                        QStr_append_cstring(&job->sink, ";\n");
+                        OStr_append_cstring(&job->sink, ";\n");
                 }
         }
         generate_sym_unknown(node, job);

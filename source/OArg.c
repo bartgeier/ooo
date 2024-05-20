@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <string.h>
 
 #define OARG_ASSERT(x, msg) assert((x && msg))
 
@@ -221,6 +222,10 @@ int OArg_init(OArg_t *m, int argc, char **argv) {
         int error = 0;
         error |= parse(m, argc, argv);
         error |= verify_style(m); 
+        if (m->output_path != 0
+        && strcmp(m->output_path, "*") == 0) {
+                m->output_path = m->input_path;
+        }
         return error;
 }
 

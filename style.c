@@ -61,6 +61,15 @@ bool ooo_style_A(const char *file_path) {
     return ok;
 }
 
+bool ooo_style_treesitter_symbols_ids_h() {
+    Nob_Cmd cmd = {0};
+    nob_cmd_append(&cmd, "./ooo");
+    nob_cmd_append(&cmd, "-i./tree-sitter-c/ooo_treesitter_symbol_ids.h", "-o*");
+    bool ok = nob_cmd_run_sync(cmd);
+    nob_cmd_free(cmd);
+    return ok;
+}
+
 int main(int argc, char **argv) {
     nob_log(NOB_INFO, "version 3");
     bool result = true;
@@ -116,6 +125,7 @@ int main(int argc, char **argv) {
         result &= ooo_style("unitTests/test_FlashState.cpp");
         result &= ooo_style("unitTests/test_FlashStream.cpp");
         result &= ooo_style("unitTests/test_FlashStream_read_record.cpp");
+        result &= ooo_style_treesitter_symbols_ids_h();
     }
 defer:
     if (!result) { 

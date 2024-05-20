@@ -186,6 +186,7 @@ bool ooo_copy_treesitter_symbols_build(bool clean) {
         nob_cmd_append(&cmd, "gcc");
         nob_cmd_append(&cmd, "-ggdb", "-pedantic");
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
+        nob_cmd_append(&cmd, "-I", "source/");
         nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
         nob_cmd_append(&cmd, "-o", "ooo_copy_treesitter_symbols");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a",  "tree-sitter-c/src/parser.c");;

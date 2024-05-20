@@ -117,6 +117,11 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
                 OJob_LF(job, slice);
                 return true;
         }
+        if (me(node) == anon_sym_SEMI) {
+                /* enum AE { A, B, C }; */
+                /*                   ^^ */
+                return true;
+        }
         OJob_1_or_2LF(job, slice);
         return true;
 }
@@ -138,6 +143,11 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
                         return true;
                 }
                 return false;
+        }
+        if (me(node) == anon_sym_SEMI) {
+                /* enum AE { A, B, C }; */
+                /*                   ^^ */
+                return true;
         }
         OJob_1_or_2LF(job, slice);
         return true;
@@ -171,6 +181,11 @@ static bool linkage_specification(Relation const *node, Slice const slice, OJob 
                 /* extern "C" { */
                 /*           ^  */
                 OJob_space(job);
+                return true;
+        }
+        if (me(node) == anon_sym_SEMI) {
+                /* enum AE { A, B, C }; */
+                /*                   ^^ */
                 return true;
         }
         OJob_1_or_2LF(job, slice);
@@ -217,6 +232,11 @@ static bool declaration_list(Relation const *node, Slice const slice, OJob *job)
                 /* \n}                */
                 /* ^                  */
                 OJob_LF(job, slice);
+                return true;
+        }
+        if (me(node) == anon_sym_SEMI) {
+                /* enum AE { A, B, C }; */
+                /*                   ^^ */
                 return true;
         }
         OJob_1_or_2LF(job, slice);
