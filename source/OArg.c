@@ -108,6 +108,7 @@ static int set_print(OArg_t *m, char *optarg) {
 
 static void print_help() {
         fprintf(stderr, "./ooo -i./example/hello.c -o./example/hello.c              Apply code style -i input to -o output\n");
+        fprintf(stderr, "./ooo -i./example/hello.c -o*                              Apply code style -i input to input => output file is the input file\n");
         fprintf(stderr, "./ooo -i./example/hello.c -o-                              Print code style to terminal\n");
         fprintf(stderr, "./ooo -p \"42 56\" -i./example/hello.c -o./tree_output       Print tree-sitter lines -p \"firstLine numOfLine\"\n");
         fprintf(stderr, "./ooo -p \"42 56\" -i./example/hello.c -o-                   Print tree-sitter to terminal\n");
