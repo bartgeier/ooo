@@ -87,6 +87,7 @@ int main(int argc, char **argv) {
     if (!create_directorys_ooo_gererate(clean)) nob_return_defer(false);
     if (!clean) {
         nob_log(NOB_INFO, "Examples");
+        result &= ooo_style_A("main.c");
         result &= ooo_style_A("CipActionDispatcher.c");
         result &= ooo_style_A("CipActionDispatcher.h");
         result &= ooo_style_A("Eventdetection_Heating.c");

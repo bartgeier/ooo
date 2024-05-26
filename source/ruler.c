@@ -3,6 +3,7 @@
 #include "OStr.h"
 #include "tree_navigator.h"
 #include <stdio.h>
+#include <string.h>
 
 static bool preproc_include(Relation const *node, Slice const slice, OJob *job) {
         if (parent(node) != sym_preproc_include) {
@@ -1119,6 +1120,7 @@ static bool parentesized_expression(Relation const *node, Slice const slice, OJo
         return false;
 }
 
+#if 0
 static bool binary_expression(Relation const *node, Slice const slice, OJob *job) {
         if (parent(node) != sym_binary_expression) {
                 return false;
@@ -1152,6 +1154,62 @@ static bool binary_expression(Relation const *node, Slice const slice, OJob *job
         }
         return false;
 }
+#else
+static bool binary_expression(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_binary_expression) {
+                return false;
+        }
+        if (is_first_child(node)) {
+                /* a != 0 */
+                /* a      */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (strcmp(ts_node_field_name_for_child(node->parent, node->child_idx),"operator") == 0) {
+                TSFieldId const field_left = 22;
+                TSFieldId const field_right = 32;
+
+                TSNode const left = ts_node_child_by_field_id(node->parent, field_left);
+
+                uint32_t a;
+                if (ooo(left) == sym_binary_expression) {
+                        a = ts_node_start_point(
+                                ts_node_child_by_field_id(left, field_right)
+                        ).row;
+                } else {
+                        a = ts_node_start_point(
+                                ts_node_child_by_field_id(node->parent, field_left)
+                        ).row;
+                }
+
+                uint32_t const b = ts_node_start_point(
+                        Nodes_at(node->nodes, 0)
+                ).row;
+
+                uint32_t const c = ts_node_start_point(
+                        ts_node_child_by_field_id(node->parent, field_right)
+                ).row;
+
+                if (a == b & a == c) {
+                        /* a != 0 */
+                        /*  ^     */
+                        OJob_space(job);
+                        return true;  
+                } else {
+                        /* a\n!= 0 */
+                        /*  ^      */
+                        OJob_LF(job, slice);
+                        return true;
+                }
+        }
+        /* a != 0 */
+        /*     ^  */
+        OJob_space(job);
+        return true;
+}
+#endif
 
 static bool switch_statement(Relation const *node, Slice const slice, OJob *job) {
         if (parent(node) != sym_switch_statement) {
