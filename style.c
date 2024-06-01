@@ -1,6 +1,8 @@
 #define NOB_IMPLEMENTATION
 #include "nob.h"
 #include <stdio.h>
+#include <time.h>
+#include <stdint.h>
 
 #define I_PATH "examples/Double_Page_Flash/"
 #define GENERATE_PATH "ooo_generate/Double_Page_Flash/"
@@ -70,6 +72,65 @@ bool ooo_style_treesitter_symbols_ids_h() {
     return ok;
 }
 
+#if 0
+uint64_t nanos() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t ns = (uint64_t)ts.tv_sec*1000000000 + (uint64_t)ts.tv_nsec;
+    return ns;
+}
+
+uint64_t micros() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t us = (uint64_t)ts.tv_sec*1000000 + (uint64_t)ts.tv_nsec/1000;
+    return us;
+}
+
+uint64_t millis() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t ms = (uint64_t)ts.tv_sec*1000 + (uint64_t)ts.tv_nsec/1000000;
+    return ms;
+}
+
+uint64_t seconds() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000;
+    return s;
+}
+https://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
+#else
+uint64_t nanos() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t ns = (uint64_t)ts.tv_sec*1000000000 + (uint64_t)ts.tv_nsec;
+    return ns;
+}
+
+uint64_t micros() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t us = (uint64_t)ts.tv_sec*1000000 + (uint64_t)ts.tv_nsec/1000;
+    return us;
+}
+
+uint64_t millis() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t ms = (uint64_t)ts.tv_sec*1000 + (uint64_t)ts.tv_nsec/1000000;
+    return ms;
+}
+
+uint64_t seconds() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000;
+    return s;
+}
+#endif
+
 int main(int argc, char **argv) {
     nob_log(NOB_INFO, "version 3");
     bool result = true;
@@ -87,6 +148,12 @@ int main(int argc, char **argv) {
     if (!create_directorys_ooo_gererate(clean)) nob_return_defer(false);
     if (!clean) {
         nob_log(NOB_INFO, "Examples");
+        time_t start_time = time(NULL);
+        if (start_time == ((time_t) -1)) {
+                printf("Failure to optain the start time.\n");
+                return 1;
+        }
+        uint64_t t_start = millis();
         result &= ooo_style_A("main.c");
         result &= ooo_style_A("CipActionDispatcher.c");
         result &= ooo_style_A("CipActionDispatcher.h");
@@ -127,6 +194,7 @@ int main(int argc, char **argv) {
         result &= ooo_style("unitTests/test_FlashStream.cpp");
         result &= ooo_style("unitTests/test_FlashStream_read_record.cpp");
         result &= ooo_style_treesitter_symbols_ids_h();
+        nob_log(NOB_INFO, "ooo styling duration %llu ms", millis() - t_start);
     }
 defer:
     if (!result) { 
