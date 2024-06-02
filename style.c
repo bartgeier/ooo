@@ -72,61 +72,78 @@ bool ooo_style_treesitter_symbols_ids_h() {
     return ok;
 }
 
-#if 0
+#ifdef _WIN32
+// https://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
+// https://gist.github.com/Masterxilo/eb4280e79fc0f9f5d89242053d15292d
+void clock_gettime_monotonic(struct timespec *tv) {
+    static LARGE_INTEGER ticksPerSec;
+    LARGE_INTEGER ticks;
+    if (!ticksPerSec.QuadPart) {
+        QueryPerformanceFrequency(&ticksPerSec);
+        if (!ticksPerSec.QuadPart) {
+            errno = ENOTSUP;
+            fprintf(stderr, "clock_gettime_monotonic: QueryPerformanceFrequency failed\n");
+            exit(-1);
+        }
+    }
+    QueryPerformanceCounter(&ticks);
+    tv->tv_sec = (long)(ticks.QuadPart / ticksPerSec.QuadPart);
+    tv->tv_nsec = (long)(((ticks.QuadPart % ticksPerSec.QuadPart) * 1000000000ULL) / ticksPerSec.QuadPart);
+}
+
 uint64_t nanos() {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t ns = (uint64_t)ts.tv_sec*1000000000 + (uint64_t)ts.tv_nsec;
+    clock_gettime_monotonic(&ts);
+    uint64_t ns = (uint64_t)ts.tv_sec*1000000000ULL + (uint64_t)ts.tv_nsec;
     return ns;
 }
 
 uint64_t micros() {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t us = (uint64_t)ts.tv_sec*1000000 + (uint64_t)ts.tv_nsec/1000;
+    clock_gettime_monotonic(&ts);
+    uint64_t us = (uint64_t)ts.tv_sec*1000000ULL + (uint64_t)ts.tv_nsec/1000ULL;
     return us;
 }
 
 uint64_t millis() {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t ms = (uint64_t)ts.tv_sec*1000 + (uint64_t)ts.tv_nsec/1000000;
+    clock_gettime_monotonic(&ts);
+    uint64_t ms = (uint64_t)ts.tv_sec*1000ULL + (uint64_t)ts.tv_nsec/1000000ULL;
     return ms;
 }
 
 uint64_t seconds() {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000;
+    clock_gettime_monotonic(&ts);
+    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000ULL;
     return s;
 }
-https://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
 #else
 uint64_t nanos() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t ns = (uint64_t)ts.tv_sec*1000000000 + (uint64_t)ts.tv_nsec;
+    uint64_t ns = (uint64_t)ts.tv_sec*1000000000ULL + (uint64_t)ts.tv_nsec;
     return ns;
 }
 
 uint64_t micros() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t us = (uint64_t)ts.tv_sec*1000000 + (uint64_t)ts.tv_nsec/1000;
+    uint64_t us = (uint64_t)ts.tv_sec*1000000ULL + (uint64_t)ts.tv_nsec/1000ULL;
     return us;
 }
 
 uint64_t millis() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t ms = (uint64_t)ts.tv_sec*1000 + (uint64_t)ts.tv_nsec/1000000;
+    uint64_t ms = (uint64_t)ts.tv_sec*1000ULL + (uint64_t)ts.tv_nsec/1000000ULL;
     return ms;
 }
 
 uint64_t seconds() {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000;
+    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000ULL;
     return s;
 }
 #endif
