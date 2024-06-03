@@ -1,8 +1,6 @@
 #define NOB_IMPLEMENTATION
 #include "nob.h"
 #include <stdio.h>
-#include <time.h>
-#include <stdint.h>
 
 #define I_PATH "examples/Double_Page_Flash/"
 #define GENERATE_PATH "ooo_generate/Double_Page_Flash/"
@@ -72,82 +70,6 @@ bool ooo_style_treesitter_symbols_ids_h() {
     return ok;
 }
 
-#ifdef _WIN32
-// https://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
-// https://gist.github.com/Masterxilo/eb4280e79fc0f9f5d89242053d15292d
-void clock_gettime_monotonic(struct timespec *tv) {
-    static LARGE_INTEGER ticksPerSec;
-    LARGE_INTEGER ticks;
-    if (!ticksPerSec.QuadPart) {
-        QueryPerformanceFrequency(&ticksPerSec);
-        if (!ticksPerSec.QuadPart) {
-            errno = ENOTSUP;
-            fprintf(stderr, "clock_gettime_monotonic: QueryPerformanceFrequency failed\n");
-            exit(-1);
-        }
-    }
-    QueryPerformanceCounter(&ticks);
-    tv->tv_sec = (long)(ticks.QuadPart / ticksPerSec.QuadPart);
-    tv->tv_nsec = (long)(((ticks.QuadPart % ticksPerSec.QuadPart) * 1000000000ULL) / ticksPerSec.QuadPart);
-}
-
-uint64_t nanos() {
-    struct timespec ts;
-    clock_gettime_monotonic(&ts);
-    uint64_t ns = (uint64_t)ts.tv_sec*1000000000ULL + (uint64_t)ts.tv_nsec;
-    return ns;
-}
-
-uint64_t micros() {
-    struct timespec ts;
-    clock_gettime_monotonic(&ts);
-    uint64_t us = (uint64_t)ts.tv_sec*1000000ULL + (uint64_t)ts.tv_nsec/1000ULL;
-    return us;
-}
-
-uint64_t millis() {
-    struct timespec ts;
-    clock_gettime_monotonic(&ts);
-    uint64_t ms = (uint64_t)ts.tv_sec*1000ULL + (uint64_t)ts.tv_nsec/1000000ULL;
-    return ms;
-}
-
-uint64_t seconds() {
-    struct timespec ts;
-    clock_gettime_monotonic(&ts);
-    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000ULL;
-    return s;
-}
-#else
-uint64_t nanos() {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t ns = (uint64_t)ts.tv_sec*1000000000ULL + (uint64_t)ts.tv_nsec;
-    return ns;
-}
-
-uint64_t micros() {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t us = (uint64_t)ts.tv_sec*1000000ULL + (uint64_t)ts.tv_nsec/1000ULL;
-    return us;
-}
-
-uint64_t millis() {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t ms = (uint64_t)ts.tv_sec*1000ULL + (uint64_t)ts.tv_nsec/1000000ULL;
-    return ms;
-}
-
-uint64_t seconds() {
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
-    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000ULL;
-    return s;
-}
-#endif
-
 int main(int argc, char **argv) {
     nob_log(NOB_INFO, "version 3");
     bool result = true;
@@ -170,7 +92,7 @@ int main(int argc, char **argv) {
                 printf("Failure to optain the start time.\n");
                 return 1;
         }
-        uint64_t t_start = millis();
+        uint64_t t_start = nob_millis();
         result &= ooo_style_A("main.c");
         result &= ooo_style_A("CipActionDispatcher.c");
         result &= ooo_style_A("CipActionDispatcher.h");
@@ -211,7 +133,7 @@ int main(int argc, char **argv) {
         result &= ooo_style("unitTests/test_FlashStream.cpp");
         result &= ooo_style("unitTests/test_FlashStream_read_record.cpp");
         result &= ooo_style_treesitter_symbols_ids_h();
-        nob_log(NOB_INFO, "ooo styling duration %llu ms", millis() - t_start);
+        nob_log(NOB_INFO, "ooo styling duration %llu ms", nob_millis() - t_start);
     }
 defer:
     if (!result) { 

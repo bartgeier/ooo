@@ -38,6 +38,8 @@
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
+#include <time.h>
+#include <stdint.h>
 
 #ifdef _WIN32
 #    define WIN32_LEAN_AND_MEAN
@@ -1320,5 +1322,81 @@ int closedir(DIR *dirp)
 }
 #endif // _WIN32
 // minirent.h SOURCE END ////////////////////////////////////////
+
+#ifdef _WIN32
+// https://stackoverflow.com/questions/5404277/porting-clock-gettime-to-windows
+// https://gist.github.com/Masterxilo/eb4280e79fc0f9f5d89242053d15292d
+void clock_gettime_monotonic(struct timespec *tv) {
+    static LARGE_INTEGER ticksPerSec;
+    LARGE_INTEGER ticks;
+    if (!ticksPerSec.QuadPart) {
+        QueryPerformanceFrequency(&ticksPerSec);
+        if (!ticksPerSec.QuadPart) {
+            errno = ENOTSUP;
+            fprintf(stderr, "clock_gettime_monotonic: QueryPerformanceFrequency failed\n");
+            exit(-1);
+        }
+    }
+    QueryPerformanceCounter(&ticks);
+    tv->tv_sec = (long)(ticks.QuadPart / ticksPerSec.QuadPart);
+    tv->tv_nsec = (long)(((ticks.QuadPart % ticksPerSec.QuadPart) * 1000000000ULL) / ticksPerSec.QuadPart);
+}
+
+uint64_t nob_nanos() {
+    struct timespec ts;
+    clock_gettime_monotonic(&ts);
+    uint64_t ns = (uint64_t)ts.tv_sec*1000000000ULL + (uint64_t)ts.tv_nsec;
+    return ns;
+}
+
+uint64_t nob_micros() {
+    struct timespec ts;
+    clock_gettime_monotonic(&ts);
+    uint64_t us = (uint64_t)ts.tv_sec*1000000ULL + (uint64_t)ts.tv_nsec/1000ULL;
+    return us;
+}
+
+uint64_t nob_millis() {
+    struct timespec ts;
+    clock_gettime_monotonic(&ts);
+    uint64_t ms = (uint64_t)ts.tv_sec*1000ULL + (uint64_t)ts.tv_nsec/1000000ULL;
+    return ms;
+}
+
+uint64_t nob_seconds() {
+    struct timespec ts;
+    clock_gettime_monotonic(&ts);
+    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000ULL;
+    return s;
+}
+#else
+uint64_t nob_nanos() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t ns = (uint64_t)ts.tv_sec*1000000000ULL + (uint64_t)ts.tv_nsec;
+    return ns;
+}
+
+uint64_t nob_micros() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t us = (uint64_t)ts.tv_sec*1000000ULL + (uint64_t)ts.tv_nsec/1000ULL;
+    return us;
+}
+
+uint64_t nob_millis() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t ms = (uint64_t)ts.tv_sec*1000ULL + (uint64_t)ts.tv_nsec/1000000ULL;
+    return ms;
+}
+
+uint64_t nob_seconds() {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000ULL;
+    return s;
+}
+#endif
 
 #endif
