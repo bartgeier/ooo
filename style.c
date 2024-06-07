@@ -103,6 +103,7 @@ int main(int argc, char **argv) {
         result &= ooo_style_A("drv_Bootloader.c");
         result &= ooo_style_A("drv_Bootloader.h");
         result &= ooo_style_A("if_comment_issue.c");
+        result &= ooo_style_A("drv_spi.c");
         
         nob_log(NOB_INFO, "");
         nob_log(NOB_INFO, "");

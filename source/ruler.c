@@ -478,8 +478,15 @@ static bool pointer_declarator(Relation const *node, Slice const slice, OJob *jo
         if (me(node) == sym_comment | unknown(node)) {
                 return false;
         }
-        /* *alice */
-        /* ^^     */
+        if (node->child_idx == 1) {
+                /* *const alice */
+                /* *alice */
+                /* ^^     */
+                return true;
+        }
+        /* *const alice */
+        /*       ^      */
+        OJob_space(job);
         return true;
 }
 
