@@ -93,6 +93,7 @@ int main(int argc, char **argv) {
                 return 1;
         }
         uint64_t t_start = nob_millis();
+        result &= ooo_style_A("arr.c");
         result &= ooo_style_A("main.c");
         result &= ooo_style_A("CipActionDispatcher.c");
         result &= ooo_style_A("CipActionDispatcher.h");
@@ -133,7 +134,7 @@ int main(int argc, char **argv) {
         result &= ooo_style("unitTests/test_FlashState.cpp");
         result &= ooo_style("unitTests/test_FlashStream.cpp");
         result &= ooo_style("unitTests/test_FlashStream_read_record.cpp");
-        result &= ooo_style_treesitter_symbols_ids_h();
+        //result &= ooo_style_treesitter_symbols_ids_h();
         nob_log(NOB_INFO, "ooo styling duration %llu ms", nob_millis() - t_start);
     }
 defer:

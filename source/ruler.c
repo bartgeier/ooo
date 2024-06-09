@@ -138,12 +138,9 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
         if (unknown(node)) {
                 return false;
         }
-        if (me(node) == sym_comment) {
-                if (ts_node_start_point(Nodes_at(node->nodes, 0)).column == 0) {
-                        OJob_1_or_2LF(job, slice);
-                        return true;
-                }
-                return false;
+        if (ooo(child(node, node->child_idx - 1)) == sym_function_definition) {
+                OJob_2LF(job, slice);
+                return true;
         }
         if (me(node) == anon_sym_SEMI) {
                 /* enum AE { A, B, C }; */
@@ -490,6 +487,116 @@ static bool pointer_declarator(Relation const *node, Slice const slice, OJob *jo
         return true;
 }
 
+static bool pointer_expression(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_pointer_expression) {
+                return false;
+        }
+        if (is_first_child(node)) {
+                /* &alice */
+                /* *      */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (node->child_idx == 1) {
+                /* &const alice */
+                /* &alice */
+                /* ^^     */
+                return true;
+        }
+        OJob_space(job);
+        return true;
+}
+
+static bool sizeof_expression(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_sizeof_expression) {
+                return false;
+        }
+        if (is_first_child(node)) {
+                /* sizeof */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (me(node) == sym_parenthesized_expression) {
+                /* sizeof( */
+                /*      ^^ */
+                return true;
+        }
+        return false;
+}
+
+static bool cast_expression(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_cast_expression) {
+                return false;
+        }
+        if (is_first_child(node)) {
+                /* ( */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (me(node) == sym_type_descriptor) {
+                /* (char */
+                /* ^^    */
+                return true;
+        }
+        if (me(node) == anon_sym_RPAREN) {
+                /* char)  */
+                /*    ^^  */
+                return true;
+        }
+        if (me(node) == sym_identifier) {
+                /* char)A */
+                /*     ^^ */
+                return true;
+        }
+        return false;
+}
+
+static bool type_descriptor(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_type_descriptor) {
+                return false;
+        }
+        if (is_first_child(node)) {
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (me(node) == sym_abstract_pointer_declarator) {
+                /* const char * */
+                /*           ^  */
+                OJob_space(job);
+                return true;
+        }
+        /* char const * */
+        /*     ^       */
+        /* const char * */
+        /*      ^      */
+        OJob_space(job);
+        return true;
+}
+
+static bool abstract_pointer_declarator(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_abstract_pointer_declarator) {
+                return false;
+        }
+        if (is_first_child(node)) {
+                /* * */
+                return true;
+        }
+        if (me(node) == sym_abstract_pointer_declarator) {
+                /* ** */
+                /* ^^ */
+                return true;
+        }
+        return false;
+}
+
 static bool declaration(Relation const *node, Slice const slice, OJob *job) {
         if (parent(node) != sym_declaration) {
                 return false;
@@ -670,6 +777,22 @@ static bool array_declarator(Relation const *node, Slice const slice, OJob *job)
         }
         /* a[4] */
         /* ^^^^ */
+        return true;
+}
+
+static bool subscript_designator(Relation const *node, Slice const slice, OJob *job) {
+        if (parent(node) != sym_subscript_designator) {
+                return false;
+        }
+        if (is_first_child(node)) {
+                /* [ */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        /* [4] */
+        /* ^^^ */
         return true;
 }
 
@@ -1101,7 +1224,7 @@ static bool else_clause(Relation *node, Slice slice, OJob *job)  {
 }
 
 
-static bool parentesized_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool parenthesized_expression(Relation const *node, Slice const slice, OJob *job) {
         if (parent(node) != sym_parenthesized_expression) {
                 /* (a == 0) */
                 return false;
@@ -1356,6 +1479,11 @@ bool dispatcher(
         || enum_specifier(&relation, slice, job)
         || union_specifier(&relation, slice, job)
         || pointer_declarator(&relation, slice, job)
+        || pointer_expression(&relation, slice, job)
+        || sizeof_expression(&relation, slice, job)
+        || cast_expression(&relation, slice, job)
+        || type_descriptor(&relation, slice, job)
+        || abstract_pointer_declarator(&relation, slice, job)
         || compound_statement(&relation, slice, job)
         || declaration(&relation, slice, job)
         || init_declarator(&relation, slice, job)
@@ -1365,6 +1493,7 @@ bool dispatcher(
         || initializer_list(&relation, slice, job)
         || initializer_pair(&relation, slice, job)
         || array_declarator(&relation, slice, job)
+        || subscript_designator(&relation, slice, job)
         || type_definition(&relation, slice, job)
         || enumerator_list(&relation, slice, job)
         || enumerator(&relation, slice, job)
@@ -1376,7 +1505,7 @@ bool dispatcher(
         || while_statement(&relation, slice, job)
         || do_statement(&relation, slice, job)
         || if_statement(&relation, slice, job)
-        || parentesized_expression(&relation, slice, job)
+        || parenthesized_expression(&relation, slice, job)
         || binary_expression(&relation, slice, job)
         || else_clause(&relation, slice, job)
         || switch_statement(&relation, slice, job)
