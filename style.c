@@ -94,6 +94,10 @@ int main(int argc, char **argv) {
         }
         uint64_t t_start = nob_millis();
         result &= ooo_style_A("arr.c");
+        result &= ooo_style_A("conway.c");
+        result &= ooo_style_A("dhyang.c");
+        result &= ooo_style_A("donut.c");
+        result &= ooo_style_A("Don_Yang.c");
         result &= ooo_style_A("main.c");
         result &= ooo_style_A("CipActionDispatcher.c");
         result &= ooo_style_A("CipActionDispatcher.h");
