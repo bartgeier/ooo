@@ -6,9 +6,6 @@
 #include <string.h>
 
 static bool preproc_include(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_preproc_include) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -32,9 +29,6 @@ static bool preproc_include(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool preproc_def(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_preproc_def) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* #define */
                 return true;
@@ -58,9 +52,6 @@ static bool preproc_def(Relation const *node, Slice const slice, OJob *job) {
 }
 
 static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_preproc_ifdef) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* #ifndef or #ifdef */
                 return true;
@@ -129,9 +120,6 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
 
 static bool translation_unit(Relation const *node, Slice const slice, OJob *job) {
         /* root of an file */
-        if (parent(node) != sym_translation_unit) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -152,9 +140,6 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
 }
 
 static bool linkage_specification(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_linkage_specification) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* extern */
                 return true;
@@ -191,9 +176,6 @@ static bool linkage_specification(Relation const *node, Slice const slice, OJob 
 }
 
 static bool declaration_list(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_declaration_list) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -242,9 +224,6 @@ static bool declaration_list(Relation const *node, Slice const slice, OJob *job)
 }
 
 static bool function_definition(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_function_definition) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* static void foo(int a, int b) */
                 /* static                        */
@@ -281,9 +260,6 @@ static bool function_definition(Relation const *node, Slice const slice, OJob *j
 }
 
 static bool function_declarator(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_function_declarator) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* void foo(int a, int b) */
                 /*      foo               */
@@ -301,9 +277,6 @@ static bool function_declarator(Relation const *node, Slice const slice, OJob *j
 }
 
 static bool parameter_list(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_parameter_list) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* void foo(int a, int b) */
                 /*         (              */
@@ -352,9 +325,6 @@ static bool parameter_list(Relation const *node, Slice const slice, OJob *job) {
 }
 
 static bool parameter_declaration(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_parameter_declaration) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* void foo(int a, int b) */
                 /*          int             */
@@ -370,9 +340,6 @@ static bool parameter_declaration(Relation const *node, Slice const slice, OJob 
 }
 
 static bool enum_specifier(Relation const *node, Slice slice, OJob *job) {
-        if (parent(node) != sym_enum_specifier) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* enum alice */
                 /* enum       */
@@ -388,9 +355,6 @@ static bool enum_specifier(Relation const *node, Slice slice, OJob *job) {
 }
 
 static bool union_specifier(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_union_specifier) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* union alice */
                 /* union       */
@@ -406,9 +370,6 @@ static bool union_specifier(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool compound_statement(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_compound_statement) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* { */
                 /* { */
@@ -464,9 +425,6 @@ static bool compound_statement(Relation const *node, Slice const slice, OJob *jo
 }
 
 static bool pointer_declarator(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_pointer_declarator) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* *alice */
                 /* *      */
@@ -488,9 +446,6 @@ static bool pointer_declarator(Relation const *node, Slice const slice, OJob *jo
 }
 
 static bool pointer_expression(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_pointer_expression) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* &alice */
                 /* *      */
@@ -510,9 +465,6 @@ static bool pointer_expression(Relation const *node, Slice const slice, OJob *jo
 }
 
 static bool sizeof_expression(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_sizeof_expression) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* sizeof */
                 return true;
@@ -529,9 +481,6 @@ static bool sizeof_expression(Relation const *node, Slice const slice, OJob *job
 }
 
 static bool cast_expression(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_cast_expression) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* ( */
                 return true;
@@ -558,9 +507,6 @@ static bool cast_expression(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool type_descriptor(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_type_descriptor) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -582,9 +528,6 @@ static bool type_descriptor(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool abstract_pointer_declarator(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_abstract_pointer_declarator) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* * */
                 return true;
@@ -598,9 +541,6 @@ static bool abstract_pointer_declarator(Relation const *node, Slice const slice,
 }
 
 static bool declaration(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_declaration) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* bool alice */
                 /* bool      */
@@ -626,9 +566,6 @@ static bool declaration(Relation const *node, Slice const slice, OJob *job) {
 }
 
 static bool init_declarator(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_init_declarator) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -642,9 +579,6 @@ static bool init_declarator(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool struct_specifier(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_struct_specifier) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -658,9 +592,6 @@ static bool struct_specifier(Relation const *node, Slice const slice, OJob *job)
 }
 
 static bool field_declaration_list(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_field_declaration_list) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -674,9 +605,6 @@ static bool field_declaration_list(Relation const *node, Slice const slice, OJob
 }
 
 static bool field_declaration(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_field_declaration) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -695,9 +623,6 @@ static bool field_declaration(Relation const *node, Slice const slice, OJob *job
 }
 
 static bool initializer_list(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_initializer_list) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -748,9 +673,6 @@ static bool initializer_list(Relation const *node, Slice const slice, OJob *job)
 }
 
 static bool initializer_pair(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_initializer_pair) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -764,9 +686,6 @@ static bool initializer_pair(Relation const *node, Slice const slice, OJob *job)
 }
 
 static bool array_declarator(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_array_declarator) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* a[] */
                 /* a   */
@@ -781,9 +700,6 @@ static bool array_declarator(Relation const *node, Slice const slice, OJob *job)
 }
 
 static bool subscript_designator(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_subscript_designator) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* [ */
                 return true;
@@ -797,9 +713,6 @@ static bool subscript_designator(Relation const *node, Slice const slice, OJob *
 }
 
 static bool type_definition(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_type_definition) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* typedef enum { A, B, C } ABC; */
                 /* typedef                       */
@@ -827,9 +740,6 @@ static bool type_definition(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool enumerator_list(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_enumerator_list) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* enum { */
                 /*      { */
@@ -858,9 +768,6 @@ static bool enumerator_list(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool enumerator(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_enumerator) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* FlashState_READY = 0 */
                 /* FlashState_READY     */
@@ -876,9 +783,6 @@ static bool enumerator(Relation const *node, Slice const slice, OJob *job) {
 }
 
 static bool expression_statement(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_expression_statement) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* ach(); */
                 /* acht() */
@@ -896,9 +800,6 @@ static bool expression_statement(Relation const *node, Slice const slice, OJob *
 }
 
 static bool assignment_expression(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_assignment_expression) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* foo = false; */
                 /* foo          */
@@ -926,9 +827,6 @@ static bool assignment_expression(Relation const *node, Slice const slice, OJob 
 }
 
 static bool call_expression(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_call_expression) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* foo(int a) */
                 /* foo        */
@@ -946,9 +844,6 @@ static bool call_expression(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool argument_list(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_argument_list) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* function(alice */
                 /*         (      */
@@ -995,9 +890,6 @@ static bool argument_list(Relation const *node, Slice const slice, OJob *job) {
 }
 
 static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_for_statement) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* for */
                 return true;
@@ -1065,9 +957,6 @@ static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
 }
 
 static bool while_statement(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_while_statement) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* while */
                 return true;
@@ -1098,9 +987,6 @@ static bool while_statement(Relation const *node, Slice const slice, OJob *job) 
 }
 
 static bool do_statement(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_do_statement) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* do */
                 return true;
@@ -1135,9 +1021,6 @@ static bool do_statement(Relation const *node, Slice const slice, OJob *job) {
 }
 
 static bool if_statement(Relation *node, Slice slice, OJob *job) {
-        if (parent(node) != sym_if_statement) {
-                return false;
-        }
         if (is_first_child(node)) {
                 return true;
         }
@@ -1194,9 +1077,6 @@ static bool if_statement(Relation *node, Slice slice, OJob *job) {
 }
 
 static bool else_clause(Relation *node, Slice slice, OJob *job)  {
-        if (parent(node) != sym_else_clause) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* else */
                 return true;
@@ -1225,10 +1105,6 @@ static bool else_clause(Relation *node, Slice slice, OJob *job)  {
 
 
 static bool parenthesized_expression(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_parenthesized_expression) {
-                /* (a == 0) */
-                return false;
-        }
         if (is_first_child(node)) {
                 /* (a == 0) */
                 /* (        */
@@ -1251,9 +1127,6 @@ static bool parenthesized_expression(Relation const *node, Slice const slice, OJ
 }
 
 static bool binary_expression(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_binary_expression) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* a != 0 */
                 /* a      */
@@ -1306,9 +1179,6 @@ static bool binary_expression(Relation const *node, Slice const slice, OJob *job
 }
 
 static bool switch_statement(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_switch_statement) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* switch */
                 return true;
@@ -1332,9 +1202,6 @@ static bool switch_statement(Relation const *node, Slice const slice, OJob *job)
 }
 
 static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_case_statement) {
-                return false;
-        }
         if (is_first_child(node)) {
                 /* case */
                 return true;
