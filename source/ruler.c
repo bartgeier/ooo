@@ -1292,7 +1292,6 @@ static bool roots(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-#if 1
 bool dispatcher(
         Nodes *nodes,
         Slice slice,
@@ -1391,69 +1390,11 @@ bool dispatcher(
                 return linkage_specification(&relation, slice, job);
         case sym_declaration_list: 
                 return declaration_list(&relation, slice, job);
+        //|| roots(&relation, slice, job);
         default:
                 return false;
         }
 }
-#else 
-bool dispatcher(
-        Nodes *nodes,
-        Slice slice,
-        OJob *job
-) {
-        Relation relation = {0}; 
-        Relation_init(&relation, nodes); 
-
-        return 
-        preproc_include(&relation, slice, job) 
-        || preproc_def(&relation, slice, job)
-        || function_definition(&relation, slice, job)
-        || function_declarator(&relation, slice, job)
-        || parameter_list(&relation, slice, job)
-        || parameter_declaration(&relation, slice, job)
-        || enum_specifier(&relation, slice, job)
-        || union_specifier(&relation, slice, job)
-        || pointer_declarator(&relation, slice, job)
-        || pointer_expression(&relation, slice, job)
-        || sizeof_expression(&relation, slice, job)
-        || cast_expression(&relation, slice, job)
-        || type_descriptor(&relation, slice, job)
-        || abstract_pointer_declarator(&relation, slice, job)
-        || compound_statement(&relation, slice, job)
-        || declaration(&relation, slice, job)
-        || init_declarator(&relation, slice, job)
-        || struct_specifier(&relation, slice, job)
-        || field_declaration_list(&relation, slice, job)
-        || field_declaration(&relation, slice, job)
-        || initializer_list(&relation, slice, job)
-        || initializer_pair(&relation, slice, job)
-        || array_declarator(&relation, slice, job)
-        || subscript_designator(&relation, slice, job)
-        || type_definition(&relation, slice, job)
-        || enumerator_list(&relation, slice, job)
-        || enumerator(&relation, slice, job)
-        || expression_statement(&relation, slice, job)
-        || assignment_expression(&relation, slice, job)
-        || call_expression(&relation, slice, job)
-        || argument_list(&relation, slice, job)
-        || for_statement(&relation, slice, job)
-        || while_statement(&relation, slice, job)
-        || do_statement(&relation, slice, job)
-        || if_statement(&relation, slice, job)
-        || parenthesized_expression(&relation, slice, job)
-        || binary_expression(&relation, slice, job)
-        || else_clause(&relation, slice, job)
-        || switch_statement(&relation, slice, job)
-        || case_statement(&relation, slice, job)
-
-        || preproc_ifdef(&relation, slice, job) 
-        || translation_unit(&relation, slice, job)
-        || linkage_specification(&relation, slice, job)
-        || declaration_list(&relation, slice, job);
-        //|| roots(&relation, slice, job);
-}
-#endif
-
 
 void ooo_ruler(
         Nodes *nodes,
