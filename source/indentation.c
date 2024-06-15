@@ -2,9 +2,6 @@
 #include "stdio.h"
 
 static bool compound_statement(Relation const *node, size_t *level) {
-        if (parent(node) != sym_compound_statement) {
-               return false;
-        }
         if (grand(node) == sym_switch_statement
         && me(node) == sym_case_statement) {
                 return true;
@@ -23,9 +20,6 @@ static bool compound_statement(Relation const *node, size_t *level) {
 }
 
 static bool field_declaration_list(Relation const *node, size_t *level) {
-        if (parent(node) != sym_field_declaration_list) {
-               return false;
-        }
         if (me(node) == anon_sym_LBRACE) {
                 return true;
         }
@@ -37,9 +31,6 @@ static bool field_declaration_list(Relation const *node, size_t *level) {
 }
 
 static bool enumerator_list(Relation const *node, size_t *level) {
-        if (parent(node) != sym_enumerator_list) {
-               return false;
-        }
         if (me(node) == anon_sym_LBRACE) {
                 return true;
         }
@@ -51,9 +42,6 @@ static bool enumerator_list(Relation const *node, size_t *level) {
 }
 
 static bool initializer_list(Relation const *node, size_t *level) {
-        if (parent(node) != sym_initializer_list) {
-               return false;
-        }
         if (me(node) == anon_sym_LBRACE) {
                 return true;
         }
@@ -65,9 +53,6 @@ static bool initializer_list(Relation const *node, size_t *level) {
 }
 
 static bool parameter_list(Relation const *node, size_t *level) {
-        if (parent(node) != sym_parameter_list) {
-               return false;
-        }
         if (me(node) == anon_sym_LPAREN) {
                 return true;
         }
@@ -79,9 +64,6 @@ static bool parameter_list(Relation const *node, size_t *level) {
 }
 
 static bool argument_list(Relation const *node, size_t *level) {
-        if (parent(node) != sym_argument_list) {
-               return false;
-        }
         if (me(node) == anon_sym_LPAREN) {
                 return true;
         }
@@ -93,17 +75,11 @@ static bool argument_list(Relation const *node, size_t *level) {
 }
 
 static bool case_statement(Relation const *node, size_t *level) {
-        if (parent(node) != sym_case_statement) {
-                return false;
-        }
         *level += 1;
         return true;
 }
 
 static bool for_statement(Relation const *node, size_t *level) {
-        if (parent(node) != sym_for_statement) {
-                return false;
-        }
         if (me(node) == anon_sym_LPAREN) {
                 return true;
         }
@@ -118,9 +94,6 @@ static bool for_statement(Relation const *node, size_t *level) {
 }
 
 static bool while_statement(Relation const *node, size_t *level) {
-        if (parent(node) != sym_while_statement) {
-                return false;
-        }
         if (find_child(node, sym_compound_statement) < 0) {
                 *level += 1;
                 return true;
@@ -129,9 +102,6 @@ static bool while_statement(Relation const *node, size_t *level) {
 }
 
 static bool if_statement(Relation const *node, size_t *level) {
-        if (parent(node) != sym_if_statement) {
-                return false;
-        }
         if (me(node) == sym_else_clause) {
                 return true;
         }
@@ -143,9 +113,6 @@ static bool if_statement(Relation const *node, size_t *level) {
 }
 
 static bool else_clause(Relation const *node, size_t *level) {
-        if (parent(node) != sym_else_clause) {
-                return false;
-        }
         if (find_child(node, sym_compound_statement) < 0) {
                 *level += 1;
                 return true;
@@ -153,6 +120,7 @@ static bool else_clause(Relation const *node, size_t *level) {
         return true;
 }
 
+#if 0
 static size_t dispatcher(Nodes *nodes, size_t level) {
         Relation node;
         Relation_init(&node, nodes);
@@ -171,6 +139,49 @@ static size_t dispatcher(Nodes *nodes, size_t level) {
 
         return level;
 }
+#else
+static size_t dispatcher(Nodes *nodes, size_t level) {
+        Relation node;
+        Relation_init(&node, nodes);
+
+        switch(parent(&node)) {
+                case sym_compound_statement: 
+                        compound_statement(&node, &level);
+                        break;
+                case sym_field_declaration_list: 
+                        field_declaration_list(&node, &level);
+                        break;
+                case sym_enumerator_list: 
+                        enumerator_list(&node, &level);
+                        break;
+                case sym_initializer_list: 
+                        initializer_list(&node, &level);
+                        break;
+                case sym_parameter_list: 
+                        parameter_list(&node, &level);
+                        break;
+                case sym_argument_list: 
+                        argument_list(&node, &level);
+                        break;
+                case sym_case_statement: 
+                        case_statement(&node, &level);
+                        break;
+                case sym_for_statement: 
+                        for_statement(&node, &level);
+                        break;
+                case sym_while_statement: 
+                        while_statement(&node, &level);
+                        break;
+                case sym_if_statement: 
+                        if_statement(&node, &level);
+                        break;
+                case sym_else_clause: 
+                        else_clause(&node, &level);
+                        break;
+        }
+        return level;
+}
+#endif
 
 void ooo_set_indentation(
         OJob *job,
