@@ -179,11 +179,11 @@ void ooo_set_indentation(
         Nodes *nodes,
         size_t indentation_level
 ) {
-        TSNode node = Nodes_at(nodes, 0);
-        TSSymbol me = ooo(node);
+        TSNode const node = Nodes_at(nodes, 0);
+        TSSymbol const me = ooo(node);
 
-        size_t cx = job->idx;
-        size_t sx = OJob_cursor(job, ts_node_start_byte(node));
+        size_t const cx = job->idx;
+        size_t const sx = OJob_cursor(job, ts_node_start_byte(node));
         indentation_level = dispatcher(nodes, indentation_level);
         for (size_t i = cx; i < sx; i++) {
                 if (job->source.at[i] == '\n') {
@@ -195,7 +195,7 @@ void ooo_set_indentation(
         }
 
         for (size_t it = 0; it < ts_node_child_count(node); it++) {
-                TSNode child = ts_node_child(node, it);
+                TSNode const child = ts_node_child(node, it);
                 Nodes_push(nodes,  child);
                 ooo_set_indentation(
                         job,
@@ -203,21 +203,17 @@ void ooo_set_indentation(
                         indentation_level
                 );
         }
-        size_t ax = job->idx;
+        size_t const ax = job->idx;
         size_t ex = OJob_cursor(job, ts_node_end_byte(node));
-        // anon_sym_LF sym_preproc_if
-        //if (ooo(super(1, node)) == sym_preproc_if) {
-        if (me == anon_sym_LF) {
-                /* preproc_def node includes the \n                */
-                /* \n is then not used for indentation             */
-                job->idx = (job->idx > 0) ? job->idx - 1 : 0;
+        if (ex > 0 && job->source.at[ex - 1] == '\n') {
+                /* \n is last member byte in the node  */
+                /* thats caused missing indentation    */
+                /* therefore decrement job->idx        */
+                /* problematic nodes are for example:  */
+                /*     anon_sym_LF                     */
+                /*     sym_preproc_def                 */
+                job->idx--;
                 ex = job->idx;
-                for (size_t i = ax; i < ex; i++) {
-                        if (i == ax) OStr_append_chr(&job->sink, 'X');
-                        if (i == ex-1) OStr_append_chr(&job->sink, 'Y');
-                        OStr_append_chr(&job->sink, job->source.at[i]);
-                }
-                return;
         } 
         if (me == sym_comment) {
                 /* inside of block comment */
