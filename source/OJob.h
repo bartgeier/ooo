@@ -11,8 +11,8 @@ typedef struct {
 
 void OJob_swap(OJob *m);
 size_t OJob_cursor(OJob *m, size_t const idx);
-void OJob_LF(OJob *m, Slice const slice);
-void OJob_2LF(OJob *m, Slice const slice);
+void OJob_LF(OJob *m);
+void OJob_2LF(OJob *m);
 void OJob_space(OJob *m);
 void OJob_1_or_2LF(OJob *m, Slice const slice);
 void OJob_LF_or_space(OJob *m, Slice const slice);
@@ -43,16 +43,13 @@ size_t OJob_cursor(OJob *m, size_t const idx) {
         return m->idx;
 }
 
-void OJob_LF(OJob *m, Slice const slice) {
-        size_t const num_of_LF = OStr_need_LF(&m->source, slice);
-        OStr_append_number_of_chr(&m->sink, num_of_LF, '\n');
+void OJob_LF(OJob *m) {
+        OStr_append_chr(&m->sink, '\n');
 }
 
-void OJob_2LF(OJob *m, Slice const slice) {
-        size_t const num_of_LF = OStr_need_2LF(&m->source, slice);
-        OStr_append_number_of_chr(&m->sink, num_of_LF, '\n');
+void OJob_2LF(OJob *m) {
+        OStr_append_number_of_chr(&m->sink, 2, '\n');
 }
-
 
 void OJob_space(OJob *m) {
         OStr_append_chr(&m->sink, ' ');

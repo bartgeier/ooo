@@ -25,8 +25,6 @@ void OStr_append_chr(OStr *m, char const chr);
 void OStr_append_number_of_chr(OStr *m, size_t n, char chr);
 void OStr_append_spaces(OStr *m, size_t n);
 void OStr_append_cstring(OStr *m, char const * str);
-size_t OStr_need_LF(OStr const *m, Slice const s);
-size_t OStr_need_2LF(OStr const *m, Slice const s); 
 size_t OStr_need_1_or_2LF(OStr const *m, Slice const s);
 bool OStr_last_has_LF(OStr const *m, Slice const s);
 char OStr_need_LF_or_space(OStr const *m, Slice const s);
@@ -67,37 +65,12 @@ void OStr_append_cstring(OStr *m, char const * str) {
         }
 }
 
-size_t OStr_need_LF(OStr const *m, Slice const s) {
-        size_t const begin = s.begin;
-        bool const b = (begin > 0) ? (m->at[begin -1] == '\n')  : false;
-        return 1 - b;
-}
-
-size_t OStr_need_2LF(OStr const *m, Slice const s) {
-        size_t const begin = s.begin;
-        bool const b = (begin > 0) ? (m->at[begin -1] == '\n')  : false;
-        return 2 - b;
-}
-
 size_t OStr_need_1_or_2LF(OStr const *m, Slice const s) {
-        size_t const begin = s.begin;
-        size_t const end = s.end;
-        bool const b = (s.begin > 0) ? m->at[begin -1] == '\n' : false;
-        size_t count = b;
-        for (size_t i = begin; i < end; i++) {
+        size_t count = 0;
+        for (size_t i = s.begin; i < s.end; i++) {
                 if (m->at[i] == '\n') count++;
         }
-        switch (count) {
-        case 0:
-                return 1;
-        case 1:
-                return 1 - b;
-        case 2:
-                return 2 - b;
-        default:
-                break;
-        }
-        return 2 - b;
+        return (count < 2) ? 1 : 2;
 }
 
 bool OStr_last_has_LF(OStr const *m, Slice const s) {
@@ -106,12 +79,9 @@ bool OStr_last_has_LF(OStr const *m, Slice const s) {
         return b;
 }
 
-/* Before using this function check with OStr_last_has_LF */
 char OStr_need_LF_or_space(OStr const *m, Slice const s) {
-        size_t const begin = s.begin;
-        size_t const end = s.end;
         size_t count = 0;
-        for (size_t i = begin; i < end; i++) {
+        for (size_t i = s.begin; i < s.end; i++) {
                 if (m->at[i] == '\n') count++;
         }
         return (count > 0) ? '\n' : ' ';

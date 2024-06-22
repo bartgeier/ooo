@@ -82,7 +82,7 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
                 /* #ifndef FOO_H   */
                 /* #define FOO_H\n\n */
                 /*              ^ ^  */
-                OJob_2LF(job, slice);
+                OJob_2LF(job);
                 return true;
         }
         if (me(node) == aux_sym_preproc_if_token2 & is_last_child(node)) {
@@ -91,7 +91,7 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
                         /* } */
                         /* \n#endif */
                         /* ^         */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
                 /* \n#endif */
@@ -107,7 +107,7 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
         if (me(node) == sym_linkage_specification) {
                 /* \nextern "C" { */
                 /* ^              */
-                OJob_LF(job, slice);
+                OJob_LF(job);
                 return true;
         }
         if (me(node) == anon_sym_SEMI) {
@@ -147,7 +147,7 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
         if (me(node) == sym_linkage_specification) {
                 /* \nextern "C" { */
                 /* ^              */
-                OJob_LF(job, slice);
+                OJob_LF(job);
                 return true;
         }
         if (me(node) == anon_sym_SEMI) {
@@ -194,7 +194,7 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
                 return false;
         }
         // if (ooo(child(node, node->child_idx - 1)) == sym_function_definition) {
-        //         OJob_2LF(job, slice);
+        //         OJob_2LF(job);
         //         return true;
         // }
         if (me(node) == anon_sym_SEMI) {
@@ -253,7 +253,7 @@ static bool declaration_list(Relation const *node, Slice const slice, OJob *job)
                 /* extern "C" {        */
                 /* \n#endif            */
                 /* ^                   */
-                OJob_LF(job, slice);
+                OJob_LF(job);
                 return true;
         }
         if (ooo(Nodes_at(node->nodes, 1)) == sym_preproc_directive
@@ -264,14 +264,14 @@ static bool declaration_list(Relation const *node, Slice const slice, OJob *job)
                 /* extern "C" {        */
                 /* #endif\n\n          */
                 /*         ^           */
-                OJob_2LF(job, slice);
+                OJob_2LF(job);
                 return true;
         }
         if (me(node) == anon_sym_RBRACE) {
                 /* #ifdef __cplusplus */
                 /* \n}                */
                 /* ^                  */
-                OJob_LF(job, slice);
+                OJob_LF(job);
                 return true;
         }
         if (me(node) == anon_sym_SEMI) {
@@ -354,7 +354,7 @@ static bool parameter_list(Relation const *node, Slice const slice, OJob *job) {
                 } else {
                         /* void foo(\nint a  */
                         /*          ^        */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
         }
@@ -366,7 +366,7 @@ static bool parameter_list(Relation const *node, Slice const slice, OJob *job) {
                 } else {
                         /* void foo(\nint a,\nint b\n)  */
                         /*                          ^   */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
         }
@@ -453,7 +453,7 @@ static bool compound_statement(Relation const *node, Slice const slice, OJob *jo
                 /* second child */
                 /* {\n */
                 /*  ^  */
-                OJob_LF(job, slice);
+                OJob_LF(job);
                 return true;
         }
         if (me(node) == anon_sym_RBRACE 
@@ -477,7 +477,7 @@ static bool compound_statement(Relation const *node, Slice const slice, OJob *jo
         if (me(node) == anon_sym_RBRACE) {
                 /* \n} */
                 /*  ^  */
-                OJob_LF(job, slice);
+                OJob_LF(job);
                 return true;
         }
         OJob_1_or_2LF(job, slice);
@@ -660,7 +660,7 @@ static bool field_declaration_list(Relation const *node, Slice const slice, OJob
         }
         /* struct big {\nint a;\nint b;\n} */
         /*              ^       ^       ^  */
-        OJob_LF(job, slice);
+        OJob_LF(job);
         return true;
 }
 
@@ -714,13 +714,13 @@ static bool initializer_list(Relation const *node, Slice const slice, OJob *job)
                 if (node->child_idx == 1) {
                         /* {\n.a = 1, */
                         /* ^^         */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
                 if (me(node) == anon_sym_RBRACE) {
                         /* .a = 1\n} */
                         /*        ^  */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
                 /* {.a = 1, .b = 2\n}  */
@@ -821,7 +821,7 @@ static bool enumerator_list(Relation const *node, Slice const slice, OJob *job) 
         } else {
                 /* {\nSECTOR_A,\nSECTOR_B\n} */
                 /*  ^          ^         ^   */
-                OJob_LF(job, slice);
+                OJob_LF(job);
                 return true;
         }
         return false;
@@ -921,7 +921,7 @@ static bool argument_list(Relation const *node, Slice const slice, OJob *job) {
                 } else {
                         /* void foo(\nalice  */
                         /*          ^        */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
         }
@@ -938,7 +938,7 @@ static bool argument_list(Relation const *node, Slice const slice, OJob *job) {
                 } else {
                         /* void foo(\nalice, bob\n)  */
                         /*                       ^   */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
         }
@@ -996,7 +996,7 @@ static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
                 } else {
                         /*  (\nint i;\ni < max;\ni++\n) */
                         /*           ^         ^     ^  */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
         }
@@ -1108,7 +1108,7 @@ static bool if_statement(Relation *node, Slice slice, OJob *job) {
                 } else {
                         /* if (true)\nfoo(); */
                         /*          ^        */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
         }
@@ -1127,7 +1127,7 @@ static bool if_statement(Relation *node, Slice slice, OJob *job) {
                         } else {
                                 /* if (true)\nfoo();\nelse */
                                 /*                  ^      */
-                                OJob_LF(job, slice);
+                                OJob_LF(job);
                                 return true;
                         }
                 }
@@ -1157,7 +1157,7 @@ static bool else_clause(Relation *node, Slice slice, OJob *job)  {
         } else {
                 /* else\nfoo();  */
                 /*     ^         */
-                OJob_LF(job, slice);
+                OJob_LF(job);
                 return true;
         }
         return false;
@@ -1228,7 +1228,7 @@ static bool binary_expression(Relation const *node, Slice const slice, OJob *job
                 } else {
                         /* a\n!= 0 */
                         /*  ^      */
-                        OJob_LF(job, slice);
+                        OJob_LF(job);
                         return true;
                 }
         }
@@ -1465,7 +1465,7 @@ void ooo_ruler(
         TSNode node = Nodes_at(nodes, 0);
         Slice slice = {
                 .begin = job->idx,
-                .end = OJob_cursor(job, ts_node_start_byte(node)) 
+                .end = job->idx = ts_node_start_byte(node)
         };
 
         if (!dispatcher(nodes, slice, job)) {
@@ -1482,7 +1482,17 @@ void ooo_ruler(
         }
 
         slice.begin = job->idx;
-        slice.end = OJob_cursor(job, ts_node_end_byte(node)); 
+        slice.end = job->idx = ts_node_end_byte(node);
+        if (slice.end > 0 && job->source.at[slice.end - 1] == '\n') {
+                /* \n is last member byte in the node   */
+                /* that caused and unexpected line feed */
+                /* therefore decrement job->idx         */
+                /* problematic nodes are for example:   */
+                /*     anon_sym_LF                      */
+                /*     sym_preproc_def                  */
+                job->idx--;
+                slice.end = job->idx;
+        } 
         for (size_t i = slice.begin; i < slice.end; i++) {
                 OStr_append_chr(&job->sink, job->source.at[i]);
         }
