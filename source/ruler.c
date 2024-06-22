@@ -1463,6 +1463,7 @@ void ooo_ruler(
         OJob *job
 ) {
         TSNode node = Nodes_at(nodes, 0);
+
         Slice slice = {
                 .begin = job->idx,
                 .end = job->idx = ts_node_start_byte(node)

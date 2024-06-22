@@ -10,7 +10,6 @@ typedef struct {
 } OJob;
 
 void OJob_swap(OJob *m);
-size_t OJob_cursor(OJob *m, size_t const idx);
 void OJob_LF(OJob *m);
 void OJob_2LF(OJob *m);
 void OJob_space(OJob *m);
@@ -36,11 +35,6 @@ void OJob_swap(OJob *m) {
         m->source.at = p;
 
         OStr_clear(&m->sink);
-}
-
-size_t OJob_cursor(OJob *m, size_t const idx) {
-        m->idx = idx;
-        return m->idx;
 }
 
 void OJob_LF(OJob *m) {

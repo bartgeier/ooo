@@ -182,10 +182,13 @@ void ooo_set_indentation(
         TSNode const node = Nodes_at(nodes, 0);
         TSSymbol const me = ooo(node);
 
-        size_t const cx = job->idx;
-        size_t const sx = OJob_cursor(job, ts_node_start_byte(node));
+        Slice slice = {
+                .begin = job->idx,
+                .end = job->idx = ts_node_start_byte(node)
+        };
+
         indentation_level = dispatcher(nodes, indentation_level);
-        for (size_t i = cx; i < sx; i++) {
+        for (size_t i = slice.begin; i < slice.end; i++) {
                 if (job->source.at[i] == '\n') {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                         OStr_append_spaces(&job->sink, 4 * indentation_level); // <-- her plays the magic
@@ -203,9 +206,10 @@ void ooo_set_indentation(
                         indentation_level
                 );
         }
-        size_t const ax = job->idx;
-        size_t ex = OJob_cursor(job, ts_node_end_byte(node));
-        if (ex > 0 && job->source.at[ex - 1] == '\n') {
+
+        slice.begin = job->idx;
+        slice.end = job->idx = ts_node_end_byte(node);
+        if (slice.end > 0 && job->source.at[slice.end - 1] == '\n') {
                 /* \n is last member byte in the node  */
                 /* thats caused missing indentation    */
                 /* therefore decrement job->idx        */
@@ -213,11 +217,11 @@ void ooo_set_indentation(
                 /*     anon_sym_LF                     */
                 /*     sym_preproc_def                 */
                 job->idx--;
-                ex = job->idx;
+                slice.end = job->idx;
         } 
         if (me == sym_comment) {
                 /* inside of block comment */
-                for (size_t i = ax; i < ex; i++) {
+                for (size_t i = slice.begin; i < slice.end; i++) {
                         if (job->source.at[i] == '\n') {
                                 OStr_append_chr(&job->sink, job->source.at[i]);
                                 OStr_append_spaces(&job->sink, 4 * indentation_level);
@@ -226,7 +230,7 @@ void ooo_set_indentation(
                         }
                 }
         } else {
-                for (size_t i = ax; i < ex; i++) {
+                for (size_t i = slice.begin; i < slice.end; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                 }
         }
