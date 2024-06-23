@@ -113,6 +113,9 @@ static size_t if_statement(Relation const *node, size_t level) {
 }
 
 static size_t else_clause(Relation const *node, size_t level) {
+        if (me(node) == sym_if_statement) {
+                return level;
+        }
         if (find_child(node, sym_compound_statement) < 0) {
                 level += 1;
                 return level;

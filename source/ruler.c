@@ -1144,9 +1144,10 @@ static bool else_clause(Relation *node, Slice slice, OJob *job)  {
         if (me(node) == sym_comment | unknown(node)) {
                 return false;
         }
-        if (me(node) == sym_compound_statement) {
-                /* else { */
-                /*     ^  */
+        if (me(node) == sym_compound_statement | me(node) == sym_if_statement) {
+                /* else {  */
+                /* else if */
+                /*     ^   */
                 OJob_space(job);
                 return true;
         } else if (is_single_line(node->grand)) {
