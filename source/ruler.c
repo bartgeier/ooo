@@ -772,6 +772,20 @@ static bool subscript_designator(Relation const *node, Slice const slice, OJob *
         return true;
 }
 
+static bool subscript_expression(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                /* f[2] */
+                /* f    */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        /* f[2] */
+        /* ^^^^ */
+        return true;
+}
+
 static bool type_definition(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* typedef enum { A, B, C } ABC; */
@@ -903,6 +917,54 @@ static bool call_expression(Relation const *node, Slice const slice, OJob *job) 
         return false;
 }
 
+static bool update_expression(Relation const *node, Slice const slice, OJob *job) { 
+        if (is_first_child(node)) {
+                /* counter++ */
+                /* ++counter */
+                /* counter-- */
+                /* --counter */
+                /* ^         */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        /* --counter */
+        /*  ^^       */
+        return true;
+}
+
+static bool conditional_expression(Relation const *node,Slice const slice,OJob *job) {
+        if (is_first_child(node)) {
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (me(node) == anon_sym_QMARK) {
+                uint32_t a = ts_node_start_point(child(node, node->child_idx)).row;
+                uint32_t b = ts_node_start_point(child(node, node->child_idx + 1)).row;
+                if (a != b) {
+                        OJob_LF(job);
+                        return true;
+                }
+                OJob_LF_or_space(job, slice);
+                return true;
+        }
+        if (me(node) == anon_sym_COLON) {
+                uint32_t a = ts_node_start_point(child(node, node->child_idx)).row;
+                uint32_t b = ts_node_start_point(child(node, node->child_idx + 1)).row;
+                if (a != b) {
+                        OJob_LF(job);
+                        return true;
+                }
+                OJob_LF_or_space(job, slice);
+                return true;
+        }
+        OJob_space(job);
+        return true;
+}
+
 static bool argument_list(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* function(alice */
@@ -1007,6 +1069,12 @@ static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
                 return true;
         }
         if (is_last_child(node)) {
+                if (!is_single_line(node->parent)) {
+                        /* for (int i; i < max; i++) if (a) {\n */
+                        /*                          ^           */
+                        OJob_LF(job);
+                        return true;
+                }
                 /* for (int i; i < max; i++) doSomething();  */
                 /* for (int i; i < max; i++)\ndoSomething(); */
                 /*                          ^                */
@@ -1037,6 +1105,12 @@ static bool while_statement(Relation const *node, Slice const slice, OJob *job) 
                 return true;
         }
         if (is_last_child(node)) {
+                if (!is_single_line(node->parent)) {
+                        /* while (true) if (a) {\n */
+                        /*             ^           */
+                        OJob_LF(job);
+                        return true;
+                }
                 /* while (true) doSomething();  */
                 /* while (true)\ndoSomething(); */
                 /*             ^                */
@@ -1101,8 +1175,8 @@ static bool if_statement(Relation *node, Slice slice, OJob *job) {
         } 
         if (is_middle_child(sym_parenthesized_expression, node, sym_else_clause)) {
                 if (is_single_line(node->parent)) {
-                        /* if (true) foo();  */
-                        /*          ^        */
+                        /* if (true) foo(); else */
+                        /*          ^            */
                         OJob_space(job);
                         return true;
                 } else {
@@ -1131,7 +1205,19 @@ static bool if_statement(Relation *node, Slice slice, OJob *job) {
                                 return true;
                         }
                 }
-
+        }
+        if (is_last_child(node)) {
+                if (!is_single_line(node->parent)) {
+                        /* if (true)\nif (a) {\n */
+                        /*          ^            */
+                        OJob_LF(job);
+                        return true;
+                }
+                /* if (true) doSomething();  */
+                /* if (true)\ndoSomething(); */
+                /*          ^                */
+                OJob_LF_or_space(job, slice);
+                return true;
         }
         return false;
 }
@@ -1410,6 +1496,8 @@ bool dispatcher(
                 return array_declarator(&relation, slice, job);
         case sym_subscript_designator: 
                 return subscript_designator(&relation, slice, job);
+        case sym_subscript_expression:
+                return subscript_expression(&relation, slice, job);
         case sym_type_definition: 
                 return type_definition(&relation, slice, job);
         case sym_enumerator_list: 
@@ -1422,6 +1510,10 @@ bool dispatcher(
                 return assignment_expression(&relation, slice, job);
         case sym_call_expression: 
                 return call_expression(&relation, slice, job);
+        case sym_update_expression:
+                return update_expression(&relation, slice, job);
+        case sym_conditional_expression:
+                return conditional_expression(&relation, slice, job);
         case sym_argument_list: 
                 return argument_list(&relation, slice, job);
         case sym_for_statement: 

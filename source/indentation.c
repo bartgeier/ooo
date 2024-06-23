@@ -122,27 +122,12 @@ static size_t else_clause(Relation const *node, size_t level) {
         }
         return level;
 }
-
-#if 0
-static size_t dispatcher(Nodes *nodes, size_t level) {
-        Relation node;
-        Relation_init(&node, nodes);
-
-        compound_statement(&node, &level)
-        || field_declaration_list(&node, &level)
-        || enumerator_list(&node, &level)
-        || initializer_list(&node, &level)
-        || parameter_list(&node, &level)
-        || argument_list(&node, &level)
-        || case_statement(&node, &level)
-        || for_statement(&node, &level)
-        || while_statement(&node, &level)
-        || if_statement(&node, &level)
-        || else_clause(&node, &level);
-
-        return level;
+                
+static size_t conditional_expression(Relation const *node, size_t level) {
+       level +=1;
+       return level; 
 }
-#else
+
 static size_t dispatcher(Nodes *nodes, size_t level) {
         Relation node;
         Relation_init(&node, nodes);
@@ -170,12 +155,13 @@ static size_t dispatcher(Nodes *nodes, size_t level) {
                 return if_statement(&node, level);
         case sym_else_clause: 
                 return else_clause(&node, level);
+        case sym_conditional_expression:
+                return conditional_expression(&node, level);
         default:
                 return level;
         }
         return level;
 }
-#endif
 
 void ooo_set_indentation(
         OJob *job,
