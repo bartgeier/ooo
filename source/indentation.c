@@ -169,7 +169,7 @@ void ooo_set_indentation(
         size_t indentation_level
 ) {
         TSNode const node = Nodes_at(nodes, 0);
-        TSSymbol const me = ooo(node);
+        TSSymbol const me = sym(node);
 
         Slice slice = {
                 .begin = job->idx,

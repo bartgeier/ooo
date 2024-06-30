@@ -73,12 +73,12 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
                 OJob_space(job);
                 return true; 
         }
-        if (ooo(Nodes_at(node->nodes, 1)) == sym_identifier 
-        & ooo(Nodes_at(node->nodes, 2)) == aux_sym_preproc_def_token1
-        & ooo(Nodes_at(node->nodes, 3)) == sym_preproc_def
-        & ooo(Nodes_at(node->nodes, 4)) == sym_identifier
-        & ooo(Nodes_at(node->nodes, 5)) == aux_sym_preproc_ifdef_token2
-        & ooo(Nodes_at(node->nodes, 6)) == sym_preproc_ifdef) {
+        if (sym(Nodes_at(node->nodes, 1)) == sym_identifier 
+        & sym(Nodes_at(node->nodes, 2)) == aux_sym_preproc_def_token1
+        & sym(Nodes_at(node->nodes, 3)) == sym_preproc_def
+        & sym(Nodes_at(node->nodes, 4)) == sym_identifier
+        & sym(Nodes_at(node->nodes, 5)) == aux_sym_preproc_ifdef_token2
+        & sym(Nodes_at(node->nodes, 6)) == sym_preproc_ifdef) {
                 /* #ifndef FOO_H   */
                 /* #define FOO_H\n\n */
                 /*              ^ ^  */
@@ -86,7 +86,7 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
                 return true;
         }
         if (me(node) == aux_sym_preproc_if_token2 & is_last_child(node)) {
-                if (ooo(ts_node_child(node->parent, node->child_idx - 1)) == sym_linkage_specification) {
+                if (sym(ts_node_child(node->parent, node->child_idx - 1)) == sym_linkage_specification) {
                         /* #ifdef __cplusplus */
                         /* } */
                         /* \n#endif */
@@ -193,7 +193,7 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
         if (me(node) == sym_comment | unknown(node)) {
                 return false;
         }
-        // if (ooo(child(node, node->child_idx - 1)) == sym_function_definition) {
+        // if (sym(child(node, node->child_idx - 1)) == sym_function_definition) {
         //         OJob_2LF(job);
         //         return true;
         // }
@@ -256,10 +256,10 @@ static bool declaration_list(Relation const *node, Slice const slice, OJob *job)
                 OJob_LF(job);
                 return true;
         }
-        if (ooo(Nodes_at(node->nodes, 1)) == sym_preproc_directive
-        & ooo(Nodes_at(node->nodes, 2)) == sym_preproc_call
-        & ooo(Nodes_at(node->nodes, 3)) == anon_sym_LBRACE
-        & ooo(Nodes_at(node->nodes, 4)) == sym_declaration_list) {
+        if (sym(Nodes_at(node->nodes, 1)) == sym_preproc_directive
+        & sym(Nodes_at(node->nodes, 2)) == sym_preproc_call
+        & sym(Nodes_at(node->nodes, 3)) == anon_sym_LBRACE
+        & sym(Nodes_at(node->nodes, 4)) == sym_declaration_list) {
                 /* #ifdef __cplusplus  */
                 /* extern "C" {        */
                 /* #endif\n\n          */
@@ -458,8 +458,8 @@ static bool compound_statement(Relation const *node, Slice const slice, OJob *jo
         }
         if (me(node) == anon_sym_RBRACE 
         && grand(node) == sym_case_statement 
-        && ooo(ts_node_prev_sibling(node->parent)) == anon_sym_COLON
-        && ooo(child(node, node->num_of_childs - 2)) == sym_break_statement) {
+        && sym(ts_node_prev_sibling(node->parent)) == anon_sym_COLON
+        && sym(child(node, node->num_of_childs - 2)) == sym_break_statement) {
                 /* case ABC: {\n    foo();    break; } */
                 /*                                  ^  */
                 OJob_space(job);
@@ -467,8 +467,8 @@ static bool compound_statement(Relation const *node, Slice const slice, OJob *jo
         }
         if (me(node) == anon_sym_RBRACE 
         && grand(node) == sym_case_statement 
-        && ooo(ts_node_prev_sibling(node->parent)) == anon_sym_COLON
-        && ooo(child(node, node->num_of_childs - 2)) == sym_return_statement) {
+        && sym(ts_node_prev_sibling(node->parent)) == anon_sym_COLON
+        && sym(child(node, node->num_of_childs - 2)) == sym_return_statement) {
                 /* case ABC: {\n    foo();\n    return 5; } */
                 /*                                       ^  */
                 OJob_space(job);
@@ -1041,7 +1041,7 @@ static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
         if (is_middle_child(anon_sym_LPAREN, node, anon_sym_RPAREN)
         | me(node) == anon_sym_RPAREN) {
                 if (single_line_PAREN) {
-                        if (ooo(Nodes_at(node->nodes, 1)) == anon_sym_LPAREN) {
+                        if (sym(Nodes_at(node->nodes, 1)) == anon_sym_LPAREN) {
                                 /* (int i = 0; i < max; i++) */
                                 /* ^^                        */
                                 return true;
@@ -1260,7 +1260,7 @@ static bool parenthesized_expression(Relation const *node, Slice const slice, OJ
         if (me(node) == sym_comment | unknown(node)) {
                 return false;
         }
-        if (ooo(Nodes_at(node->nodes, 1)) == anon_sym_LPAREN) {
+        if (sym(Nodes_at(node->nodes, 1)) == anon_sym_LPAREN) {
                 /* (a == 0) */
                 /* ^^       */
                 return true;
@@ -1289,7 +1289,7 @@ static bool binary_expression(Relation const *node, Slice const slice, OJob *job
                 TSNode const left = ts_node_child_by_field_id(node->parent, field_left);
 
                 uint32_t a;
-                if (ooo(left) == sym_binary_expression) {
+                if (sym(left) == sym_binary_expression) {
                         a = ts_node_start_point(
                                 ts_node_child_by_field_id(left, field_right)
                         ).row;
@@ -1368,7 +1368,7 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
                 return true;
         }
         if (me(node) == sym_compound_statement 
-        && ooo(Nodes_at(node->nodes, 1)) == anon_sym_COLON
+        && sym(Nodes_at(node->nodes, 1)) == anon_sym_COLON
         && is_last_child(node)) {
                 /* case ABC: { .... } case */
                 /*          ^              */
@@ -1376,18 +1376,18 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
                 return true;
         }
         if (me(node) == sym_compound_statement 
-        && ooo(Nodes_at(node->nodes, 1)) == anon_sym_COLON
+        && sym(Nodes_at(node->nodes, 1)) == anon_sym_COLON
         && (node->child_idx + 2 == node->num_of_childs)
-        && ooo(child(node, node->num_of_childs - 1)) == sym_break_statement) {
+        && sym(child(node, node->num_of_childs - 1)) == sym_break_statement) {
                 /* case ABC: { .... } break; case */
                 /*          ^                     */
                 OJob_space(job);
                 return true;
         }
         if (me(node) == sym_compound_statement 
-        && ooo(Nodes_at(node->nodes, 1)) == anon_sym_COLON
+        && sym(Nodes_at(node->nodes, 1)) == anon_sym_COLON
         && (node->child_idx + 2 == node->num_of_childs)
-        && ooo(child(node, node->num_of_childs - 1)) == sym_return_statement) {
+        && sym(child(node, node->num_of_childs - 1)) == sym_return_statement) {
                 /* case ABC: { .... } return; case */
                 /*          ^                     */
                 OJob_space(job);
@@ -1395,8 +1395,8 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
         }
         if (me(node) == sym_break_statement
         && is_last_child(node)
-        && ooo(child(node, node->child_idx - 1)) == sym_compound_statement
-        && ooo(child(node, node->child_idx - 2)) == anon_sym_COLON) {
+        && sym(child(node, node->child_idx - 1)) == sym_compound_statement
+        && sym(child(node, node->child_idx - 2)) == anon_sym_COLON) {
                 /* case ABC: { .... } break; case */
                 /*                   ^            */
                 OJob_space(job);
@@ -1404,8 +1404,8 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
         }
         if (me(node) == sym_return_statement
         && is_last_child(node)
-        && ooo(child(node, node->child_idx - 1)) == sym_compound_statement
-        && ooo(child(node, node->child_idx - 2)) == anon_sym_COLON) {
+        && sym(child(node, node->child_idx - 1)) == sym_compound_statement
+        && sym(child(node, node->child_idx - 2)) == anon_sym_COLON) {
                 /* case ABC: { .... } return; case */
                 /*                   ^            */
                 OJob_space(job);

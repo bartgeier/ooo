@@ -21,7 +21,7 @@ bool is_single_line(TSNode n) {
         return start.row == end.row;
 }
 
-TSSymbol ooo(TSNode n) {
+TSSymbol sym(TSNode n) {
         if (ts_node_is_null(n)) {
                 return 0;
         }
@@ -110,15 +110,15 @@ TSSymbol unknown(Relation const *r) {
 }
 
 TSSymbol me(Relation const *r) {
-        return ooo(Nodes_at(r->nodes, 0));
+        return sym(Nodes_at(r->nodes, 0));
 }
 
 TSSymbol parent(Relation const *r) {
-        return ooo(r->parent);
+        return sym(r->parent);
 }
 
 TSSymbol grand(Relation const *r) {
-        return ooo(r->grand);
+        return sym(r->grand);
 }
 
 bool is_error(Relation const *r) {
@@ -136,7 +136,7 @@ bool is_last_child(Relation const *r) {
 
 bool is_after_child(TSSymbol symbol, Relation const *r) {
         for (uint32_t i = r->child_idx - 1; i < r->num_of_childs; i--) {
-                if (ooo(ts_node_child(r->parent, i)) == symbol) {
+                if (sym(ts_node_child(r->parent, i)) == symbol) {
                         return true;
                 }
         }
@@ -149,7 +149,7 @@ bool is_middle_child(TSSymbol symbol_a, Relation const *r, TSSymbol symbol_b) {
 
 bool is_before_child(Relation const *r, TSSymbol symbol) {
         for (uint32_t i = r->child_idx + 1; i < r->num_of_childs; i++) {
-                if (ooo(ts_node_child(r->parent, i)) == symbol) {
+                if (sym(ts_node_child(r->parent, i)) == symbol) {
                         return true;
                 }
         }
@@ -164,7 +164,7 @@ uint32_t me_size(Relation const *r) {
 /* return -1 not found => return >= 0 found child idx */
 int find_child(Relation const *r, TSSymbol const symbol) {
         for (size_t i = 0; i < r->num_of_childs; i++) {
-                if (ooo(ts_node_child(r->parent, i)) == symbol) {
+                if (sym(ts_node_child(r->parent, i)) == symbol) {
                        return i;
                }
         }

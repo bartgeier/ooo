@@ -161,7 +161,7 @@ void ooo_truncate_spaces(
         TSNode node,
         OJob *job
 ) {
-        TSSymbol me = ooo(node);
+        TSSymbol me = sym(node);
 
         Slice slice = {
                 .begin = job->idx,
