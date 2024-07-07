@@ -23,7 +23,7 @@ $ ./nob
 ```
 
 #### unzip
-https://gnuwin32.sourceforge.net/packages/unzip.htm\
+https://gnuwin32.sourceforge.net/packages/unzip.htm \
 Binaries....Zip....457440....14 February 2005....925a5d4d9b4a63ff1a473cc4d47f2f05\
 
 ## Nob
