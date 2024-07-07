@@ -228,8 +228,9 @@ bool ooo_build(bool const clean) {
         nob_cmd_append(&cmd, "./source/ruler.c");
         nob_cmd_append(&cmd, "./source/indentation.c");
         nob_cmd_append(&cmd, "./source/tree_navigator.c");
-        const bool ok = nob_cmd_run_sync(cmd);
+        bool ok = nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
+        ok &= nob_rename("ooo", "build/ooo");
         return ok;
 }
 
@@ -259,6 +260,7 @@ bool unittests_build(bool const clean) {
         ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
         nob_cmd_free(cmd);
+        ok &= nob_rename("otest", "build/otest");
         return ok;
 }
 
