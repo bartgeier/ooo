@@ -36,9 +36,13 @@ bool treesitter_download_build(bool const clean) {
         nob_cmd_append(&cmd, "--output", "tree-sitter.zip");
         ok &= nob_cmd_run_sync(cmd);
 
-        cmd.count = 0;
-        nob_log(NOB_INFO,"unzip");
-        nob_cmd_append(&cmd, "unzip", "tree-sitter.zip");
+        cmd.count = 0;               
+        #ifdef _WIN32
+                nob_log(NOB_INFO,"xxxxx unzip with tar xxxxx");
+                nob_cmd_append(&cmd, "tar", "-xvzf", "tree-sitter.zip");
+        #else
+                nob_cmd_append(&cmd, "unzip", "tree-sitter.zip");                
+        #endif                
         ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
         ok &= nob_remove("tree-sitter.zip");
@@ -94,7 +98,12 @@ bool tree_sitter_c_download(bool const clean) {
         ok &= nob_cmd_run_sync(cmd);
         
         cmd.count = 0;
-        nob_cmd_append(&cmd, "unzip", "tree-sitter-c.zip");
+        #ifdef _WIN32
+                nob_log(NOB_INFO,"xxxxx unzip with tar xxxxx");
+                nob_cmd_append(&cmd, "tar", "-xvzf", "tree-sitter-c.zip");
+        #else
+                nob_cmd_append(&cmd, "unzip", "tree-sitter-c.zip");                
+        #endif
         ok &= nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
         ok &= nob_remove("tree-sitter-c.zip");
@@ -132,8 +141,12 @@ bool googleTest_download_build(bool const clean) {
         nob_cmd_append(&cmd, "--output", "googletest.zip");
         ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
-
-        nob_cmd_append(&cmd, "unzip", "googletest.zip");
+        #ifdef _WIN32
+                nob_log(NOB_INFO,"xxxxx unzip with tar xxxxx");
+                nob_cmd_append(&cmd, "tar", "-xvzf", "googletest.zip");
+        #else
+                nob_cmd_append(&cmd, "unzip", "googletest.zip");                
+        #endif
         ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
         ok &= nob_remove("googletest.zip");
@@ -286,3 +299,15 @@ int main(int argc, char **argv) {
 }
 
 /* https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives */
+
+// ## Windows
+// #### Compiler
+// WinLibs standalone build of GCC and MinGW-w64 for Windows\
+// https://winlibs.com/
+//
+// #### unzip
+// https://gnuwin32.sourceforge.net/packages/unzip.htm \
+// Binaries....Zip....457440....14 February 2005....925a5d4d9b4a63ff1a473cc4d47f2f05 \
+//
+// First I used unzip because I had issues on windows with unzipping tree-sitter using `tar -xvzf tree-sitter.zip'.
+// These issues are gone. So I use tar again, which is already installed on Windows.

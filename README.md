@@ -13,11 +13,6 @@ $ ./nob
 ```
 
 ### Windows 
-#### unzip
-https://gnuwin32.sourceforge.net/packages/unzip.htm \
-Binaries....Zip....457440....14 February 2005....925a5d4d9b4a63ff1a473cc4d47f2f05 \
-
-I used unzip because I had issues on windows with unzipping tree-sitter using `tar -xvzf tree-sitter.zip'.
 
 #### Compiler
 WinLibs standalone build of GCC and MinGW-w64 for Windows\
