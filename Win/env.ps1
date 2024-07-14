@@ -9,4 +9,6 @@ $env:path = "C:\mingw64\bin;" + $env:path
 # For windows download https://gnuwin32.sourceforge.net/packages/unzip.htm 
 $env:path = "C:\unzip-5.51-1-bin\bin;" + $env:path
 
+$env:path = "C:\Projekts\ooo\build;" + $env:path
+
 cd "C:\Projekts\ooo"

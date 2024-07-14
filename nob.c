@@ -12,13 +12,13 @@ bool create_build_dir(bool const clean) {
 }
 
 bool treesitter_download_build(bool const clean) {
-#if 1
-        #define TS_URL "https://github.com/tree-sitter/tree-sitter/archive/refs/heads/"
-        #define TS_COMMIT "master"
-#else
-        #define TS_URL "https://github.com/tree-sitter/tree-sitter/archive/"
-        #define TS_COMMIT "0ff28346be3d27f935d7cde8bbdf6b621c268e1a"
-#endif
+        #if 1
+                #define TS_URL "https://github.com/tree-sitter/tree-sitter/archive/refs/heads/"
+                #define TS_COMMIT "master"
+        #else
+                #define TS_URL "https://github.com/tree-sitter/tree-sitter/archive/"
+                #define TS_COMMIT "0ff28346be3d27f935d7cde8bbdf6b621c268e1a"
+        #endif
         bool ok = true;
         if (clean) {
                 ok &= nob_remove("tree-sitter.zip");
@@ -109,13 +109,13 @@ bool tree_sitter_c_download(bool const clean) {
 }
 
 bool googleTest_download_build(bool const clean) {
-#if 1
-        #define GTEST_URL "https://github.com/google/googletest/archive/refs/heads/"
-        #define GTEST_COMMIT "main"
-#else
-        #define GTEST_URL "https://github.com/google/googletest/archive/"
-        #define GTEST_COMMIT "76bb2afb8b522d24496ad1c757a49784fbfa2e42"
-#endif
+        #if 1
+                #define GTEST_URL "https://github.com/google/googletest/archive/refs/heads/"
+                #define GTEST_COMMIT "main"
+        #else
+                #define GTEST_URL "https://github.com/google/googletest/archive/"
+                #define GTEST_COMMIT "76bb2afb8b522d24496ad1c757a49784fbfa2e42"
+        #endif
         bool ok = true;
         if (clean) {
                 ok &= nob_remove("googletest.zip");
@@ -176,9 +176,9 @@ bool googleTest_download_build(bool const clean) {
         return ok;
 }
 
-bool ooo_copy_treesitter_symbols_build(bool clean) {
+bool ooo_copy_treesitter_symbols_build(bool const clean) {
         if (clean) {
-                return nob_remove("copy_treesitter_symbols");
+                return true;
         }
         if (nob_file_exists("tree-sitter-c/ooo_treesitter_symbol_ids.h")) return true;
         nob_log(NOB_INFO, "BUILD: copy_treesitter_symbols ----> copy enumerator");
@@ -207,21 +207,15 @@ bool ooo_copy_treesitter_symbols_build(bool clean) {
 }
 
 bool ooo_build(bool const clean) {
-        #define NOT_USED "-ggdb", "-std=c99"
-        #define _CFLAGS  "-Wall", "-Wextra", "-pedantic"
         if (clean) {
-                #ifdef _WIN32
-                        return nob_remove("ooo.exe");
-                #else
-                        return nob_remove("ooo");
-                #endif
+                return true;
         }
         nob_log(NOB_INFO, "BUILD: ooo ----> code styler");
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "gcc", "-ggdb", "-pedantic");
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
         nob_cmd_append(&cmd, "-I", "tree-sitter-c/");
-        nob_cmd_append(&cmd, "-o", "ooo");
+        nob_cmd_append(&cmd, "-o", "build/ooo");
         nob_cmd_append(&cmd, "./source/main.c");
         nob_cmd_append(&cmd, "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c");;
         nob_cmd_append(&cmd, "./source/node_printer.c", "./source/truncate.c", "./source/OArg.c");
@@ -230,17 +224,12 @@ bool ooo_build(bool const clean) {
         nob_cmd_append(&cmd, "./source/tree_navigator.c");
         bool ok = nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
-        ok &= nob_rename("ooo", "build/ooo");
         return ok;
 }
 
 bool unittests_build(bool const clean) {
         if (clean) {
-                #ifdef _WIN32
-                        return nob_remove("otest.exe");
-                #else
-                        return nob_remove("otest");
-                #endif
+                return true;
         }
         bool ok = true;
         nob_log(NOB_INFO, "BUILD: otest ----> unit tests");
@@ -251,7 +240,7 @@ bool unittests_build(bool const clean) {
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/"); 
         nob_cmd_append(&cmd, "-I", "tree-sitter-c/");
         nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
-        nob_cmd_append(&cmd, "-o", "otest");
+        nob_cmd_append(&cmd, "-o", "build/otest");
         nob_cmd_append(&cmd, "source/tree_navigator.c");
         nob_cmd_append(&cmd, "unittests/tst_OStr.c");
         nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
@@ -260,7 +249,6 @@ bool unittests_build(bool const clean) {
         ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
         nob_cmd_free(cmd);
-        ok &= nob_rename("otest", "build/otest");
         return ok;
 }
 

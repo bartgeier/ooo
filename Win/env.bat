@@ -9,6 +9,9 @@ SET PATH=C:\mingw64\bin;%PATH%
 REM I had issues with tar for unziping thats wy I use unzip.
 REM For windows download https://gnuwin32.sourceforge.net/packages/unzip.htm 
 SET PATH=C:\unzip-5.51-1-bin\bin;%PATH%
+
+SET PATH=C:\Projekts\ooo\build;%PATH%
+
 path
 cd "C:\Projekts\ooo"
 echo on
