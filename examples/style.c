@@ -2,27 +2,22 @@
 #include "../nob.h"
 #include <stdio.h>
 
-#define I_PATH "examples/Double_Page_Flash/"
-#define GENERATE_PATH "ooo_generate/Double_Page_Flash/"
-#define O_PATH GENERATE_PATH
-
 bool create_directorys_ooo_gererate(const bool clean) {
-    if (clean) {
-        return  nob_remove("./styled_source");
-    }
-    return nob_mkdir_if_not_exists("./styled_source");
+        if (clean) {
+                return  nob_remove("./styled_source");
+        }
+        return nob_mkdir_if_not_exists("./styled_source");
 }
 
 bool ooo_style(const char *input_path, const char *output_path) {
-    Nob_Cmd cmd = {0};
-    nob_cmd_append(&cmd, "../build/ooo", "-i", input_path, "-o", output_path);
-    bool ok = nob_cmd_run_async(cmd);
-    nob_cmd_free(cmd);
-    return ok;
+        Nob_Cmd cmd = {0};
+        nob_cmd_append(&cmd, "../build/ooo", "-i", input_path, "-o", output_path);
+        bool ok = nob_cmd_run_sync(cmd);
+        nob_cmd_free(cmd);
+        return ok;
 }
 
 int main(int argc, char **argv) {
-        nob_log(NOB_INFO, "version 3");
         bool result = true;
         NOB_GO_REBUILD_URSELF(argc, argv);      
         #ifdef _WIN32
@@ -36,12 +31,10 @@ int main(int argc, char **argv) {
 
         if (argc > 1) nob_shift_args(&argc, &argv);
         const bool clean = strcmp(nob_shift_args(&argc, &argv), "clean") == 0;
-
         if (!create_directorys_ooo_gererate(clean)) {
                 nob_log(NOB_ERROR, "style exit with an error!");
                 return 1;
         }
-
         if (clean) {
                 nob_log(NOB_INFO, "style clean exit successful!");
                 return 0;
