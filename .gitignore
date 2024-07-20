@@ -1,28 +1,24 @@
 **/build
 **/tree-sitter
 **/tree-sitter-c
-**/examples
 **/.cache
 **/googletest
-**/ooo_generate
 **/trash
 
-nobuild
-nobuild.old
 nob
 nob.old
 style
 style.old
 ooo
 otest
-output.c
+donut
+conway
 
-nobuild.exe
-nobuild.exe.old
 nob.exe
-nob.exe.old
+nob.old.exe
 style.exe
-style.exe.old
+style.old.exe
 ooo.exe
 otest.exe
-unzip.exe
+donut.exe
+conway.exe
