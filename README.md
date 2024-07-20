@@ -45,5 +45,28 @@ Next it will create the build directory with the executables:
 Deletes all the downloads and builds.
 
 
+## Examples
+
+```console
+$ cd example
+$ gcc -o style style.c # ONLY ONCE!!!
+$ ./style
+```
+
+Files in example/source are formatted and saved in example/styled_source.
+- donut.c is from => https://www.a1k0n.net/2006/09/15/obfuscated-c-donut.html
+- conway.c is from => https://github.com/tsoding/conway/blob/main/conway.c
+- arr.c is my test file.
+
+donut.c and conway.c can be compiled and executed
+```console
+$ gcc -o donut donut.c -lm
+$ ./donut
+```
+```console
+$ gcc -o conway conway.c
+$ ./conway
+```
+
 
 
