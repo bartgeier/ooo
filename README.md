@@ -48,12 +48,12 @@ Deletes all the downloads and builds.
 ## Examples
 
 ```console
-$ cd example
+$ cd examples
 $ gcc -o style style.c # ONLY ONCE!!!
 $ ./style
 ```
 
-Files in example/source are formatted and saved in example/styled_source.
+Files in examples/source are formatted and saved in examples/styled_source.
 - donut.c is from => https://www.a1k0n.net/2006/09/15/obfuscated-c-donut.html
 - conway.c is from => https://github.com/tsoding/conway/blob/main/conway.c
 - arr.c is my test file.
