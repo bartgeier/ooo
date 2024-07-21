@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
 
         uint64_t t_start = nob_millis();
 
+        result &= ooo_style("source/show.c", "styled_source/show.c");
         result &= ooo_style("source/arr.c", "styled_source/arr.c");
         result &= ooo_style("source/conway.c", "styled_source/conway.c");
         result &= ooo_style("source/donut.c", "styled_source/donut.c");
