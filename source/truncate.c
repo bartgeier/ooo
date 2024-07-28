@@ -196,11 +196,11 @@ void ooo_truncate_spaces(
                         slice.begin,
                         slice.end
                 );
-                if (job->sink.at[job->sink.size - 1] != '/') {
+                size_t const idx = job->sink.size - new_comment_size;
+                if (job->sink.at[idx] == '/' & job->sink.at[idx + 1] == '/') {
                         /* line comment becomes a block comment */
                         // a comment
                         /* a comment */
-                        size_t const idx = job->sink.size - new_comment_size;
                         job->sink.at[idx] = '/';
                         job->sink.at[idx + 1] = '*';
                         OStr_append_cstring(&job->sink, " */");
