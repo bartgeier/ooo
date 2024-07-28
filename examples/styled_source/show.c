@@ -150,6 +150,10 @@ void switch_statement(void) {
     case 2:
         x = c;
         break;
+    case 3:
+    case 4:
+        x = 11;
+        break;
     default:
         x = 0;
         break;
