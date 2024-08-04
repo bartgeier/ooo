@@ -8,6 +8,7 @@
 
 #include "tree_sitter/api.h"
 #include <stdlib.h>
+#include "Regex.h"
 
 typedef struct {
         size_t begin;
@@ -187,6 +188,7 @@ char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A) {
         return 'N';
 }
 
+#if 0
 void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
         size_t x = 0;
         for (size_t i = 0; i < A->size; i++) {
@@ -217,5 +219,53 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
         B->size = x;
         OStr_clear(A);
 }
+#else
+
+void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
+        size_t x = 0;
+        Regex_CommentBlock_1Line_t reg = {RCB1_IDLE, 0, 0};
+        for (size_t i = 0; i < A->size; i++) {
+
+                bool const found =  Regex_commentBlock_1line(&reg, i, A->at[i]);
+                if (found) {
+                        B->at[x - (i - reg.begin)] = '/'; // '/*' becomes '//'
+                        x = x - reg.num_of_truncate;      // trunc end of line
+                }
+
+                if (A->at[i] == '\n') {
+                        switch (lineFeed) {
+                        case 'r':
+                                B->at[x++] = '\r';
+                                break;
+                        case 'n':
+                                B->at[x++] = '\n';
+                                break;
+                        case 'R':
+                                B->at[x++] = '\r';
+                                B->at[x++] = '\n';
+                                break;
+                        case 'N':
+                                /* this is not normal */
+                                B->at[x++] = '\n';
+                                B->at[x++] = '\r';
+                                break;
+                        }
+                } else {
+                        B->at[x++] = A->at[i];
+                }
+
+        }
+        bool const found =  Regex_commentBlock_1line(&reg, A->size, 0);
+        if (found) {
+                // case end of OStr
+                B->at[x - (x - reg.begin)] = '/';
+                x = x - reg.num_of_truncate;
+        }
+        B->at[x] = 0;
+        B->size = x;
+        OStr_clear(A);
+}
+#endif
+
 #endif
 #undef OSTR_IMPLEMENTAION

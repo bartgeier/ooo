@@ -327,6 +327,31 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_ANOTHER_ONE_) {
         EXPECT_EQ(x, (size_t)2);
 }
 
+#if 0
+TEST(OStr, at_least_1_not_3__three) {
+        char *src = (char*)malloc(MEM_SIZE);
+        const char *a = "The   quick  ";
+        //                  ^  ^
+        //                  3  6
+        for (size_t i = 0; i < strlen(a); i++) {
+                src[i] = a[i];
+        } 
+        src[strlen(a)] = 0;
+        OStr source_str = {
+                .capacity = MEM_SIZE,
+                .size = strlen(a),
+                .at = src
+        };
+        size_t x = OStr_at_least_1_not_3(&source_str, 3, 6, ' ');
+        EXPECT_EQ(x, (size_t)2);
+}
+#endif
+
+
+
+// bool OStr_last_has_LF(OStr const *m, Slice const s);
+// char OStr_need_1LF_or_1Space(OStr const *m, Slice const s);
+
 TEST(OStr, OStr_need_LF_or_space_GOT_LF) {
         char *src = (char*)malloc(MEM_SIZE);
         const char *a = "The\n\n\nquick  ";

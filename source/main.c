@@ -11,11 +11,12 @@
 #include "node_printer.h"
 #include "truncate.h"
 #include "OArg.h"
+#define REGEX_IMPLEMENTATION
+#include "Regex.h"
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
 #define OJOB_IMPLEMENTATION
 #include "OJob.h"
-
 
 // Declare the `tree_sitter_json` function, which is
 // implemented by the `tree-sitter-json` library.

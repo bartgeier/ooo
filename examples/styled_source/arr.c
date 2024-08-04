@@ -50,13 +50,13 @@ int numberes[] = {
 };
 int numberes[] = {[a] = 1, [b] = 2, [c] = 2};
 
-int a = 5; /* a equal five */
+int a = 5; // a equal five
 
 int a, b, c;
 
-/* comment */
+// comment
 void foo(int a, int b) { x = a + b; }
-/* comment  */
+// comment
 int bar(
     int a,
     int b, int c,
@@ -67,7 +67,7 @@ int bar(
 }
 
 int main(int argc, char **argv) {
-    /* declaration, init_declarator */
+    // declaration, init_declarator
     int a = 11;
     int const b = 13;
     
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
      *  indentation
         is ... */
     
-    /* comment */
+    // comment
     int const **c = &a;
     int *const *d = &a;
     const char chr[] = "Hello world!";
@@ -124,7 +124,7 @@ int main(int argc, char **argv) {
     { int A = 5; }
     int s = sizeof(A);
     #define FOO 5 == n
-    /* comment */
+    // comment
     (void)a;
     char a = (char)A;
     char const *a = (char const *)A;
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
     char const **a = (char const **)A;
     const char **a = (const char **)A;
     #ifdef _WIN32
-    /* comment */
+    // comment
     
     #else
     
@@ -140,7 +140,7 @@ int main(int argc, char **argv) {
     
     
     
-    /* comment */
+    // comment
     
     #endif
     
@@ -259,7 +259,7 @@ int main(int argc, char **argv) {
             a++;
         }
         } break;
-    case e: /* comment  */
+    case e: // comment
         {
         }
         break;
