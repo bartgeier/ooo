@@ -182,4 +182,4 @@ bool Regex_commentBlock_1line(Regex_CommentBlock_1Line_t *self, size_t const idx
 }
 
 #endif
-#undef REGEX_IMPLEMENTATION
+// #undef REGEX_IMPLEMENTATION

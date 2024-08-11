@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="15.1">
-  <zoom_level>7</zoom_level>
+  <zoom_level>9</zoom_level>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>231</x>
-      <y>287</y>
-      <w>259</w>
-      <h>364</h>
+      <x>297</x>
+      <y>459</y>
+      <w>333</w>
+      <h>468</h>
     </coordinates>
     <panel_attributes>0</panel_attributes>
     <additional_attributes/>
@@ -16,9 +16,9 @@
     <id>UMLState</id>
     <coordinates>
       <x>0</x>
-      <y>294</y>
-      <w>63</w>
-      <h>315</h>
+      <y>468</y>
+      <w>81</w>
+      <h>405</h>
     </coordinates>
     <panel_attributes>r</panel_attributes>
     <additional_attributes/>
@@ -26,10 +26,10 @@
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>686</x>
-      <y>301</y>
-      <w>63</w>
-      <h>301</h>
+      <x>882</x>
+      <y>477</y>
+      <w>81</w>
+      <h>387</h>
     </coordinates>
     <panel_attributes>n</panel_attributes>
     <additional_attributes/>
@@ -37,10 +37,10 @@
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>56</x>
-      <y>308</y>
-      <w>189</w>
-      <h>28</h>
+      <x>72</x>
+      <y>486</y>
+      <w>243</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 at[i] == 'r'</panel_attributes>
@@ -49,10 +49,10 @@ at[i] == 'r'</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>483</x>
-      <y>308</y>
-      <w>217</w>
-      <h>28</h>
+      <x>621</x>
+      <y>486</y>
+      <w>279</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 at[i] == 'n'</panel_attributes>
@@ -61,10 +61,10 @@ at[i] == 'n'</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>266</x>
-      <y>224</y>
-      <w>175</w>
-      <h>77</h>
+      <x>342</x>
+      <y>378</y>
+      <w>225</w>
+      <h>99</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else
@@ -75,10 +75,10 @@ B-&gt;at[x++] = A-&gt;at[i]</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>56</x>
-      <y>469</y>
-      <w>189</w>
-      <h>91</h>
+      <x>72</x>
+      <y>693</y>
+      <w>243</w>
+      <h>117</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 at[i] == 'n' 
@@ -93,10 +93,10 @@ rn++;
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>483</x>
-      <y>469</y>
-      <w>217</w>
-      <h>91</h>
+      <x>621</x>
+      <y>693</y>
+      <w>279</w>
+      <h>117</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 at[i] == 'r' 
@@ -111,10 +111,10 @@ nr++;
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>56</x>
-      <y>378</y>
-      <w>189</w>
-      <h>126</h>
+      <x>72</x>
+      <y>576</y>
+      <w>243</w>
+      <h>162</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 at[i] == 'r' 
@@ -132,10 +132,10 @@ r += 2;
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>483</x>
-      <y>378</y>
-      <w>217</w>
-      <h>126</h>
+      <x>621</x>
+      <y>576</y>
+      <w>279</w>
+      <h>162</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 at[i] == 'n' 
@@ -153,10 +153,10 @@ n += 2;
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>56</x>
-      <y>553</y>
-      <w>189</w>
-      <h>63</h>
+      <x>72</x>
+      <y>801</y>
+      <w>243</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else
@@ -169,10 +169,10 @@ r++;</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>483</x>
-      <y>553</y>
-      <w>217</w>
-      <h>98</h>
+      <x>621</x>
+      <y>801</y>
+      <w>279</w>
+      <h>126</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else
@@ -188,10 +188,10 @@ n++;
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>189</x>
-      <y>189</y>
-      <w>343</w>
-      <h>35</h>
+      <x>243</x>
+      <y>333</y>
+      <w>441</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A)
 lw=3</panel_attributes>
@@ -200,10 +200,10 @@ lw=3</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>714</x>
-      <y>798</y>
-      <w>140</w>
-      <h>56</h>
+      <x>918</x>
+      <y>1116</y>
+      <w>180</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>copy_treesitter_symbols.c</panel_attributes>
     <additional_attributes/>
@@ -211,10 +211,10 @@ lw=3</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>889</x>
-      <y>798</y>
-      <w>105</w>
-      <h>21</h>
+      <x>1143</x>
+      <y>1116</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>tree_sitter/api.h</panel_attributes>
     <additional_attributes/>
@@ -222,10 +222,10 @@ lw=3</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>889</x>
-      <y>833</y>
-      <w>63</w>
-      <h>21</h>
+      <x>1143</x>
+      <y>1161</y>
+      <w>81</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>OStr.h</panel_attributes>
     <additional_attributes/>
@@ -233,10 +233,10 @@ lw=3</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>847</x>
-      <y>798</y>
-      <w>56</w>
-      <h>21</h>
+      <x>1089</x>
+      <y>1116</y>
+      <w>72</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
@@ -244,10 +244,10 @@ lw=3</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>847</x>
-      <y>833</y>
-      <w>56</w>
-      <h>21</h>
+      <x>1089</x>
+      <y>1161</y>
+      <w>72</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
@@ -255,10 +255,10 @@ lw=3</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>21</x>
-      <y>819</y>
-      <w>133</w>
-      <h>168</h>
+      <x>27</x>
+      <y>1143</y>
+      <w>171</w>
+      <h>216</h>
     </coordinates>
     <panel_attributes>main.c
 ooo
@@ -272,10 +272,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>84</x>
-      <y>728</y>
-      <w>77</w>
-      <h>21</h>
+      <x>108</x>
+      <y>1026</y>
+      <w>99</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>OArg.c</panel_attributes>
     <additional_attributes/>
@@ -283,10 +283,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>84</x>
-      <y>770</y>
-      <w>77</w>
-      <h>21</h>
+      <x>108</x>
+      <y>1080</y>
+      <w>99</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>OArg.h</panel_attributes>
     <additional_attributes/>
@@ -294,10 +294,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>511</x>
-      <y>819</y>
-      <w>63</w>
-      <h>21</h>
+      <x>657</x>
+      <y>1143</y>
+      <w>81</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>OStr.h</panel_attributes>
     <additional_attributes/>
@@ -305,10 +305,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>378</x>
-      <y>896</y>
-      <w>112</w>
-      <h>21</h>
+      <x>486</x>
+      <y>1242</y>
+      <w>144</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>truncate_spaces.c</panel_attributes>
     <additional_attributes/>
@@ -316,10 +316,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>189</x>
-      <y>889</y>
-      <w>105</w>
-      <h>35</h>
+      <x>243</x>
+      <y>1233</y>
+      <w>135</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>truncate_spaces.h</panel_attributes>
     <additional_attributes/>
@@ -327,10 +327,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>364</x>
-      <y>819</y>
-      <w>112</w>
-      <h>21</h>
+      <x>468</x>
+      <y>1143</y>
+      <w>144</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>OJob.h</panel_attributes>
     <additional_attributes/>
@@ -338,10 +338,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>217</x>
-      <y>938</y>
-      <w>77</w>
-      <h>21</h>
+      <x>279</x>
+      <y>1296</y>
+      <w>99</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>ruler.h</panel_attributes>
     <additional_attributes/>
@@ -349,10 +349,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>378</x>
-      <y>938</y>
-      <w>91</w>
-      <h>21</h>
+      <x>486</x>
+      <y>1296</y>
+      <w>117</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>ruler.c</panel_attributes>
     <additional_attributes/>
@@ -360,10 +360,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>231</x>
-      <y>1148</y>
-      <w>168</w>
-      <h>28</h>
+      <x>297</x>
+      <y>1566</y>
+      <w>216</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>ooo_treesitter_symbol_ids.h</panel_attributes>
     <additional_attributes/>
@@ -371,10 +371,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>231</x>
-      <y>1120</y>
-      <w>105</w>
-      <h>21</h>
+      <x>297</x>
+      <y>1530</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>tree_sitter/api.h</panel_attributes>
     <additional_attributes/>
@@ -382,10 +382,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>287</x>
-      <y>896</y>
-      <w>105</w>
-      <h>21</h>
+      <x>369</x>
+      <y>1242</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
@@ -393,10 +393,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>147</x>
-      <y>903</y>
-      <w>49</w>
-      <h>21</h>
+      <x>189</x>
+      <y>1251</y>
+      <w>63</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>50.0;10.0;10.0;10.0</additional_attributes>
@@ -404,10 +404,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>287</x>
-      <y>938</y>
-      <w>105</w>
-      <h>21</h>
+      <x>369</x>
+      <y>1296</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
@@ -415,10 +415,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>329</x>
-      <y>819</y>
-      <w>49</w>
-      <h>21</h>
+      <x>423</x>
+      <y>1143</y>
+      <w>63</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>50.0;10.0;10.0;10.0</additional_attributes>
@@ -426,10 +426,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>112</x>
-      <y>784</y>
-      <w>21</w>
-      <h>49</h>
+      <x>144</x>
+      <y>1098</y>
+      <w>27</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -437,10 +437,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>112</x>
-      <y>742</y>
-      <w>21</w>
-      <h>42</h>
+      <x>144</x>
+      <y>1044</y>
+      <w>27</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
@@ -448,10 +448,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>189</x>
-      <y>1155</y>
-      <w>56</w>
-      <h>21</h>
+      <x>243</x>
+      <y>1575</y>
+      <w>72</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
@@ -460,9 +460,9 @@ OJob.h</panel_attributes>
     <id>UMLClass</id>
     <coordinates>
       <x>0</x>
-      <y>805</y>
-      <w>336</w>
-      <h>266</h>
+      <y>1125</y>
+      <w>432</w>
+      <h>342</h>
     </coordinates>
     <panel_attributes/>
     <additional_attributes/>
@@ -470,10 +470,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>469</x>
-      <y>819</y>
-      <w>56</w>
-      <h>21</h>
+      <x>603</x>
+      <y>1143</y>
+      <w>72</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
@@ -481,10 +481,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>182</x>
-      <y>875</y>
-      <w>133</w>
-      <h>168</h>
+      <x>234</x>
+      <y>1215</y>
+      <w>171</w>
+      <h>216</h>
     </coordinates>
     <panel_attributes/>
     <additional_attributes/>
@@ -492,10 +492,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>63</x>
-      <y>1120</y>
-      <w>133</w>
-      <h>49</h>
+      <x>81</x>
+      <y>1530</y>
+      <w>171</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>tree_sitter_navigator.h</panel_attributes>
     <additional_attributes/>
@@ -503,10 +503,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>63</x>
-      <y>1197</y>
-      <w>133</w>
-      <h>21</h>
+      <x>81</x>
+      <y>1629</y>
+      <w>171</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>tree_sitter_navigator.c</panel_attributes>
     <additional_attributes/>
@@ -514,10 +514,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>119</x>
-      <y>1162</y>
-      <w>21</w>
-      <h>49</h>
+      <x>153</x>
+      <y>1584</y>
+      <w>27</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;10.0;50.0</additional_attributes>
@@ -525,10 +525,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>112</x>
-      <y>1064</y>
-      <w>21</w>
-      <h>70</h>
+      <x>144</x>
+      <y>1458</y>
+      <w>27</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
@@ -536,10 +536,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>189</x>
-      <y>1127</y>
-      <w>56</w>
-      <h>21</h>
+      <x>243</x>
+      <y>1539</y>
+      <w>72</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>60.0;10.0;10.0;10.0</additional_attributes>
@@ -547,10 +547,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>210</x>
-      <y>1008</y>
-      <w>84</w>
-      <h>21</h>
+      <x>270</x>
+      <y>1386</y>
+      <w>108</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>node_printer.h</panel_attributes>
     <additional_attributes/>
@@ -558,10 +558,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>378</x>
-      <y>1008</y>
-      <w>105</w>
-      <h>21</h>
+      <x>486</x>
+      <y>1386</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>node_printer.c</panel_attributes>
     <additional_attributes/>
@@ -569,10 +569,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>287</x>
-      <y>1008</y>
-      <w>105</w>
-      <h>21</h>
+      <x>369</x>
+      <y>1386</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
@@ -580,10 +580,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>210</x>
-      <y>973</y>
-      <w>84</w>
-      <h>21</h>
+      <x>270</x>
+      <y>1341</y>
+      <w>108</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>indentation.h</panel_attributes>
     <additional_attributes/>
@@ -591,10 +591,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>378</x>
-      <y>973</y>
-      <w>105</w>
-      <h>21</h>
+      <x>486</x>
+      <y>1341</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>indentation.c</panel_attributes>
     <additional_attributes/>
@@ -602,10 +602,10 @@ OJob.h</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>287</x>
-      <y>973</y>
-      <w>105</w>
-      <h>21</h>
+      <x>369</x>
+      <y>1341</y>
+      <w>135</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
@@ -613,10 +613,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1127</x>
-      <y>175</y>
-      <w>63</w>
-      <h>518</h>
+      <x>1449</x>
+      <y>315</y>
+      <w>81</w>
+      <h>666</h>
     </coordinates>
     <panel_attributes>IDLE</panel_attributes>
     <additional_attributes/>
@@ -624,10 +624,10 @@ OJob.h</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1302</x>
-      <y>252</y>
-      <w>70</w>
-      <h>112</h>
+      <x>1674</x>
+      <y>414</y>
+      <w>90</w>
+      <h>144</h>
     </coordinates>
     <panel_attributes>SLASH_0
 bg=white
@@ -637,10 +637,10 @@ transparency=0</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1554</x>
-      <y>231</y>
-      <w>77</w>
-      <h>133</h>
+      <x>1998</x>
+      <y>387</y>
+      <w>99</w>
+      <h>171</h>
     </coordinates>
     <panel_attributes>ASTERISK_0
 bg=white
@@ -650,10 +650,10 @@ transparency=0</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1302</x>
-      <y>420</y>
-      <w>70</w>
-      <h>91</h>
+      <x>1674</x>
+      <y>630</y>
+      <w>90</w>
+      <h>117</h>
     </coordinates>
     <panel_attributes>SLASH_1
 bg=white
@@ -663,10 +663,10 @@ transparency=0</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1554</x>
-      <y>420</y>
-      <w>294</w>
-      <h>91</h>
+      <x>1998</x>
+      <y>630</y>
+      <w>378</w>
+      <h>117</h>
     </coordinates>
     <panel_attributes>ASTERISK_1
 bg=white
@@ -676,10 +676,10 @@ transparency=0</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1701</x>
-      <y>315</y>
-      <w>140</w>
-      <h>56</h>
+      <x>2187</x>
+      <y>495</y>
+      <w>180</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>CHAR
 --
@@ -693,10 +693,10 @@ valign=top</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1967</x>
-      <y>231</y>
-      <w>140</w>
-      <h>280</h>
+      <x>2529</x>
+      <y>387</y>
+      <w>180</w>
+      <h>360</h>
     </coordinates>
     <panel_attributes>SPACE
 --
@@ -710,10 +710,10 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1183</x>
-      <y>259</y>
-      <w>133</w>
-      <h>35</h>
+      <x>1521</x>
+      <y>423</y>
+      <w>171</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 /
@@ -723,10 +723,10 @@ valign=top</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1365</x>
-      <y>259</y>
-      <w>203</w>
-      <h>56</h>
+      <x>1755</x>
+      <y>423</y>
+      <w>261</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 *
@@ -738,10 +738,10 @@ num_of_truncate = 0
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1624</x>
-      <y>329</y>
-      <w>91</w>
-      <h>35</h>
+      <x>2088</x>
+      <y>513</y>
+      <w>117</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else
@@ -751,10 +751,10 @@ else
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1834</x>
-      <y>315</y>
-      <w>147</w>
-      <h>28</h>
+      <x>2358</x>
+      <y>495</y>
+      <w>189</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ' '</panel_attributes>
@@ -763,10 +763,10 @@ else
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1841</x>
-      <y>420</y>
-      <w>140</w>
-      <h>28</h>
+      <x>2367</x>
+      <y>630</y>
+      <w>180</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 *</panel_attributes>
@@ -775,10 +775,10 @@ else
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1365</x>
-      <y>448</y>
-      <w>203</w>
-      <h>35</h>
+      <x>1755</x>
+      <y>666</y>
+      <w>261</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 /
@@ -788,10 +788,10 @@ num_of_truncate += 2 </panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1183</x>
-      <y>469</y>
-      <w>133</w>
-      <h>28</h>
+      <x>1521</x>
+      <y>693</y>
+      <w>171</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 \n | 0</panel_attributes>
@@ -800,10 +800,10 @@ num_of_truncate += 2 </panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1722</x>
-      <y>364</y>
-      <w>28</w>
-      <h>70</h>
+      <x>2214</x>
+      <y>558</y>
+      <w>36</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 *</panel_attributes>
@@ -812,10 +812,10 @@ num_of_truncate += 2 </panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1834</x>
-      <y>343</y>
-      <w>147</w>
-      <h>35</h>
+      <x>2358</x>
+      <y>531</y>
+      <w>189</w>
+      <h>45</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else
@@ -825,10 +825,10 @@ else
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1582</x>
-      <y>357</y>
-      <w>28</w>
-      <h>77</h>
+      <x>2034</x>
+      <y>549</y>
+      <w>36</w>
+      <h>99</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 *</panel_attributes>
@@ -837,10 +837,10 @@ else
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1624</x>
-      <y>245</y>
-      <w>357</w>
-      <h>28</h>
+      <x>2088</x>
+      <y>405</y>
+      <w>459</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ' '</panel_attributes>
@@ -849,10 +849,10 @@ else
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1631</x>
-      <y>504</y>
-      <w>161</w>
-      <h>56</h>
+      <x>2097</x>
+      <y>738</y>
+      <w>207</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 *
@@ -862,10 +862,10 @@ num_of_truncate = 0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1183</x>
-      <y>434</y>
-      <w>133</w>
-      <h>28</h>
+      <x>1521</x>
+      <y>648</y>
+      <w>171</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else</panel_attributes>
@@ -874,10 +874,10 @@ else</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1841</x>
-      <y>469</y>
-      <w>140</w>
-      <h>28</h>
+      <x>2367</x>
+      <y>693</y>
+      <w>180</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ' '</panel_attributes>
@@ -886,10 +886,10 @@ else</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1799</x>
-      <y>364</y>
-      <w>42</w>
-      <h>70</h>
+      <x>2313</x>
+      <y>558</y>
+      <w>54</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else
@@ -899,10 +899,10 @@ else
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1183</x>
-      <y>322</y>
-      <w>133</w>
-      <h>28</h>
+      <x>1521</x>
+      <y>504</y>
+      <w>171</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else</panel_attributes>
@@ -911,10 +911,10 @@ else</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1127</x>
-      <y>105</y>
-      <w>1043</w>
-      <h>56</h>
+      <x>1449</x>
+      <y>225</y>
+      <w>1341</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>Detect a block comment which is only a one liner.
 (a kind of a regular expression)
@@ -926,10 +926,10 @@ lw=3</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>1204</x>
-      <y>532</y>
-      <w>252</w>
-      <h>42</h>
+      <x>1548</x>
+      <y>774</y>
+      <w>324</w>
+      <h>54</h>
     </coordinates>
     <panel_attributes>block one liner comment at the end of the line
 successful detected
@@ -941,10 +941,10 @@ lw=3</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1225</x>
-      <y>476</y>
-      <w>98</w>
-      <h>70</h>
+      <x>1575</x>
+      <y>702</y>
+      <w>126</w>
+      <h>90</h>
     </coordinates>
     <panel_attributes>lt=.&gt;</panel_attributes>
     <additional_attributes>10.0;10.0;120.0;80.0</additional_attributes>
@@ -952,10 +952,10 @@ lw=3</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1526</x>
-      <y>175</y>
-      <w>644</w>
-      <h>539</h>
+      <x>1962</x>
+      <y>315</y>
+      <w>828</w>
+      <h>693</h>
     </coordinates>
     <panel_attributes>
 layer=-1
@@ -967,10 +967,10 @@ bg=light_gray
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1743</x>
-      <y>665</y>
-      <w>42</w>
-      <h>63</h>
+      <x>2241</x>
+      <y>945</y>
+      <w>54</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 \n | 0</panel_attributes>
@@ -979,10 +979,10 @@ bg=light_gray
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1722</x>
-      <y>616</y>
-      <w>70</w>
-      <h>56</h>
+      <x>2214</x>
+      <y>882</y>
+      <w>90</w>
+      <h>72</h>
     </coordinates>
     <panel_attributes>DISCARD
 bg=white
@@ -992,10 +992,10 @@ transparency=0</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1568</x>
-      <y>616</y>
-      <w>70</w>
-      <h>49</h>
+      <x>2016</x>
+      <y>882</y>
+      <w>90</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>ASTERISK_2
 bg=white
@@ -1005,10 +1005,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1631</x>
-      <y>616</y>
-      <w>105</w>
-      <h>28</h>
+      <x>2097</x>
+      <y>882</y>
+      <w>135</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 *</panel_attributes>
@@ -1017,10 +1017,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1183</x>
-      <y>623</y>
-      <w>399</w>
-      <h>28</h>
+      <x>1521</x>
+      <y>891</y>
+      <w>513</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 /</panel_attributes>
@@ -1029,10 +1029,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1330</x>
-      <y>357</y>
-      <w>21</w>
-      <h>77</h>
+      <x>1710</x>
+      <y>549</y>
+      <w>27</w>
+      <h>99</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 /
@@ -1042,10 +1042,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1631</x>
-      <y>637</y>
-      <w>105</w>
-      <h>28</h>
+      <x>2097</x>
+      <y>909</y>
+      <w>135</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 else</panel_attributes>
@@ -1054,10 +1054,10 @@ else</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1330</x>
-      <y>217</y>
-      <w>21</w>
-      <h>49</h>
+      <x>1710</x>
+      <y>369</y>
+      <w>27</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 /</panel_attributes>
@@ -1066,10 +1066,10 @@ else</panel_attributes>
   <element>
     <id>UMLState</id>
     <coordinates>
-      <x>1281</x>
-      <y>175</y>
-      <w>112</w>
-      <h>49</h>
+      <x>1647</x>
+      <y>315</y>
+      <w>144</w>
+      <h>63</h>
     </coordinates>
     <panel_attributes>CPP 
  // line comment
@@ -1080,10 +1080,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1183</x>
-      <y>182</y>
-      <w>112</w>
-      <h>28</h>
+      <x>1521</x>
+      <y>324</y>
+      <w>144</w>
+      <h>36</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 \n | 0</panel_attributes>
@@ -1092,10 +1092,10 @@ transparency=0</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>1974</x>
-      <y>287</y>
-      <w>147</w>
-      <h>196</h>
+      <x>2538</x>
+      <y>459</y>
+      <w>189</w>
+      <h>252</h>
     </coordinates>
     <panel_attributes>lt=-&gt;
 ' ' 
@@ -1105,10 +1105,10 @@ num_of_truncate++</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>469</x>
-      <y>756</y>
-      <w>112</w>
-      <h>21</h>
+      <x>603</x>
+      <y>1062</y>
+      <w>144</w>
+      <h>27</h>
     </coordinates>
     <panel_attributes>Regex.h</panel_attributes>
     <additional_attributes/>
@@ -1116,12 +1116,540 @@ num_of_truncate++</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>525</x>
-      <y>770</y>
-      <w>28</w>
-      <h>63</h>
+      <x>675</x>
+      <y>1080</y>
+      <w>36</w>
+      <h>81</h>
     </coordinates>
     <panel_attributes>lt=&lt;-</panel_attributes>
     <additional_attributes>20.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3177</x>
+      <y>207</y>
+      <w>81</w>
+      <h>756</h>
+    </coordinates>
+    <panel_attributes>IDLE</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3483</x>
+      <y>414</y>
+      <w>90</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>SLASH_0
+bg=white
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3726</x>
+      <y>243</y>
+      <w>99</w>
+      <h>252</h>
+    </coordinates>
+    <panel_attributes>ASTERISK_0
+bg=white
+transparency=0
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3978</x>
+      <y>504</y>
+      <w>531</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>ID_OK
+--
+entry:
+
+
+bg=white
+transparency=0
+valign=top</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3249</x>
+      <y>423</y>
+      <w>252</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+/
+</panel_attributes>
+    <additional_attributes>10.0;20.0;260.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3564</x>
+      <y>423</y>
+      <w>180</w>
+      <h>99</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+*
+begin = idx
+found = false
+id_size = 0
+
+</panel_attributes>
+    <additional_attributes>10.0;20.0;180.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3249</x>
+      <y>729</y>
+      <w>261</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+\n | 0
+</panel_attributes>
+    <additional_attributes>270.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3249</x>
+      <y>504</y>
+      <w>252</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+else</panel_attributes>
+    <additional_attributes>260.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>3285</x>
+      <y>774</y>
+      <w>189</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>/*if (found == true)*/
+block one liner comment 
+at the end of the line
+restore to C++ // comment
+transparency=0
+
+
+lw=3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3699</x>
+      <y>198</y>
+      <w>846</w>
+      <h>765</h>
+    </coordinates>
+    <panel_attributes>
+layer=-1
+bg=light_gray
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3969</x>
+      <y>882</y>
+      <w>108</w>
+      <h>99</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+\n | 0
+found = false</panel_attributes>
+    <additional_attributes>10.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3942</x>
+      <y>819</y>
+      <w>90</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>DISCARD
+bg=white
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3735</x>
+      <y>819</y>
+      <w>90</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>ASTERISK_2
+bg=white
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3816</x>
+      <y>819</y>
+      <w>144</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+*</panel_attributes>
+    <additional_attributes>140.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3249</x>
+      <y>837</y>
+      <w>504</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+/</panel_attributes>
+    <additional_attributes>540.0;10.0;310.0;10.0;310.0;40.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3771</x>
+      <y>486</y>
+      <w>36</w>
+      <h>189</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+*
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3816</x>
+      <y>846</y>
+      <w>144</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+else</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3519</x>
+      <y>369</y>
+      <w>27</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+/</panel_attributes>
+    <additional_attributes>10.0;50.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3456</x>
+      <y>315</y>
+      <w>144</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>CPP 
+ // line comment
+bg=white
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3249</x>
+      <y>324</y>
+      <w>225</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+\n | 0</panel_attributes>
+    <additional_attributes>230.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLSpecialState</id>
+    <coordinates>
+      <x>3969</x>
+      <y>351</y>
+      <w>90</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>type=decision
+
+ condition
+bg=white
+transparency=0
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3816</x>
+      <y>351</y>
+      <w>171</w>
+      <h>63</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+else</panel_attributes>
+    <additional_attributes>10.0;20.0;130.0;20.0;170.0;50.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>4005</x>
+      <y>432</y>
+      <w>234</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+chr == id[id_size]
+id_size++
+found = id_size == (sizeof(ID)-1);
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3816</x>
+      <y>243</y>
+      <w>216</w>
+      <h>126</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+chr != id[id_size]
+idx = 0
+found = false</panel_attributes>
+    <additional_attributes>220.0;120.0;220.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>4050</x>
+      <y>378</y>
+      <w>414</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+else
+idx = (id_size &lt; (sizeof(ID) - 1) ? idx : 0
+</panel_attributes>
+    <additional_attributes>440.0;140.0;440.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3249</x>
+      <y>639</y>
+      <w>261</w>
+      <h>36</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+else</panel_attributes>
+    <additional_attributes>270.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>3312</x>
+      <y>585</y>
+      <w>162</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>/*if (found == true)*/
+remove ID
+transparency=0
+
+
+lw=3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3753</x>
+      <y>657</y>
+      <w>441</w>
+      <h>81</h>
+    </coordinates>
+    <panel_attributes>ASTERISK_1
+bg=white
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLState</id>
+    <coordinates>
+      <x>3492</x>
+      <y>639</y>
+      <w>90</w>
+      <h>126</h>
+    </coordinates>
+    <panel_attributes>SLASH_1
+bg=white
+transparency=0</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3573</x>
+      <y>684</y>
+      <w>198</w>
+      <h>45</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+/
+</panel_attributes>
+    <additional_attributes>200.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3519</x>
+      <y>549</y>
+      <w>27</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+/</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>4140</x>
+      <y>585</y>
+      <w>108</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+*
+id_size += 2
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;80.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3843</x>
+      <y>387</y>
+      <w>144</w>
+      <h>288</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+else
+id_size = 0;</panel_attributes>
+    <additional_attributes>10.0;300.0;10.0;50.0;110.0;50.0;140.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3465</x>
+      <y>603</y>
+      <w>81</w>
+      <h>27</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3438</x>
+      <y>738</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;40.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>3168</x>
+      <y>0</y>
+      <w>1404</w>
+      <h>189</h>
+    </coordinates>
+    <panel_attributes>/*Regex_commentOpen*/
+    - Detect a block comment which 
+    - is closed with an mark ID.
+
+Example:
+    - input   /* this is a closed comment @123-345-567A*/
+    - return // this is a closed comment
+    - @123-345-567A is the ID
+   - not allowed chars for the ID is '0' '\n' * and / 
+lw=3</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3429</x>
+      <y>621</y>
+      <w>27</w>
+      <h>54</h>
+    </coordinates>
+    <panel_attributes>lt=.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3834</x>
+      <y>729</y>
+      <w>216</w>
+      <h>108</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+*
+found = false
+
+
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;50.0;220.0;50.0;220.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>3744</x>
+      <y>873</y>
+      <w>81</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;
+*</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0;70.0;60.0;70.0;10.0</additional_attributes>
   </element>
 </diagram>

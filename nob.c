@@ -260,9 +260,11 @@ bool unittests_build(bool const clean) {
         nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
         nob_cmd_append(&cmd, "-o", "build/otest");
         nob_cmd_append(&cmd, "source/tree_navigator.c");
+        nob_cmd_append(&cmd, "source/Regex_commentOpen.c");
         nob_cmd_append(&cmd, "unittests/tst_OStr.c");
         nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
         nob_cmd_append(&cmd, "unittests/tst_regex.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_commentOpen.c");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a");
         nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
         ok &= nob_cmd_run_sync(cmd);
@@ -294,7 +296,7 @@ int main(int argc, char **argv) {
         ok &= tree_sitter_c_download(flag.clean);        
         ok &= googleTest_download_build(flag.clean);        
         ok &= ooo_copy_treesitter_symbols_build(flag.clean);
-        ok &= ooo_build(flag.clean);
+        //ok &= ooo_build(flag.clean);
         ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred!");
