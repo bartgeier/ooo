@@ -1,13 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 //                                   ooo
 //                     Shows the way of code fromating.
-//
+// 
 // - most of the time there is a onlie and a  multiline format solution
 // - see the ooo formated version of source/show.c under styled_source/show.c
-//
-// - todo on comments
-//     - C++ comment banner converts not into block comment
-//     - convert onliner block comments finally into C++ line comments
 //
 // - todo on binary expression ?
 //
@@ -89,7 +85,7 @@ void binary_expression(void) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                     if statement without curly braces
+//                     if statement without curly braces 
 ////////////////////////////////////////////////////////////////////////////////
 
 void if_statement(void) {
@@ -118,7 +114,7 @@ void if_statement_with_curly_braces(void) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                         conditional expression
+//                         conditional expression 
 ////////////////////////////////////////////////////////////////////////////////
 
 void conditional_expression(void) {

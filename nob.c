@@ -235,6 +235,7 @@ bool ooo_build(bool const clean) {
         nob_cmd_append(&cmd, "./source/ruler.c");
         nob_cmd_append(&cmd, "./source/indentation.c");
         nob_cmd_append(&cmd, "./source/tree_navigator.c");
+        nob_cmd_append(&cmd, "source/Regex_commentOpen.c");
         bool ok = nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
         return ok;
@@ -296,7 +297,7 @@ int main(int argc, char **argv) {
         ok &= tree_sitter_c_download(flag.clean);        
         ok &= googleTest_download_build(flag.clean);        
         ok &= ooo_copy_treesitter_symbols_build(flag.clean);
-        //ok &= ooo_build(flag.clean);
+        ok &= ooo_build(flag.clean);
         ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred!");

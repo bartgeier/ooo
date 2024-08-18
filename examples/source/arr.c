@@ -109,6 +109,7 @@ int main(int argc, char * * argv) {
  *  indentation
     is ... */
 
+                    /* comment */
                                // comment
         int  const  * * c  =  & a;
         int  *const   * d  =  & a;

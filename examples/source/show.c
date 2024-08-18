@@ -5,10 +5,6 @@
 // - most of the time there is a onlie and a  multiline format solution
 // - see the ooo formated version of source/show.c under styled_source/show.c
 //
-// - todo on comments 
-//     - C++ comment banner converts not into block comment
-//     - convert onliner block comments finally into C++ line comments
-//
 // - todo on binary expression ?
 //
 ////////////////////////////////////////////////////////////////////////////////

@@ -1,61 +1,61 @@
 #include "Regex_commentOpen.h"
 
-static char const ID[] = "|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|";
+static char const ID[] = REGEX_COMMENT_CLOSE_ID;
 
-static void endOfLine(Regex_commentOpen_t *self) {
+static bool endOfLine(Regex_commentOpen_t *self) {
         switch (self->state) {
-                case REGEX1_IDLE:
-                case REGEX1_DISCARD:
-                        return;
-                case REGEX1_CPP:
-                case REGEX1_SLASH_0:
-                        self->state = REGEX1_IDLE;
-                        return;
-                case REGEX1_SLASH_1:
-                        self->state = REGEX1_IDLE;
-                        return;
-                case REGEX1_ASTERISK_0:
-                case REGEX1_ASTERISK_1:
-                case REGEX1_ASTERISK_2:
-                case REGEX1_ID_OK:
-                        self->state = REGEX1_DISCARD;
-                        self->found = false;
-                        return;
+        case REGEX1_IDLE:
+        case REGEX1_DISCARD:
+                return false;
+        case REGEX1_CPP:
+        case REGEX1_SLASH_0:
+                self->state = REGEX1_IDLE;
+                return false;
+        case REGEX1_SLASH_1:
+                self->state = REGEX1_IDLE;
+                return self->found;
+        case REGEX1_ASTERISK_0:
+        case REGEX1_ASTERISK_1:
+        case REGEX1_ASTERISK_2:
+        case REGEX1_ID_OK:
+                self->state = REGEX1_DISCARD;
+                self->found = false;
+                return false;
         }
-        return;
+        return false;
 }
 
 
-static void asterisk(Regex_commentOpen_t *self, size_t const idx) {
+static bool asterisk(Regex_commentOpen_t *self, size_t const idx) {
         switch (self->state) {
         case REGEX1_IDLE:
         case REGEX1_CPP:
         case REGEX1_ASTERISK_2:
-                return;
+                return false;
         case REGEX1_SLASH_0:
                 self->state = REGEX1_ASTERISK_0;
                 self->begin = idx;
                 self->found = false;
                 self->id_size = 0;
-                return;
+                return false;
         case REGEX1_SLASH_1:
                 self->state = REGEX1_IDLE;
-                return;
+                return self->found;
         case REGEX1_ASTERISK_0:
                 self->state = REGEX1_ASTERISK_1;
-                return;
+                return false;
         case REGEX1_ASTERISK_1:
                 self->found = false;
-                break;
+                return false;
         case REGEX1_DISCARD:
                 self->state = REGEX1_ASTERISK_2;
-                return;
+                return false;
         case REGEX1_ID_OK:
                 self->state = REGEX1_ASTERISK_1;
                 self->id_size += 2;
-                return;
+                return false;
         }
-        return;
+        return false;
 }
 
 static void condition(Regex_commentOpen_t *self, char const chr) {
@@ -66,6 +66,7 @@ static void condition(Regex_commentOpen_t *self, char const chr) {
                         self->state = REGEX1_ID_OK;
                         self->id_size++;
                         self->found = self->id_size == (sizeof(ID) - 1);
+                        // sizeOf(ID)-1 == strlen(ID)
                         return;
                 }
                 self->state = REGEX1_ASTERISK_0;
@@ -103,29 +104,31 @@ static bool slash(Regex_commentOpen_t *self) {
         return false;
 }
 
-static void default_char(Regex_commentOpen_t *self, char const chr) {
+static bool default_char(Regex_commentOpen_t *self, char const chr) {
         switch (self->state) {
         case REGEX1_IDLE:
         case REGEX1_CPP:
         case REGEX1_DISCARD:
-                return;
+                return false;
         case REGEX1_SLASH_0:
+                self->state = REGEX1_IDLE;
+                return false;
         case REGEX1_SLASH_1:
                 self->state = REGEX1_IDLE;
-                return;
+                return self->found;
         case REGEX1_ASTERISK_1:
                 self->id_size = 0;
                 condition(self, chr);
-                return;
+                return false;
         case REGEX1_ASTERISK_0:
         case REGEX1_ID_OK:
                 condition(self, chr);
-                return;
+                return false;
         case REGEX1_ASTERISK_2:
                 self->state = REGEX1_DISCARD;
-                return;
+                return false;
         }
-        return;
+        return false;
 }
 
 bool Regex_commentOpen(Regex_commentOpen_t *self, size_t const idx, char const chr) {
@@ -133,16 +136,14 @@ bool Regex_commentOpen(Regex_commentOpen_t *self, size_t const idx, char const c
         switch(chr) {
         case 0:
         case '\n':
-                endOfLine(self);
-                return self->found;
+                return endOfLine(self);
         case '/':
                 return slash(self);
         case '*':
-                asterisk(self, idx);
-                return false;
+                return asterisk(self, idx);
         default:
-                default_char(self, chr);
+                break;
         }
-        return false;
+        return default_char(self, chr);
 }
 

@@ -8,7 +8,8 @@
 
 #include "tree_sitter/api.h"
 #include <stdlib.h>
-#include "Regex.h"
+//#include "Regex.h"
+#include "Regex_commentOpen.h"
 
 typedef struct {
         size_t begin;
@@ -223,13 +224,32 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
 
 void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
         size_t x = 0;
-        Regex_CommentBlock_1Line_t reg = {RCB1_IDLE, 0, 0};
+        //Regex_CommentBlock_1Line_t reg = {RCB1_IDLE, 0, 0};
+        Regex_commentOpen_t reg = {
+                .state = REGEX1_IDLE, 
+                .found = false,
+                .begin = 0, 
+                .id_size = 0
+        };
         for (size_t i = 0; i < A->size; i++) {
 
-                bool const found =  Regex_commentBlock_1line(&reg, i, A->at[i]);
+                // bool const found =  Regex_commentBlock_1line(&reg, i, A->at[i]);
+                // if (found) {
+                //         B->at[x - (i - reg.begin)] = '/'; // '/*' becomes '//'
+                //         x = x - reg.num_of_truncate;      // trunc end of line
+                // }
+
+                bool const found = Regex_commentOpen(&reg, i, A->at[i]);
                 if (found) {
-                        B->at[x - (i - reg.begin)] = '/'; // '/*' becomes '//'
-                        x = x - reg.num_of_truncate;      // trunc end of line
+                        if (A->at[i] == '\n') {
+                                B->at[x - (i - reg.begin)] = '/';
+                                x -= reg.id_size;
+                        } else {
+                                x -= reg.id_size;
+                                B->at[x++] = ' ';
+                                B->at[x++] = '*';
+                                B->at[x++] = '/';
+                        }
                 }
 
                 if (A->at[i] == '\n') {
@@ -253,13 +273,19 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
                 } else {
                         B->at[x++] = A->at[i];
                 }
-
         }
-        bool const found =  Regex_commentBlock_1line(&reg, A->size, 0);
+        
+        // bool const found =  Regex_commentBlock_1line(&reg, A->size, 0);
+        // if (found) {
+        //         // case end of OStr
+        //         B->at[x - (x - reg.begin)] = '/';
+        //         x = x - reg.num_of_truncate;
+        // }
+
+        bool const found = Regex_commentOpen(&reg, A->size, 0);
         if (found) {
-                // case end of OStr
-                B->at[x - (x - reg.begin)] = '/';
-                x = x - reg.num_of_truncate;
+                B->at[reg.begin] = '/';
+                x -= reg.id_size;
         }
         B->at[x] = 0;
         B->size = x;

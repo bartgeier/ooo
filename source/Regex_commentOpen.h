@@ -4,6 +4,9 @@
 #include <stddef.h>
 #include <stdbool.h>
 
+#define REGEX_COMMENT_CLOSE_ID "|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|"
+
+
 typedef enum {
         REGEX1_IDLE,
         REGEX1_CPP,

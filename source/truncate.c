@@ -1,5 +1,7 @@
 #include "truncate.h"
 #include "OJob.h"
+#include "Regex_commentOpen.h"
+#include <stdio.h>
 
 /* \n is the last character in a row */
 /* returns the column idx            */
@@ -86,9 +88,9 @@ static void trunc_spaces(OJob *job, size_t const start_idx, size_t const end_idx
                         if ((i > 0) 
                         & ((i + 1) < (A->size)) 
                         & ((i + 2) < (A->size))
-                        & (A->at[i - 1] != ' ' | A->at[i - 1] != '\n')
+                        & (A->at[i - 1] != ' ' & A->at[i - 1] != '\n')
                         & (A->at[i + 1] == '\n') 
-                        & (A->at[i + 2] != ' ' | A->at[i + 2] != '\n')) {
+                        & (A->at[i + 2] != ' ' & A->at[i + 2] != '\n')) {
                                 break;
                         }
                 }
@@ -203,7 +205,7 @@ void ooo_truncate_spaces(
                         /* a comment */
                         job->sink.at[idx] = '/';
                         job->sink.at[idx + 1] = '*';
-                        OStr_append_cstring(&job->sink, " */");
+                        OStr_append_cstring(&job->sink, REGEX_COMMENT_CLOSE_ID"*/");
                 }
         } else {
                 for (size_t i = slice.begin; i < slice.end; i++) {
