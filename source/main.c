@@ -6,6 +6,8 @@
 #include <assert.h>
 #include <errno.h>
 #include <getopt.h>
+#define OARENA_IMPLEMENTATION
+#include "OArena.h"
 #include "tree_navigator.h"
 #include "ruler.h"
 #include "node_printer.h"
@@ -59,8 +61,33 @@ bool write_txt_file(OStr const *source, char const *path) {
         }
 }
 
+
+OArena *memory_for_treesitter;
+void *ooo_malloc(size_t size) {
+        void *p = malloc(size);
+        // printf("malloc %p %zu \n ", p, size);
+        return p;
+}
+
+void *ooo_calloc(size_t nitems, size_t size) {
+        // printf("calloc %zu %zu \n ", nitems, size);
+        return calloc(nitems, size);
+}
+
+void *ooo_realloc(void *buffer, size_t size) {
+        // printf("reallo %p %zu <----------------------\n ", buffer, size);
+        return realloc(buffer, size);
+}
+
+void ooo_free(void *buffer) {
+        // printf("free %p \n", buffer);
+        free(buffer);
+}
+
+
 Nodes serial_nodes;
-#define MEM_SIZE 1000*1024
+#define MEM_SIZE 1024*1024
+
 int main(int argc, char **argv) {
         OArg_t oarg = {0};
         if (OArg_init(&oarg, argc, argv)) {
@@ -88,6 +115,8 @@ int main(int argc, char **argv) {
         char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
 
+        //memory_for_treesitter = OArena_make(1 * 1024 * 1024);
+        ts_set_allocator(ooo_malloc, ooo_calloc, ooo_realloc, ooo_free);
         TSParser *parser = ts_parser_new();
         ts_parser_set_language(parser, tree_sitter_c());
         {

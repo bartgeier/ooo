@@ -2,7 +2,7 @@
 //                                   ooo
 //                     Shows the way of code fromating.
 // 
-// - most of the time there is a onlie and a  multiline format solution
+// - Mostly there is a single-line or multi-line style format
 // - see the ooo formated version of source/show.c under styled_source/show.c
 //
 // - todo on binary expression ?

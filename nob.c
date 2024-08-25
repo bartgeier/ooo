@@ -203,6 +203,7 @@ bool ooo_copy_treesitter_symbols_build(bool const clean) {
         nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
         nob_cmd_append(&cmd, "-o", "ooo_copy_treesitter_symbols");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a",  "tree-sitter-c/src/parser.c");;
+        nob_cmd_append(&cmd, "source/Regex_commentOpen.c");
         bool ok = nob_cmd_run_sync(cmd);
         cmd.count = 0;
         #ifdef _WIN32

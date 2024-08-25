@@ -8,7 +8,6 @@
 
 #include "tree_sitter/api.h"
 #include <stdlib.h>
-//#include "Regex.h"
 #include "Regex_commentOpen.h"
 
 typedef struct {
@@ -224,7 +223,6 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
 
 void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
         size_t x = 0;
-        //Regex_CommentBlock_1Line_t reg = {RCB1_IDLE, 0, 0};
         Regex_commentOpen_t reg = {
                 .state = REGEX1_IDLE, 
                 .found = false,
@@ -232,13 +230,6 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
                 .id_size = 0
         };
         for (size_t i = 0; i < A->size; i++) {
-
-                // bool const found =  Regex_commentBlock_1line(&reg, i, A->at[i]);
-                // if (found) {
-                //         B->at[x - (i - reg.begin)] = '/'; // '/*' becomes '//'
-                //         x = x - reg.num_of_truncate;      // trunc end of line
-                // }
-
                 bool const found = Regex_commentOpen(&reg, i, A->at[i]);
                 if (found) {
                         if (A->at[i] == '\n') {
@@ -274,14 +265,6 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
                         B->at[x++] = A->at[i];
                 }
         }
-        
-        // bool const found =  Regex_commentBlock_1line(&reg, A->size, 0);
-        // if (found) {
-        //         // case end of OStr
-        //         B->at[x - (x - reg.begin)] = '/';
-        //         x = x - reg.num_of_truncate;
-        // }
-
         bool const found = Regex_commentOpen(&reg, A->size, 0);
         if (found) {
                 B->at[reg.begin] = '/';
