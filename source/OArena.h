@@ -10,9 +10,10 @@ typedef struct {
 } OArena;
 
 OArena *OArena_make(size_t const SIZE);
-void *OArena_malloc(OArena *arena, size_t size);
-void *OArena_calloc(OArena *arena, size_t nitems, size_t size);
-void *OArena_realloc(OArena *arena, void *buffer, size_t size);
+void *OArena_malloc(OArena *arena, size_t const size);
+void *OArena_calloc(OArena *arena, size_t const nitems, size_t const size);
+void *OArena_realloc(OArena *arena, void *buffer, size_t const size);
+void OArena_free(OArena *arena, void *buffer);
 
 #endif
 
@@ -41,7 +42,8 @@ OArena *OArena_make(size_t const SIZE) {
         return arena;
 }
 
-void *OArena_malloc(OArena *arena, size_t num_of_bytes) {
+void *OArena_malloc(OArena *arena, size_t const num_of_bytes) {
+        if (num_of_bytes == 0) return NULL;
         assert(arena->size + SIZE_OF_HEAD + num_of_bytes <= arena->SIZE && "OArena_malloc need more memory");
         Memory *mem = (Memory *)(arena->at + arena->size);
         mem->size = num_of_bytes;
@@ -49,19 +51,21 @@ void *OArena_malloc(OArena *arena, size_t num_of_bytes) {
         return (void *)mem->at;
 }
 
-void *OArena_calloc(OArena *arena, size_t nitems, size_t size) {
+void *OArena_calloc(OArena *arena, size_t const nitems, size_t const size) {
         uint8_t num_of_bytes = nitems * size;
         uint8_t *p = (uint8_t *)OArena_malloc(arena, num_of_bytes);
+        if (p == NULL) return NULL;
         memset(p, 0, num_of_bytes);
         return (void *)p;
 }
 
-void *OArena_realloc(OArena *arena, void *buffer, size_t size) {
+void *OArena_realloc(OArena *arena, void *buffer, size_t const size) {
         Memory *mem = (Memory *)((uint8_t *)buffer - SIZE_OF_HEAD);
         void *arena_end = (arena->at + arena->size);
         void *buffer_end = (uint8_t *)buffer + mem->size;
         if (buffer_end == arena_end) {
                 if (mem->size >= size) {
+                        assert(size > 0); // todo size == 0 -> Arena_free
                         arena->size -= (mem->size - size);
                 } else {
                         arena->size += (size - mem->size);
@@ -75,6 +79,15 @@ void *OArena_realloc(OArena *arena, void *buffer, size_t size) {
         void *new_buffer = OArena_malloc(arena, size);
         memcpy(new_buffer, buffer, mem->size);
         return new_buffer;
+}
+
+void OArena_free(OArena *arena, void *buffer) {
+        Memory *mem = (Memory *)((uint8_t *)buffer - SIZE_OF_HEAD);
+        void *arena_end = (arena->at + arena->size);
+        void *buffer_end = (uint8_t *)buffer + mem->size;
+        if (buffer_end == arena_end) {
+                arena->size -= (mem->size + SIZE_OF_HEAD);
+        }
 }
 
 // #ifdef __cplusplus
