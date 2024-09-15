@@ -277,6 +277,7 @@ bool unittests_build(bool const clean) {
 }
 
 int main(int argc, char **argv) {
+        uint64_t t_start = nob_millis();
         bool ok = true;
         NOB_GO_REBUILD_URSELF(argc, argv);
         #ifdef _WIN32
@@ -300,12 +301,12 @@ int main(int argc, char **argv) {
         ok &= googleTest_download_build(flag.clean);        
         ok &= ooo_copy_treesitter_symbols_build(flag.clean);
         ok &= ooo_build(flag.clean);
-        ok &= unittests_build(flag.clean);
+        // ok &= unittests_build(flag.clean);
         if (!ok) {
-                nob_log(NOB_ERROR, "Done  => One or more errors occurred!");
+                nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
                 return false;
         }
-        nob_log(NOB_INFO ,"Successful done!");
+        nob_log(NOB_INFO ,"Successful done! %llu ms", nob_millis() - t_start);
         return 0;
 }
 

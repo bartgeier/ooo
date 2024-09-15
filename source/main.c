@@ -61,27 +61,53 @@ bool write_txt_file(OStr const *source, char const *path) {
         }
 }
 
-
+#define ARENA
 OArena *memory_for_treesitter;
 void *ooo_malloc(size_t size) {
+#ifndef ARENA
         void *p = malloc(size);
         // printf("malloc %p %zu \n ", p, size);
         return p;
+#else
+        printf("OArena_malloc -> size %zu \n", size);
+        void *p = OArena_malloc(memory_for_treesitter, size);
+        printf("OArena_malloc -> %p size %zu \n", p, memory_for_treesitter->size);
+        return p;
+#endif
 }
 
 void *ooo_calloc(size_t nitems, size_t size) {
+#ifndef ARENA
         // printf("calloc %zu %zu \n ", nitems, size);
         return calloc(nitems, size);
+#else
+        printf("OArena_calloc -> new_nitems %zu new_size %zu \n", nitems, size);
+        void *p = OArena_calloc(memory_for_treesitter, nitems, size);
+        printf("OArena_calloc -> %p size %zu \n", p, memory_for_treesitter->size);
+        return p;
+#endif
 }
 
 void *ooo_realloc(void *buffer, size_t size) {
+#ifndef ARENA
         // printf("reallo %p %zu <----------------------\n ", buffer, size);
         return realloc(buffer, size);
+#else
+        printf("OArena_realloc -> %p new_size %zu \n", buffer, size);
+        void *p = OArena_realloc(memory_for_treesitter, buffer, size);
+        printf("OArena_realloc -> %p size %zu \n", p, memory_for_treesitter->size);
+        return p;
+#endif
 }
 
 void ooo_free(void *buffer) {
+#ifndef ARENA
         // printf("free %p \n", buffer);
         free(buffer);
+#else
+        // printf("OArena_free %p\n", buffer);
+        OArena_free(memory_for_treesitter, buffer);
+#endif
 }
 
 
@@ -115,7 +141,7 @@ int main(int argc, char **argv) {
         char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
         OStr_replace_tabs_with_one_space(&job.source, &job.sink);
 
-        //memory_for_treesitter = OArena_make(1 * 1024 * 1024);
+        memory_for_treesitter = OArena_make(10 * 1024 * 1024);
         ts_set_allocator(ooo_malloc, ooo_calloc, ooo_realloc, ooo_free);
         TSParser *parser = ts_parser_new();
         ts_parser_set_language(parser, tree_sitter_c());
@@ -128,7 +154,7 @@ int main(int argc, char **argv) {
                 );
                 ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
                 OJob_swap(&job);
-                ts_tree_delete(tree);
+                // ts_tree_delete(tree);
         }
         {
                 TSTree *tree = ts_parser_parse_string(
@@ -153,7 +179,7 @@ int main(int argc, char **argv) {
                         &job
                 );
                 OJob_swap(&job);
-                ts_tree_delete(tree);
+                // ts_tree_delete(tree);
         }
         {
                 TSTree *tree = ts_parser_parse_string(
@@ -172,7 +198,7 @@ int main(int argc, char **argv) {
                 OJob_swap(&job);
                 OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
                 OJob_swap(&job);
-                ts_tree_delete(tree);
+                // ts_tree_delete(tree);
         }
         write_txt_file(&job.source, oarg.output_path);
         ts_parser_delete(parser);

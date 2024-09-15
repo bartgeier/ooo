@@ -52,7 +52,7 @@ void *OArena_malloc(OArena *arena, size_t const num_of_bytes) {
 }
 
 void *OArena_calloc(OArena *arena, size_t const nitems, size_t const size) {
-        uint8_t num_of_bytes = nitems * size;
+        size_t num_of_bytes = nitems * size;
         uint8_t *p = (uint8_t *)OArena_malloc(arena, num_of_bytes);
         if (p == NULL) return NULL;
         memset(p, 0, num_of_bytes);
@@ -60,6 +60,7 @@ void *OArena_calloc(OArena *arena, size_t const nitems, size_t const size) {
 }
 
 void *OArena_realloc(OArena *arena, void *buffer, size_t const size) {
+        if (buffer == NULL) return OArena_malloc(arena, size);
         Memory *mem = (Memory *)((uint8_t *)buffer - SIZE_OF_HEAD);
         void *arena_end = (arena->at + arena->size);
         void *buffer_end = (uint8_t *)buffer + mem->size;

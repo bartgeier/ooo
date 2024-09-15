@@ -77,6 +77,24 @@ TEST(OArena, calloc) {
         EXPECT_TRUE(every_byte_is_zero(buffer_1, size_of_buffer(buffer_1)));
 }
 
+TEST(OArena, malloc_2) {
+        OArena *const arena = OArena_make(3145728);
+        uint8_t *const buffer_0 = (uint8_t *)OArena_malloc(arena, 1464);
+        EXPECT_EQ(arena->SIZE, (size_t)3145728);
+        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 1464);
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)1464);
+        EXPECT_TRUE(every_byte_is_zero(buffer_0, size_of_buffer(buffer_0)));
+}
+
+TEST(OArena, calloc_2) {
+        OArena *const arena = OArena_make(3145728);
+        uint8_t *const buffer_0 = (uint8_t *)OArena_calloc(arena, 1, 1464);
+        EXPECT_EQ(arena->SIZE, (size_t)3145728);
+        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 1464);
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)1464);
+        EXPECT_TRUE(every_byte_is_zero(buffer_0, size_of_buffer(buffer_0)));
+}
+
 TEST(OArena, calloc_zero) {
         OArena *const arena = OArena_make(10000);
         uint8_t *const buffer_0 = (uint8_t *)OArena_calloc(arena, 1, 42);
@@ -89,6 +107,7 @@ TEST(OArena, calloc_zero) {
         EXPECT_EQ(buffer_1, nullptr);
         EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 42);
 }
+
 ///////////////////////////////////////////////////////////////////////////////
 
 TEST(OArena, realloc_the_same_at_last_allocation) {
@@ -169,6 +188,15 @@ TEST(OArena, realloc_increase_first_allocation) {
         EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)69);
         EXPECT_TRUE(buffer_eq_string(buffer_2, "hello World!!", 13));
         EXPECT_EQ(arena->size, (size_t)13 + 3 + 69 + 3*SIZE_OF_HEAD);
+}
+
+TEST(OArena, realloc_with_nil) {
+        OArena *const arena = OArena_make(10000);
+        uint8_t *const buffer_0 = nullptr;
+        uint8_t *const buffer_1 = (uint8_t *)OArena_realloc(arena, buffer_0, 69);
+        EXPECT_NE(buffer_1, buffer_0);
+        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)69);
+        EXPECT_EQ(arena->size, (size_t)69 + SIZE_OF_HEAD);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
