@@ -34,46 +34,45 @@ TEST(OArena, make) {
         OArena *const arena = OArena_make(1000);
         EXPECT_EQ(arena->SIZE, (size_t)1000);
         EXPECT_EQ(arena->size, (size_t)0);
-        EXPECT_EQ(sizeof(Memory), (size_t)8);  // <--- don't use this
-        EXPECT_EQ(SIZE_OF_HEAD, (HEAD_TYPE)4); // <--- use this instead
+        EXPECT_EQ(SIZE_OF_HEAD, (HEAD_TYPE)8); 
 }
 
 TEST(OArena, malloc) {
         OArena *const arena = OArena_make(10000);
         uint8_t *const buffer_0 = (uint8_t *)OArena_malloc(arena, 42);
         EXPECT_EQ(arena->SIZE, (size_t)10000);
-        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 42);
-        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)42);
+        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 48); // 6 byte padding
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)48);
 
         uint8_t *const buffer_1 = (uint8_t *)OArena_malloc(arena, 58);
-        EXPECT_EQ(arena->size, (size_t)2*SIZE_OF_HEAD + 42 + 58);
-        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)58);
+        EXPECT_EQ(arena->size, (size_t)2*SIZE_OF_HEAD + 48 + 64);
+        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)64);
 }
 
 TEST(OArena, malloc_zero) {
         OArena *const arena = OArena_make(10000);
         uint8_t *const buffer_0 = (uint8_t *)OArena_malloc(arena, 42);
         EXPECT_EQ(arena->SIZE, (size_t)10000);
-        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 42);
-        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)42);
-        EXPECT_EQ(arena->size, (size_t)1*SIZE_OF_HEAD + 42);
+        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 48);
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)48);
+        EXPECT_EQ(arena->size, (size_t)1*SIZE_OF_HEAD + 48);
 
         uint8_t *const buffer_1 = (uint8_t *)OArena_malloc(arena, 0);
         EXPECT_EQ(buffer_1, nullptr);
-        EXPECT_EQ(arena->size, (size_t)1*SIZE_OF_HEAD + 42);
+        EXPECT_EQ(arena->size, (size_t)1*SIZE_OF_HEAD + 48);
 }
 
 TEST(OArena, calloc) {
         OArena *const arena = OArena_make(10000);
         uint8_t *const buffer_0 = (uint8_t *)OArena_calloc(arena, 1, 42);
         EXPECT_EQ(arena->SIZE, (size_t)10000);
-        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 42);
-        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)42);
+        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 48);
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)48);
         EXPECT_TRUE(every_byte_is_zero(buffer_0, size_of_buffer(buffer_0)));
 
         uint8_t *const buffer_1 = (uint8_t *)OArena_calloc(arena, 2, 50);
-        EXPECT_EQ(arena->size, (size_t)2*SIZE_OF_HEAD + 42 + 100);
-        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)100);
+        EXPECT_EQ(arena->size, (size_t)2*SIZE_OF_HEAD + 48 + 104);
+        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)104);
         EXPECT_TRUE(every_byte_is_zero(buffer_1, size_of_buffer(buffer_1)));
 }
 
@@ -99,13 +98,13 @@ TEST(OArena, calloc_zero) {
         OArena *const arena = OArena_make(10000);
         uint8_t *const buffer_0 = (uint8_t *)OArena_calloc(arena, 1, 42);
         EXPECT_EQ(arena->SIZE, (size_t)10000);
-        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 42);
-        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)42);
+        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 48);
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)48);
         EXPECT_TRUE(every_byte_is_zero(buffer_0, size_of_buffer(buffer_0)));
 
         uint8_t *const buffer_1 = (uint8_t *)OArena_calloc(arena, 0, 0);
         EXPECT_EQ(buffer_1, nullptr);
-        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 42);
+        EXPECT_EQ(arena->size, (size_t)SIZE_OF_HEAD + 48);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -117,10 +116,10 @@ TEST(OArena, realloc_the_same_at_last_allocation) {
         buffer_set_string(buffer_1, "aBc", 3);
         uint8_t *const buffer_2 = (uint8_t *)OArena_realloc(arena, buffer_1, 3);
         EXPECT_EQ(buffer_2, buffer_1);
-        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)3);
-        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)3);
+        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)8);
+        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)8);
         EXPECT_TRUE(buffer_eq_string(buffer_2, "aBc", 3));
-        EXPECT_EQ(arena->size, (size_t)13 + 3 + 2*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 8 + 2*SIZE_OF_HEAD);
 }
 
 TEST(OArena, realloc_increase_last_allocation) {
@@ -130,10 +129,10 @@ TEST(OArena, realloc_increase_last_allocation) {
         buffer_set_string(buffer_1, "aBc", 3);
         uint8_t *const buffer_2 = (uint8_t *)OArena_realloc(arena, buffer_1, 5);
         EXPECT_EQ(buffer_2, buffer_1);
-        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)5);
-        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)5);
+        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)8);
+        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)8);
         EXPECT_TRUE(buffer_eq_string(buffer_2, "aBc", 3));
-        EXPECT_EQ(arena->size, (size_t)13 + 5 + 2*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 8 + 2*SIZE_OF_HEAD);
 }
 
 TEST(OArena, realloc_reduce_last_allocation) {
@@ -143,10 +142,10 @@ TEST(OArena, realloc_reduce_last_allocation) {
         buffer_set_string(buffer_1, "hello", 3);
         uint8_t *const buffer_2 = (uint8_t *)OArena_realloc(arena, buffer_1, 3);
         EXPECT_EQ(buffer_2, buffer_1);
-        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)3);
-        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)3);
+        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)8);
+        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)8);
         EXPECT_TRUE(buffer_eq_string(buffer_2, "hel", 3));
-        EXPECT_EQ(arena->size, (size_t)13 + 3 + 2*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 8 + 2*SIZE_OF_HEAD);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -158,10 +157,10 @@ TEST(OArena, realloc_the_same_at_first_allocation) {
         OArena_malloc(arena, 3);
         uint8_t *const buffer_2 = (uint8_t *)OArena_realloc(arena, buffer_0, 13);
         EXPECT_EQ(buffer_2, buffer_0);
-        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)13);
-        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)13);
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)16);
+        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)16);
         EXPECT_TRUE(buffer_eq_string(buffer_2, "hello World!!", 13));
-        EXPECT_EQ(arena->size, (size_t)13 + 3 + 2*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 8 + 2*SIZE_OF_HEAD);
 }
 
 TEST(OArena, realloc_reduce_first_allocation) {
@@ -171,10 +170,10 @@ TEST(OArena, realloc_reduce_first_allocation) {
         OArena_malloc(arena, 3);
         uint8_t *const buffer_2 = (uint8_t *)OArena_realloc(arena, buffer_0, 5);
         EXPECT_EQ(buffer_2, buffer_0);
-        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)13);
-        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)13);
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)16);
+        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)16);
         EXPECT_TRUE(buffer_eq_string(buffer_2, "hello World!!", 13));
-        EXPECT_EQ(arena->size, (size_t)13 + 3 + 2*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 8 + 2*SIZE_OF_HEAD);
 }
 
 TEST(OArena, realloc_increase_first_allocation) {
@@ -184,10 +183,10 @@ TEST(OArena, realloc_increase_first_allocation) {
         OArena_malloc(arena, 3);
         uint8_t *const buffer_2 = (uint8_t *)OArena_realloc(arena, buffer_0, 69);
         EXPECT_NE(buffer_2, buffer_0);
-        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)13);
-        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)69);
+        EXPECT_EQ(size_of_buffer(buffer_0), (HEAD_TYPE)16);
+        EXPECT_EQ(size_of_buffer(buffer_2), (HEAD_TYPE)72);
         EXPECT_TRUE(buffer_eq_string(buffer_2, "hello World!!", 13));
-        EXPECT_EQ(arena->size, (size_t)13 + 3 + 69 + 3*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 8 + 72 + 3*SIZE_OF_HEAD);
 }
 
 TEST(OArena, realloc_with_nil) {
@@ -195,8 +194,8 @@ TEST(OArena, realloc_with_nil) {
         uint8_t *const buffer_0 = nullptr;
         uint8_t *const buffer_1 = (uint8_t *)OArena_realloc(arena, buffer_0, 69);
         EXPECT_NE(buffer_1, buffer_0);
-        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)69);
-        EXPECT_EQ(arena->size, (size_t)69 + SIZE_OF_HEAD);
+        EXPECT_EQ(size_of_buffer(buffer_1), (HEAD_TYPE)72);
+        EXPECT_EQ(arena->size, (size_t)72 + SIZE_OF_HEAD);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,10 +206,10 @@ TEST(OArena, free) {
         OArena_malloc(arena, 20);
         OArena_malloc(arena, 30);
         uint8_t *const buffer_2 = (uint8_t *)OArena_malloc(arena, 69);
-        EXPECT_EQ(arena->size, (size_t)10 + 20 + 30 + 69 + 4*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 24 + 32 + 72 + 4*SIZE_OF_HEAD);
 
         OArena_free(arena, buffer_0);
-        EXPECT_EQ(arena->size, (size_t)10 + 20 + 30 + 69 + 4*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 24 + 32 + 72 + 4*SIZE_OF_HEAD);
         OArena_free(arena, buffer_2);
-        EXPECT_EQ(arena->size, (size_t)10 + 20 + 30 + 3*SIZE_OF_HEAD);
+        EXPECT_EQ(arena->size, (size_t)16 + 24 + 32 + 3*SIZE_OF_HEAD);
 }

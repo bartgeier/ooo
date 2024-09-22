@@ -19,6 +19,8 @@
 #include "OStr.h"
 #define OJOB_IMPLEMENTATION
 #include "OJob.h"
+#define NOB_IMPLEMENTATION
+#include "../nob.h"
 
 // Declare the `tree_sitter_json` function, which is
 // implemented by the `tree-sitter-json` library.
@@ -69,9 +71,9 @@ void *ooo_malloc(size_t size) {
         // printf("malloc %p %zu \n ", p, size);
         return p;
 #else
-        printf("OArena_malloc -> size %zu \n", size);
+        // printf("OArena_malloc -> size %zu \n", size);
         void *p = OArena_malloc(memory_for_treesitter, size);
-        printf("OArena_malloc -> %p size %zu \n", p, memory_for_treesitter->size);
+        // printf("OArena_malloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
 #endif
 }
@@ -81,9 +83,9 @@ void *ooo_calloc(size_t nitems, size_t size) {
         // printf("calloc %zu %zu \n ", nitems, size);
         return calloc(nitems, size);
 #else
-        printf("OArena_calloc -> new_nitems %zu new_size %zu \n", nitems, size);
+        // printf("OArena_calloc -> new_nitems %zu new_size %zu \n", nitems, size);
         void *p = OArena_calloc(memory_for_treesitter, nitems, size);
-        printf("OArena_calloc -> %p size %zu \n", p, memory_for_treesitter->size);
+        // printf("OArena_calloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
 #endif
 }
@@ -93,9 +95,9 @@ void *ooo_realloc(void *buffer, size_t size) {
         // printf("reallo %p %zu <----------------------\n ", buffer, size);
         return realloc(buffer, size);
 #else
-        printf("OArena_realloc -> %p new_size %zu \n", buffer, size);
+        // printf("OArena_realloc -> %p new_size %zu \n", buffer, size);
         void *p = OArena_realloc(memory_for_treesitter, buffer, size);
-        printf("OArena_realloc -> %p size %zu \n", p, memory_for_treesitter->size);
+        // printf("OArena_realloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
 #endif
 }
@@ -115,6 +117,7 @@ Nodes serial_nodes;
 #define MEM_SIZE 1024*1024
 
 int main(int argc, char **argv) {
+        uint64_t t_start = nob_millis();
         OArg_t oarg = {0};
         if (OArg_init(&oarg, argc, argv)) {
                 return 1;
@@ -154,7 +157,7 @@ int main(int argc, char **argv) {
                 );
                 ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
                 OJob_swap(&job);
-                // ts_tree_delete(tree);
+                ts_tree_delete(tree);
         }
         {
                 TSTree *tree = ts_parser_parse_string(
@@ -179,7 +182,7 @@ int main(int argc, char **argv) {
                         &job
                 );
                 OJob_swap(&job);
-                // ts_tree_delete(tree);
+                ts_tree_delete(tree);
         }
         {
                 TSTree *tree = ts_parser_parse_string(
@@ -198,9 +201,10 @@ int main(int argc, char **argv) {
                 OJob_swap(&job);
                 OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
                 OJob_swap(&job);
-                // ts_tree_delete(tree);
+                ts_tree_delete(tree);
         }
         write_txt_file(&job.source, oarg.output_path);
         ts_parser_delete(parser);
+        printf("%lu ms\n", (nob_millis() - t_start));
         return 0;
 }

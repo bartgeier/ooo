@@ -24,7 +24,7 @@ void OArena_free(OArena *arena, void *buffer);
 #include <assert.h>
 // https://www.gingerbill.org/article/2019/02/08/memory-allocation-strategies-002/
 
-#define HEAD_TYPE uint32_t
+#define HEAD_TYPE uint64_t
 typedef struct {
         HEAD_TYPE size;
         uint8_t at[1];  // uint8_t at[]; flexible array don't work under C++ gtest
@@ -44,10 +44,11 @@ OArena *OArena_make(size_t const SIZE) {
 
 void *OArena_malloc(OArena *arena, size_t const num_of_bytes) {
         if (num_of_bytes == 0) return NULL;
-        assert(arena->size + SIZE_OF_HEAD + num_of_bytes <= arena->SIZE && "OArena_malloc need more memory");
+        size_t padding = SIZE_OF_HEAD * ((num_of_bytes + SIZE_OF_HEAD - 1) / SIZE_OF_HEAD);
+        assert(arena->size + SIZE_OF_HEAD + padding <= arena->SIZE && "OArena_malloc need more memory");
         Memory *mem = (Memory *)(arena->at + arena->size);
-        mem->size = num_of_bytes;
-        arena->size = arena->size + SIZE_OF_HEAD + num_of_bytes;
+        mem->size = padding;
+        arena->size = arena->size + SIZE_OF_HEAD + padding;
         return (void *)mem->at;
 }
 
@@ -65,14 +66,8 @@ void *OArena_realloc(OArena *arena, void *buffer, size_t const size) {
         void *arena_end = (arena->at + arena->size);
         void *buffer_end = (uint8_t *)buffer + mem->size;
         if (buffer_end == arena_end) {
-                if (mem->size >= size) {
-                        assert(size > 0); // todo size == 0 -> Arena_free
-                        arena->size -= (mem->size - size);
-                } else {
-                        arena->size += (size - mem->size);
-                }
-                mem->size = size;
-                return buffer;
+                arena->size = arena->size - SIZE_OF_HEAD - mem->size;
+                return OArena_malloc(arena, size);
         }
         if (mem->size >= size) {
                 return buffer;
@@ -90,9 +85,5 @@ void OArena_free(OArena *arena, void *buffer) {
                 arena->size -= (mem->size + SIZE_OF_HEAD);
         }
 }
-
-// #ifdef __cplusplus
-// }
-// #endif
 
 #endif
