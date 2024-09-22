@@ -17,7 +17,6 @@ void OArena_free(OArena *arena, void *buffer);
 
 #endif
 
-//#define OARENA_IMPLEMENTATION
 #ifdef OARENA_IMPLEMENTATION
 
 #include <stddef.h>
@@ -31,7 +30,6 @@ typedef struct {
 } Memory;
 
 #define SIZE_OF_HEAD sizeof(HEAD_TYPE)
-
 
 OArena *OArena_make(size_t const SIZE) {
         OArena *arena = (OArena *)malloc(sizeof(OArena));
