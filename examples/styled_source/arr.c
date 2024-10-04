@@ -101,6 +101,10 @@ int main(int argc, char **argv) {
      *  indentation
         is ... */
     
+    (void)x;   /*  block comment
+    *  indentation
+    is ... */
+    
     /* comment */
     // comment
     int const **c = &a;

@@ -42,11 +42,11 @@ OArena *OArena_make(size_t const SIZE) {
 
 void *OArena_malloc(OArena *arena, size_t const num_of_bytes) {
         if (num_of_bytes == 0) return NULL;
-        size_t padding = SIZE_OF_HEAD * ((num_of_bytes + SIZE_OF_HEAD - 1) / SIZE_OF_HEAD);
-        assert(arena->size + SIZE_OF_HEAD + padding <= arena->SIZE && "OArena_malloc need more memory");
+        size_t padded = SIZE_OF_HEAD * ((num_of_bytes + SIZE_OF_HEAD - 1) / SIZE_OF_HEAD);
+        assert(arena->size + SIZE_OF_HEAD + padded <= arena->SIZE && "OArena_malloc need more memory");
         Memory *mem = (Memory *)(arena->at + arena->size);
-        mem->size = padding;
-        arena->size = arena->size + SIZE_OF_HEAD + padding;
+        mem->size = padded;
+        arena->size = arena->size + SIZE_OF_HEAD + padded;
         return (void *)mem->at;
 }
 
