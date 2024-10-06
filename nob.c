@@ -269,7 +269,8 @@ bool unittests_build(bool const clean) {
         // nob_cmd_append(&cmd, "unittests/tst_regex_commentOpen.c");
         // nob_cmd_append(&cmd, "unittests/tst_OArena.c");
         // nob_cmd_append(&cmd, "unittests/tst_regex_truncNodeSpace.c");
-        nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");
+        // nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_lineCont.c");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a");
         nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
         ok &= nob_cmd_run_sync(cmd);

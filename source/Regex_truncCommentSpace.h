@@ -25,7 +25,7 @@ uint32_t Regex_truncCommentSpace(
         char const chr
 );
 
-//#ifdef REGEX_TRUNC_COMMENT_SPACE_IMPLEMENTATION
+#ifdef REGEX_TRUNC_COMMENT_SPACE_IMPLEMENTATION
 
 #define TCS_MIN(A, B) ((A) < (B) ? (A) : (B))
 
@@ -107,9 +107,5 @@ uint32_t Regex_truncCommentSpace(
         return 0;
 }
 
-
-
-
-
-//#endif
+#endif
 #endif
