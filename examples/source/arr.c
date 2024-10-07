@@ -295,7 +295,7 @@ int main(int argc, char * * argv) {
                                        a++;
                                }
                        }break;
-               case e: // comment 
+               case e: // comment      
                        {
                        } break;
                default:
@@ -319,4 +319,4 @@ int main(int argc, char * * argv) {
                default:
                        return;
        }
-}
+}            

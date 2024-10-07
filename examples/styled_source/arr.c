@@ -56,7 +56,7 @@ int a, b, c;
 
 // comment
 void foo(int a, int b) { x = a + b; }
-// comment 
+// comment
 int bar(
     int a,
     int b, int c,
@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
             a++;
         }
         } break;
-    case e: // comment 
+    case e: // comment
         {
         }
         break;
@@ -288,4 +288,4 @@ int main(int argc, char **argv) {
     default:
         return;
     }
-}
+}            

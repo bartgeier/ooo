@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-//                                   ooo
+//                                   ooo                 
 //                     Shows the way of code fromating.
 // 
 // - Mostly there is a single-line or multi-line style format
@@ -185,7 +185,7 @@ void switch_statement_with_curly_brace(void) {
 ////////////////////////////////////////////////////////////////////////////////
 
 void comment_indentation(void) {
-        /* abcd
-               abcd
+        /* abcd     
+               abcd    
 */
 }
