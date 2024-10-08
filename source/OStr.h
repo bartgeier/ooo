@@ -8,7 +8,8 @@
 
 #include "tree_sitter/api.h"
 #include <stdlib.h>
-#include "Regex_commentOpen.h"
+
+#include "Regex_signedComment.h"
 
 typedef struct {
         size_t begin;
@@ -223,14 +224,14 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
 
 void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
         size_t x = 0;
-        Regex_commentOpen_t reg = {
-                .state = REGEX1_IDLE, 
+        Regex_signedComment_t reg = {
+                .state = RSC_IDLE, 
                 .found = false,
                 .begin = 0, 
                 .id_size = 0
         };
         for (size_t i = 0; i < A->size; i++) {
-                bool const found = Regex_commentOpen(&reg, i, A->at[i]);
+                bool const found = Regex_signedComment(&reg, i, A->at[i]);
                 if (found) {
                         if (A->at[i] == '\n') {
                                 B->at[x - (i - reg.begin)] = '/';
@@ -265,7 +266,7 @@ void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
                         B->at[x++] = A->at[i];
                 }
         }
-        bool const found = Regex_commentOpen(&reg, A->size, 0);
+        bool const found = Regex_signedComment(&reg, A->size, 0);
         if (found) {
                 B->at[reg.begin] = '/';
                 x -= reg.id_size;

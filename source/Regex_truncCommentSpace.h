@@ -16,6 +16,7 @@ typedef struct {
         uint32_t max_trunc;
 }Regex_truncCommentSpace_t;
 
+// see diagrams.uxf
 void Regex_truncCommentSpace_first(
         Regex_truncCommentSpace_t *self, 
         uint32_t const column_idx
@@ -24,6 +25,8 @@ uint32_t Regex_truncCommentSpace(
         Regex_truncCommentSpace_t *self, 
         char const chr
 );
+
+#endif
 
 #ifdef REGEX_TRUNC_COMMENT_SPACE_IMPLEMENTATION
 
@@ -107,5 +110,4 @@ uint32_t Regex_truncCommentSpace(
         return 0;
 }
 
-#endif
 #endif

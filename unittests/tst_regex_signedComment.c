@@ -2,11 +2,14 @@
 
 #include "OJob.h"
 #include "OStr.h"
-#include "Regex_commentOpen.h"
+
+#define REGEX_SIGNED_COMMENT_IMPLEMENTATION
+#include "Regex_signedComment.h"
+
 
 #define MEM_SIZE 1000*1024
 
-TEST(Regex_commentOpen, no_comment) {
+TEST(Regex_signedComment, no_comment) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
@@ -26,15 +29,15 @@ TEST(Regex_commentOpen, no_comment) {
         OStr_append_cstring(&job.source, s);
         EXPECT_EQ(job.source.size, strlen(s));
 
-        Regex_commentOpen_t regex = {
-                .state = REGEX1_IDLE, 
+        Regex_signedComment_t regex = {
+                .state = RSC_IDLE, 
                 .found = false,
                 .begin = 0, 
                 .id_size = 0
         };
         for (size_t i = 0; i < job.source.size; i++) {
                 job.idx = i;
-                bool const found = Regex_commentOpen(
+                bool const found = Regex_signedComment(
                         &regex, 
                         job.idx, 
                         job.source.at[job.idx]
@@ -52,7 +55,7 @@ TEST(Regex_commentOpen, no_comment) {
         EXPECT_TRUE(strcmp(job.sink.at,job.source.at) == 0);
 }
 
-TEST(Regex_commentOpen, collect_information_1) {
+TEST(Regex_signedComment, collect_information_1) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
@@ -74,8 +77,8 @@ TEST(Regex_commentOpen, collect_information_1) {
         //                              15                     38                                          82
         OStr_append_cstring(&job.source, s);
 
-        Regex_commentOpen_t regex = {
-                .state = REGEX1_IDLE, 
+        Regex_signedComment_t regex = {
+                .state = RSC_IDLE, 
                 .found = false,
                 .begin = 0, 
                 .id_size = 0
@@ -83,7 +86,7 @@ TEST(Regex_commentOpen, collect_information_1) {
         bool f = false;
         for (size_t i = 0; i < job.source.size; i++) {
                 job.idx = i;
-                bool const found = Regex_commentOpen(
+                bool const found = Regex_signedComment(
                         &regex, 
                         job.idx, 
                         job.source.at[job.idx]
@@ -106,7 +109,7 @@ TEST(Regex_commentOpen, collect_information_1) {
         EXPECT_TRUE(strcmp(job.sink.at, job.source.at) == 0);
 }
 
-TEST(Regex_commentOpen, collect_information_2) {
+TEST(Regex_signedComment, collect_information_2) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
@@ -128,8 +131,8 @@ TEST(Regex_commentOpen, collect_information_2) {
         //                              15                     38                                          82
         OStr_append_cstring(&job.source, s);
 
-        Regex_commentOpen_t regex = {
-                .state = REGEX1_IDLE, 
+        Regex_signedComment_t regex = {
+                .state = RSC_IDLE, 
                 .found = false,
                 .begin = 0, 
                 .id_size = 0
@@ -137,7 +140,7 @@ TEST(Regex_commentOpen, collect_information_2) {
         bool f = false;
         for (size_t i = 0; i < job.source.size; i++) {
                 job.idx = i;
-                bool const found = Regex_commentOpen(
+                bool const found = Regex_signedComment(
                         &regex, 
                         job.idx, 
                         job.source.at[job.idx]
@@ -161,7 +164,7 @@ TEST(Regex_commentOpen, collect_information_2) {
 }
 
 
-TEST(Regex_commentOpen, test_1) {
+TEST(Regex_signedComment, test_1) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
@@ -180,15 +183,15 @@ TEST(Regex_commentOpen, test_1) {
         char const *s0 = "The lazy dog. /* Is there * something.|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|*/\nOk";
         char const *s1 = "The lazy dog. // Is there * something.\nOk";
         OStr_append_cstring(&job.source, s0);
-        Regex_commentOpen_t regex = {
-                .state = REGEX1_IDLE, 
+        Regex_signedComment_t regex = {
+                .state = RSC_IDLE, 
                 .found = false,
                 .begin = 0, 
                 .id_size = 0
         };
         for (size_t i = 0; i < job.source.size; i++) {
                 job.idx = i;
-                bool const found = Regex_commentOpen(
+                bool const found = Regex_signedComment(
                         &regex, 
                         job.idx, 
                         job.source.at[job.idx]
@@ -210,7 +213,7 @@ TEST(Regex_commentOpen, test_1) {
         EXPECT_TRUE(strcmp(s1, job.sink.at) == 0);
 }
 
-TEST(Regex_commentOpen, test_2) {
+TEST(Regex_signedComment, test_2) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
@@ -229,15 +232,15 @@ TEST(Regex_commentOpen, test_2) {
         char const *s0 = "The lazy dog. /* Is there * something.|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|*/ \nOk";
         char const *s1 = "The lazy dog. /* Is there * something.*/ \nOk";
         OStr_append_cstring(&job.source, s0);
-        Regex_commentOpen_t regex = {
-                .state = REGEX1_IDLE, 
+        Regex_signedComment_t regex = {
+                .state = RSC_IDLE, 
                 .found = false,
                 .begin = 0, 
                 .id_size = 0
         };
         for (size_t i = 0; i < job.source.size; i++) {
                 job.idx = i;
-                bool const found = Regex_commentOpen(
+                bool const found = Regex_signedComment(
                         &regex, 
                         job.idx, 
                         job.source.at[job.idx]
@@ -259,7 +262,7 @@ TEST(Regex_commentOpen, test_2) {
         EXPECT_TRUE(strcmp(s1, job.sink.at) == 0);
 }
 
-TEST(Regex_commentOpen, test_3) {
+TEST(Regex_signedComment, test_3) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
@@ -278,15 +281,15 @@ TEST(Regex_commentOpen, test_3) {
         char const *s0 = "The lazy dog. /* Is there * something.|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|*/// hello\nOk";
         char const *s1 = "The lazy dog. /* Is there * something.*/// hello\nOk";
         OStr_append_cstring(&job.source, s0);
-        Regex_commentOpen_t regex = {
-                .state = REGEX1_IDLE, 
+        Regex_signedComment_t regex = {
+                .state = RSC_IDLE, 
                 .found = false,
                 .begin = 0, 
                 .id_size = 0
         };
         for (size_t i = 0; i < job.source.size; i++) {
                 job.idx = i;
-                bool const found = Regex_commentOpen(
+                bool const found = Regex_signedComment(
                         &regex, 
                         job.idx, 
                         job.source.at[job.idx]
@@ -308,7 +311,7 @@ TEST(Regex_commentOpen, test_3) {
         EXPECT_TRUE(strcmp(s1, job.sink.at) == 0);
 }
 
-TEST(Regex_commentOpen, test_4) {
+TEST(Regex_signedComment, test_4) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
@@ -328,15 +331,15 @@ TEST(Regex_commentOpen, test_4) {
         char const *s0 = "The lazy dog. /* Is there 42\nsomething.|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|*/\nOk";
         char const *s1 = "The lazy dog. /* Is there 42\nsomething.|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|*/\nOk";
         OStr_append_cstring(&job.source, s0);
-        Regex_commentOpen_t regex = {
-                .state = REGEX1_IDLE, 
+        Regex_signedComment_t regex = {
+                .state = RSC_IDLE, 
                 .found = false,
                 .begin = 0, 
                 .id_size = 0
         };
         for (size_t i = 0; i < job.source.size; i++) {
                 job.idx = i;
-                bool const found = Regex_commentOpen(
+                bool const found = Regex_signedComment(
                         &regex, 
                         job.idx, 
                         job.source.at[job.idx]

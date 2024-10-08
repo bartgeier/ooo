@@ -3,6 +3,8 @@
 #include "tree_sitter/api.h"
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
+#define REGEX_SIGNED_COMMENT_IMPLEMENTATION
+#include "Regex_signedComment.h"
 
 TSLanguage *tree_sitter_c();
 

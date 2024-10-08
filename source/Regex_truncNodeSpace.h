@@ -15,6 +15,7 @@ typedef struct {
         uint32_t column;
 } Regex_truncNodeSpace_t;
 
+// see diagrams.uxf
 void Regex_truncNodeSpace_first(
         Regex_truncNodeSpace_t *self, 
         uint32_t const column_idx
@@ -24,6 +25,8 @@ uint32_t Regex_truncNodeSpace(
         Regex_truncNodeSpace_t *self, 
         char const chr
 );
+
+#endif
 
 #ifdef REGEX_TRUNC_NODE_SPACE_IMPLEMENTATION
 
@@ -99,5 +102,4 @@ uint32_t Regex_truncNodeSpace( Regex_truncNodeSpace_t *self, char const chr) {
         return TNS_default(self);
 }
 
-#endif
 #endif

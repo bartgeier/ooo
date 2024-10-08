@@ -18,6 +18,8 @@ typedef struct {
 void Regex_lineCont_first(Regex_lineCont_t *self, char const chr);
 uint32_t Regex_lineCont(Regex_lineCont_t *self, char const chr);
 
+#endif
+
 #ifdef REGEX_LINE_CONT_IMPLEMENTATION 
 
 #include <assert.h>
@@ -116,5 +118,4 @@ uint32_t Regex_lineCont(Regex_lineCont_t *self, char const chr) {
         return lco_default(self);
 }
 
-#endif
 #endif

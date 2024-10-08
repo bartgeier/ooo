@@ -13,10 +13,10 @@
 #include "node_printer.h"
 #include "truncate.h"
 #include "OArg.h"
-#define REGEX_IMPLEMENTATION
-#include "Regex.h"
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
+#define REGEX_SIGNED_COMMENT_IMPLEMENTATION
+#include "Regex_signedComment.h"
 #define OJOB_IMPLEMENTATION
 #include "OJob.h"
 #define NOB_IMPLEMENTATION

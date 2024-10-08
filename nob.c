@@ -203,7 +203,6 @@ bool ooo_copy_treesitter_symbols_build(bool const clean) {
         nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
         nob_cmd_append(&cmd, "-o", "ooo_copy_treesitter_symbols");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a",  "tree-sitter-c/src/parser.c");;
-        nob_cmd_append(&cmd, "source/Regex_commentOpen.c");
         bool ok = nob_cmd_run_sync(cmd);
         cmd.count = 0;
         #ifdef _WIN32
@@ -236,7 +235,6 @@ bool ooo_build(bool const clean) {
         nob_cmd_append(&cmd, "./source/ruler.c");
         nob_cmd_append(&cmd, "./source/indentation.c");
         nob_cmd_append(&cmd, "./source/tree_navigator.c");
-        nob_cmd_append(&cmd, "source/Regex_commentOpen.c");
         bool ok = nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
         return ok;
@@ -262,14 +260,12 @@ bool unittests_build(bool const clean) {
         nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
         nob_cmd_append(&cmd, "-o", "build/otest");
         nob_cmd_append(&cmd, "source/tree_navigator.c");
-        nob_cmd_append(&cmd, "source/Regex_commentOpen.c");
         nob_cmd_append(&cmd, "unittests/tst_OStr.c");
-        // nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex_commentOpen.c");
-        // nob_cmd_append(&cmd, "unittests/tst_OArena.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex_truncNodeSpace.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");
+        nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
+        nob_cmd_append(&cmd, "unittests/tst_OArena.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_signedComment.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_truncNodeSpace.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");
         nob_cmd_append(&cmd, "unittests/tst_regex_lineCont.c");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a");
         nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
