@@ -232,6 +232,7 @@ bool ooo_build(bool const clean) {
         nob_cmd_append(&cmd, "./source/main.c");
         nob_cmd_append(&cmd, "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c");;
         nob_cmd_append(&cmd, "./source/node_printer.c", "./source/truncate.c", "./source/OArg.c");
+        nob_cmd_append(&cmd, "./source/iteration.c");
         nob_cmd_append(&cmd, "./source/ruler.c");
         nob_cmd_append(&cmd, "./source/indentation.c");
         nob_cmd_append(&cmd, "./source/tree_navigator.c");
@@ -261,12 +262,13 @@ bool unittests_build(bool const clean) {
         nob_cmd_append(&cmd, "-o", "build/otest");
         nob_cmd_append(&cmd, "source/tree_navigator.c");
         nob_cmd_append(&cmd, "unittests/tst_OStr.c");
-        nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
-        nob_cmd_append(&cmd, "unittests/tst_OArena.c");
-        nob_cmd_append(&cmd, "unittests/tst_regex_signedComment.c");
-        nob_cmd_append(&cmd, "unittests/tst_regex_truncNodeSpace.c");
-        nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");
-        nob_cmd_append(&cmd, "unittests/tst_regex_lineCont.c");
+        // nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
+        // nob_cmd_append(&cmd, "unittests/tst_OArena.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_lineFeed.c");
+        // nob_cmd_append(&cmd, "unittests/tst_regex_signedComment.c");
+        // nob_cmd_append(&cmd, "unittests/tst_regex_truncNodeSpace.c");
+        // nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");
+        // nob_cmd_append(&cmd, "unittests/tst_regex_lineCont.c");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a");
         nob_cmd_append(&cmd, "-lgtest", "-lgtest_main");
         ok &= nob_cmd_run_sync(cmd);

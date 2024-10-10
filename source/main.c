@@ -1,4 +1,5 @@
 #include "indentation.h"
+#include "iteration.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
@@ -15,8 +16,6 @@
 #include "OArg.h"
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
-#define REGEX_SIGNED_COMMENT_IMPLEMENTATION
-#include "Regex_signedComment.h"
 #define OJOB_IMPLEMENTATION
 #include "OJob.h"
 #define NOB_IMPLEMENTATION
@@ -141,8 +140,7 @@ int main(int argc, char **argv) {
 
         if (!read_txt_file(&job.source, oarg.input_path)) return 2;
 
-        char const NEW_LINE = OStr_set_NewLine_with_LineFeed(&job.sink, &job.source);
-        OStr_replace_tabs_with_one_space(&job.source, &job.sink);
+        first_iteration(&job);
 
         memory_for_treesitter = OArena_make(10 * 1024 * 1024);
         ts_set_allocator(ooo_malloc, ooo_calloc, ooo_realloc, ooo_free);
@@ -156,8 +154,8 @@ int main(int argc, char **argv) {
                         job.source.size
                 );
                 ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
-                OJob_swap(&job);
                 ts_tree_delete(tree);
+                OJob_swap(&job);
         }
         {
                 TSTree *tree = ts_parser_parse_string(
@@ -181,8 +179,8 @@ int main(int argc, char **argv) {
                         &serial_nodes,
                         &job
                 );
-                OJob_swap(&job);
                 ts_tree_delete(tree);
+                OJob_swap(&job);
         }
         {
                 TSTree *tree = ts_parser_parse_string(
@@ -198,11 +196,13 @@ int main(int argc, char **argv) {
                         &serial_nodes,
                         0
                 );
-                OJob_swap(&job);
-                OStr_replace_LineFeed(&job.sink, &job.source, NEW_LINE);
-                OJob_swap(&job);
                 ts_tree_delete(tree);
+                OJob_swap(&job);
         }
+
+        last_iteration(&job);
+        OJob_swap(&job);
+
         write_txt_file(&job.source, oarg.output_path);
         ts_parser_delete(parser);
         printf("%lu ms\n", (nob_millis() - t_start));

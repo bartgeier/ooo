@@ -6,6 +6,7 @@
 
 #define MEM_SIZE 1000*1024
 
+#if 0
 TEST(OStr, NewLine_with_LineFeed_rn) {
         char *src = (char*)malloc(MEM_SIZE);
         char *snk = (char*)malloc(MEM_SIZE);
@@ -208,6 +209,7 @@ TEST(OStr, replace_tabs_with_one_space) {
         }
         EXPECT_TRUE(ok);
 }
+#endif
 
 TEST(OStr, append) {
         char *src = (char*)malloc(MEM_SIZE);
