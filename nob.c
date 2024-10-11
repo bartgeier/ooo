@@ -265,6 +265,7 @@ bool unittests_build(bool const clean) {
         // nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
         // nob_cmd_append(&cmd, "unittests/tst_OArena.c");
         nob_cmd_append(&cmd, "unittests/tst_regex_lineFeed.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_tabFilter.c");
         // nob_cmd_append(&cmd, "unittests/tst_regex_signedComment.c");
         // nob_cmd_append(&cmd, "unittests/tst_regex_truncNodeSpace.c");
         // nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");

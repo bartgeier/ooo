@@ -2,6 +2,10 @@
 #include "OStr.h"
 #define REGEX_SIGNED_COMMENT_IMPLEMENTATION
 #include "Regex_signedComment.h"
+#define REGEX_LINE_FEED_IMPLEMENATATION
+#include "Regex_lineFeed.h"
+#define REGEX_TAB_FILTER_IMPLEMENTATION
+#include "Regex_tabFilter.h"
 
 /* B = A; and lineFeeds are replaced with \n            */
 /* A->size = 0;                                         */
@@ -104,10 +108,34 @@ static void replace_tabs_with_one_space(OStr *B, OStr *A) {
         OStr_clear(A);
 }
 
+#if 0
+#include <stdio.h>
 void first_iteration(OJob *job) {
         NEW_LINE = set_NewLine_with_LineFeed(&job->sink, &job->source);
         replace_tabs_with_one_space(&job->source, &job->sink);
 }
+#else
+void first_iteration(OJob *job) {
+        OStr *source = &job->source;
+        OStr *sink = &job->sink;
+
+        Regex_tabFilter_t tabFilter = {.state = RTF_CHAR};
+        Regex_lineFeed_t lineFeed = { .state = RLF_CHAR, .r = 0, .n = 0, .rn = 0, .nr = 0 };
+        for (uint32_t i = 0; i < source->size; i++) {
+                OptionalChar_t o = Regex_tabFilter(&tabFilter, source->at[i]);
+                if (o.ok == false) {
+                        continue;
+                }
+                o = Regex_lineFeed(&lineFeed, o.chr);
+                if (o.ok) {
+                        OStr_append_chr(sink, o.chr);
+                }
+        }
+        NEW_LINE = Regex_lineFeed_last(&lineFeed);
+        OJob_swap(job);
+}
+
+#endif
 
 static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
         size_t x = 0;

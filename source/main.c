@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
         };
 
         if (!read_txt_file(&job.source, oarg.input_path)) return 2;
-
+        
         first_iteration(&job);
 
         memory_for_treesitter = OArena_make(10 * 1024 * 1024);

@@ -25,60 +25,66 @@ char Regex_lineFeed_last(Regex_lineFeed_t *self);
 
 #ifdef REGEX_LINE_FEED_IMPLEMENATATION
 
+#ifndef __cplusplus
+        #define RLF_RETURN_TYPE (OptionalChar_t)
+#else
+        #define RLF_RETURN_TYPE
+#endif
+
 static OptionalChar_t rlf_return(Regex_lineFeed_t *self) {
         switch (self->state) {
         case RLF_CHAR:
                 self->state = RLF_RETURN;
-                return { .ok = true, .chr = '\n' };
+                return RLF_RETURN_TYPE{ .ok = true, .chr = '\n' };
         case RLF_RETURN:
                 self->state = RLF_CHAR;
                 self->r += 2;
-                return { .ok = true, .chr = '\n' };
+                return RLF_RETURN_TYPE{ .ok = true, .chr = '\n' };
         case RLF_LINE_FEED:
                 self->state = RLF_CHAR;
                 self->nr += 1;
-                return { .ok = false, .chr = 0 };
+                return RLF_RETURN_TYPE{ .ok = false, .chr = 0 };
         default:
                 break;
         }
-        return { .ok = false, .chr = 0 };
+        return RLF_RETURN_TYPE{ .ok = false, .chr = 0 };
 }
 
 static OptionalChar_t rlf_line_feed(Regex_lineFeed_t *self) {
         switch (self->state) {
         case RLF_CHAR:
                 self->state = RLF_LINE_FEED;
-                return { .ok = true, .chr = '\n' };
+                return RLF_RETURN_TYPE{ .ok = true, .chr = '\n' };
         case RLF_RETURN:
                 self->state = RLF_CHAR;
                 self->rn += 1;
-                return { .ok = false, .chr = 0 };
+                return RLF_RETURN_TYPE{ .ok = false, .chr = 0 };
         case RLF_LINE_FEED:
                 self->state = RLF_CHAR;
                 self->n += 2;
-                return { .ok = true, .chr = '\n' };
+                return RLF_RETURN_TYPE{ .ok = true, .chr = '\n' };
         default:
                 break;
         }
-        return { .ok = false, .chr = 0 };
+        return RLF_RETURN_TYPE{ .ok = false, .chr = 0 };
 }
 
 static OptionalChar_t rlf_default(Regex_lineFeed_t *self, char const chr) {
         switch (self->state) {
         case RLF_CHAR:
-                return { .ok = true, .chr = chr };
+                return RLF_RETURN_TYPE{ .ok = true, .chr = chr };
         case RLF_RETURN:
                 self->state = RLF_CHAR;
                 self->r += 1;
-                return { .ok = true, .chr = chr };
+                return RLF_RETURN_TYPE{ .ok = true, .chr = chr };
         case RLF_LINE_FEED:
                 self->state = RLF_CHAR;
                 self->n += 1;
-                return { .ok = true, .chr = chr };
+                return RLF_RETURN_TYPE{ .ok = true, .chr = chr };
         default:
                 break;
         }
-        return { .ok = false, .chr = 0 };
+        return RLF_RETURN_TYPE{ .ok = false, .chr = 0 };
 }
 
 OptionalChar_t Regex_lineFeed(Regex_lineFeed_t *self, char const chr) {

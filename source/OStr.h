@@ -29,10 +29,6 @@ size_t OStr_need_1_or_2LF(OStr const *m, Slice const s);
 bool OStr_last_has_LF(OStr const *m, Slice const s);
 char OStr_need_LF_or_space(OStr const *m, Slice const s);
 
-void OStr_replace_tabs_with_one_space(OStr *B, OStr *A);
-char OStr_set_NewLine_with_LineFeed(OStr *B, OStr *A);
-void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed);
-
 #endif
 
 #ifdef OSTR_IMPLEMENTAION
@@ -86,44 +82,6 @@ char OStr_need_LF_or_space(OStr const *m, Slice const s) {
         }
         return (count > 0) ? '\n' : ' ';
 }
-
-
-
-
-#if 0
-void OStr_replace_LineFeed(OStr *B, OStr *A, char lineFeed) {
-        size_t x = 0;
-        for (size_t i = 0; i < A->size; i++) {
-                if (A->at[i] == '\n') {
-                        switch (lineFeed) {
-                        case 'r':
-                                B->at[x++] = '\r';
-                                break;
-                        case 'n':
-                                B->at[x++] = '\n';
-                                break;
-                        case 'R':
-                                B->at[x++] = '\r';
-                                B->at[x++] = '\n';
-                                break;
-                        case 'N':
-                                /* this is not normal */
-                                B->at[x++] = '\n';
-                                B->at[x++] = '\r';
-                                break;
-                        }
-                } else {
-                        //printf("hello");
-                        B->at[x++] = A->at[i];
-                }
-        }
-        B->at[x] = 0;
-        B->size = x;
-        OStr_clear(A);
-}
-#else
-
-#endif
 
 #endif
 #undef OSTR_IMPLEMENTAION
