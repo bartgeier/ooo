@@ -225,7 +225,8 @@ bool ooo_build(bool const clean) {
         }
         nob_log(NOB_INFO, "BUILD: ooo ----> code styler");
         Nob_Cmd cmd = {0};
-        nob_cmd_append(&cmd, "gcc", "-ggdb", "-pedantic");
+        //nob_cmd_append(&cmd, "gcc", "-O0", "-ggdb", "-pedantic");
+        nob_cmd_append(&cmd, "gcc", "-O0", "-pedantic");
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
         nob_cmd_append(&cmd, "-I", "tree-sitter-c/");
         nob_cmd_append(&cmd, "-o", "build/ooo");
