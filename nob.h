@@ -1370,30 +1370,37 @@ uint64_t nob_seconds() {
     return s;
 }
 #else
+// CLOCK_REALTIME
+// CLOCK_MONOTONIC_RAW
+// CLOCK_PROCESS_CPUTIME_ID
+// CLOCK_THREAD_CPUTIME_ID
+#ifndef NOB_TIME_CONTEXT
+    #define NOB_TIME_CONTEXT CLOCK_MONOTONIC_RAW
+#endif
 uint64_t nob_nanos() {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    clock_gettime(NOB_TIME_CONTEXT, &ts);
     uint64_t ns = (uint64_t)ts.tv_sec*1000000000ULL + (uint64_t)ts.tv_nsec;
     return ns;
 }
 
 uint64_t nob_micros() {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    clock_gettime(NOB_TIME_CONTEXT, &ts);
     uint64_t us = (uint64_t)ts.tv_sec*1000000ULL + (uint64_t)ts.tv_nsec/1000ULL;
     return us;
 }
 
 uint64_t nob_millis() {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    clock_gettime(NOB_TIME_CONTEXT, &ts);
     uint64_t ms = (uint64_t)ts.tv_sec*1000ULL + (uint64_t)ts.tv_nsec/1000000ULL;
     return ms;
 }
 
 uint64_t nob_seconds() {
     struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
+    clock_gettime(NOB_TIME_CONTEXT, &ts);
     uint64_t s = (uint64_t)ts.tv_sec + (uint64_t)ts.tv_nsec/1000000000ULL;
     return s;
 }
