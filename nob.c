@@ -65,6 +65,7 @@ bool treesitter_download_build(bool const clean) {
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib");
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include");
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include/tree_sitter");
+        ok &= nob_rename("tree-sitter-"TS_COMMIT"/Cargo.toml", "tree-sitter/Cargo.toml");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/LICENSE", "tree-sitter/LICENSE");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter/libtree-sitter.a");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/lib/include/tree_sitter/api.h", "tree-sitter/lib/include/tree_sitter/api.h");
@@ -110,6 +111,7 @@ bool tree_sitter_c_download(bool const clean) {
         ok &= nob_mkdir_if_not_exists("tree-sitter-c");
         ok &= nob_mkdir_if_not_exists("tree-sitter-c/src");
         ok &= nob_mkdir_if_not_exists("tree-sitter-c/src/tree_sitter");
+        ok &= nob_rename("tree-sitter-c-"TS_COMMIT"/Cargo.toml", "tree-sitter-c/Cargo.toml");
         ok &= nob_rename("tree-sitter-c-"TS_COMMIT"/LICENSE", "tree-sitter-c/LICENSE");
         ok &= nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/tree_sitter/parser.h", "tree-sitter-c/src/tree_sitter/parser.h");
         ok &= nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/parser.c", "tree-sitter-c/src/parser.c");
