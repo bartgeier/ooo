@@ -98,6 +98,7 @@ void generate_sym_unknown(
         if (me == ENUMERATOR_LIST & sibling == TYPE_IDENTIFIER & parent == ENUM_SPECIFIER) {
                 size_t start_idx = ts_node_start_byte(sibling_node);
                 size_t end_idx = ts_node_end_byte(sibling_node);
+                printf("asdfasd %zu %zu",start_idx, end_idx);
                 if (equal_slice("ts_symbol_identifiers", &job->source, start_idx, end_idx)) {
                         size_t num_of_childs = ts_node_child_count(node);
                         for (size_t i = 0; i < num_of_childs; i++) {

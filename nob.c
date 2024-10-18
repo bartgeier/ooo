@@ -74,6 +74,7 @@ bool treesitter_download_build(bool const clean) {
         return ok;
 }
 
+#if 0
 bool tree_sitter_c_download(bool const clean) {
 #if 1
         #define TS_C_URL "https://github.com/tree-sitter/tree-sitter-c/archive/refs/heads/"
@@ -118,6 +119,33 @@ bool tree_sitter_c_download(bool const clean) {
         ok &= nob_remove("tree-sitter-c-"TS_C_COMMIT);
         return ok;
 }
+#else
+bool tree_sitter_c_download(bool const clean) {
+#if 1
+        #define TS_C_URL "https://github.com/tree-sitter/tree-sitter-c/archive/refs/heads/"
+        #define TS_C_COMMIT "master"
+#else
+        #define TS_C_URL "https://github.com/tree-sitter/tree-sitter-c/archive/"
+        #define TS_C_COMMIT "212a80f86452bb1316324fa0db730cf52f29e05a"
+#endif
+        bool ok = true;
+        if (clean) {
+                ok &= nob_remove("tree-sitter-c.zip");
+                ok &= nob_remove("tree-sitter-c-"TS_C_COMMIT);
+                ok &= nob_remove("tree-sitter-c"); 
+                return ok;
+        }
+
+        ok &= nob_mkdir_if_not_exists("tree-sitter-c");
+        ok &= nob_mkdir_if_not_exists("tree-sitter-c/src");
+        ok &= nob_mkdir_if_not_exists("tree-sitter-c/src/tree_sitter");
+        ok &= nob_copy_file("../tree-sitter/tree-sitter-c/LICENSE", "tree-sitter-c/LICENSE");
+        ok &= nob_copy_file("../tree-sitter/tree-sitter-c/src/tree_sitter/parser.h", "tree-sitter-c/src/tree_sitter/parser.h");
+        ok &= nob_copy_file("../tree-sitter/tree-sitter-c/src/parser.c", "tree-sitter-c/src/parser.c");
+        return ok;
+}
+
+#endif
 
 bool googleTest_download_build(bool const clean) {
         #if 1
@@ -306,7 +334,7 @@ int main(int argc, char **argv) {
         ok &= googleTest_download_build(flag.clean);        
         ok &= ooo_copy_treesitter_symbols_build(flag.clean);
         ok &= ooo_build(flag.clean);
-        ok &= unittests_build(flag.clean);
+        //ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
                 return false;

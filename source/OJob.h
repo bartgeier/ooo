@@ -16,9 +16,21 @@ void OJob_space(OJob *m);
 void OJob_1_or_2LF(OJob *m, Slice const slice);
 void OJob_LF_or_space(OJob *m, Slice const slice);
 
+void OJob_reset_pre_processor_line_continuation();
+void OJob_set_pre_processor_line_continuation();
 #endif
 
 #ifdef OJOB_IMPLEMENTATION 
+
+static bool pre_processor_line_continuation = false;
+
+void OJob_reset_pre_processor_line_continuation() {
+        pre_processor_line_continuation = false;
+}
+
+void OJob_set_pre_processor_line_continuation() {
+        pre_processor_line_continuation = true;
+}
 
 void OJob_swap(OJob *m) {
         m->idx = 0;
@@ -59,9 +71,12 @@ void OJob_LF_or_space(OJob *m, Slice const slice) {
                 return;
         }
         char const chr = OStr_need_LF_or_space(&m->source, slice);
+        if (pre_processor_line_continuation) {
+                OStr_append_chr(&m->sink, ' ');
+                OStr_append_chr(&m->sink, '\\');
+        }
         OStr_append_chr(&m->sink, chr);
 }
-
 
 #endif
 #undef OJOB_IMPLEMENTATION

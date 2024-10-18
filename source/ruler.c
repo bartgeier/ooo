@@ -51,6 +51,41 @@ static bool preproc_def(Relation const *node, Slice const slice, OJob *job) {
         return false;
 }
 
+static bool preproc_function_def(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                /* #define */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (me(node) == sym_identifier) {
+                /* #define ALICE */
+                /*        ^      */
+                OJob_space(job);
+                return true;
+        }
+        if (me(node) == sym_preproc_arg) {
+                /* #define ALICE 50 */
+                /*              ^   */
+                OJob_space(job);
+                return true;
+        }
+        return false;
+}
+
+static bool preproc_arg(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        //OJob_space(job);
+        OJob_LF_or_space(job, slice); // todo version with line continuation
+        return true;
+}
+
 #if 0
 static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
@@ -1440,112 +1475,119 @@ static bool roots(Relation const *node, Slice const slice, OJob *job) {
 }
 
 bool dispatcher(
-        Nodes *nodes,
+        //Nodes *nodes,
+        Relation *relation,
         Slice slice,
         OJob *job
 ) {
-        Relation relation = {0}; 
-        Relation_init(&relation, nodes); 
+        // Relation relation = {0}; 
+        // Relation_init(&relation, nodes); 
 
-        switch(parent(&relation)) {
+        switch(parent(relation)) {
+
         case sym_preproc_include: 
-                return preproc_include(&relation, slice, job); 
+                return preproc_include(relation, slice, job); 
         case sym_preproc_def: 
-                return preproc_def(&relation, slice, job);
-        case sym_function_definition: 
-                return function_definition(&relation, slice, job);
-        case sym_function_declarator: 
-                return function_declarator(&relation, slice, job);
-        case sym_parameter_list: 
-                return parameter_list(&relation, slice, job);
-        case sym_parameter_declaration: 
-                return parameter_declaration(&relation, slice, job);
-        case sym_enum_specifier: 
-                return enum_specifier(&relation, slice, job);
-        case sym_union_specifier: 
-                return union_specifier(&relation, slice, job);
-        case sym_pointer_declarator: 
-                return pointer_declarator(&relation, slice, job);
-        case sym_pointer_expression: 
-                return pointer_expression(&relation, slice, job);
-        case sym_sizeof_expression: 
-                return sizeof_expression(&relation, slice, job);
-        case sym_cast_expression: 
-                return cast_expression(&relation, slice, job);
-        case sym_type_descriptor: 
-                return type_descriptor(&relation, slice, job);
-        case sym_abstract_pointer_declarator: 
-                return abstract_pointer_declarator(&relation, slice, job);
-        case sym_compound_statement: 
-                return compound_statement(&relation, slice, job);
-        case sym_declaration: 
-                return declaration(&relation, slice, job);
-        case sym_init_declarator: 
-                return init_declarator(&relation, slice, job);
-        case sym_struct_specifier: 
-                return struct_specifier(&relation, slice, job);
-        case sym_field_declaration_list: 
-                return field_declaration_list(&relation, slice, job);
-        case sym_field_declaration: 
-                return field_declaration(&relation, slice, job);
-        case sym_initializer_list: 
-                return initializer_list(&relation, slice, job);
-        case sym_initializer_pair: 
-                return initializer_pair(&relation, slice, job);
-        case sym_array_declarator: 
-                return array_declarator(&relation, slice, job);
-        case sym_subscript_designator: 
-                return subscript_designator(&relation, slice, job);
-        case sym_subscript_expression:
-                return subscript_expression(&relation, slice, job);
-        case sym_type_definition: 
-                return type_definition(&relation, slice, job);
-        case sym_enumerator_list: 
-                return enumerator_list(&relation, slice, job);
-        case sym_enumerator: 
-                return enumerator(&relation, slice, job);
-        case sym_expression_statement: 
-                return expression_statement(&relation, slice, job);
-        case sym_assignment_expression: 
-                return assignment_expression(&relation, slice, job);
-        case sym_call_expression: 
-                return call_expression(&relation, slice, job);
-        case sym_update_expression:
-                return update_expression(&relation, slice, job);
-        case sym_conditional_expression:
-                return conditional_expression(&relation, slice, job);
-        case sym_argument_list: 
-                return argument_list(&relation, slice, job);
-        case sym_for_statement: 
-                return for_statement(&relation, slice, job);
-        case sym_while_statement: 
-                return while_statement(&relation, slice, job);
-        case sym_do_statement: 
-                return do_statement(&relation, slice, job);
-        case sym_if_statement: 
-                return if_statement(&relation, slice, job);
-        case sym_parenthesized_expression: 
-                return parenthesized_expression(&relation, slice, job);
-        case sym_binary_expression: 
-                return binary_expression(&relation, slice, job);
-        case sym_else_clause: 
-                return else_clause(&relation, slice, job);
-        case sym_switch_statement: 
-                return switch_statement(&relation, slice, job);
-        case sym_case_statement: 
-                return case_statement(&relation, slice, job);
-
+                return preproc_def(relation, slice, job);
+        case sym_preproc_function_def: 
+                return preproc_function_def(relation, slice, job);
         case sym_preproc_ifdef: 
-                return preproc_ifdef(&relation, slice, job); 
+                return preproc_ifdef(relation, slice, job); 
         case sym_preproc_if: 
-                return preproc_if(&relation, slice, job); 
+                return preproc_if(relation, slice, job); 
+        case sym_preproc_arg: 
+                return preproc_arg(relation, slice, job);
+
+        case sym_function_definition: 
+                return function_definition(relation, slice, job);
+        case sym_function_declarator: 
+                return function_declarator(relation, slice, job);
+        case sym_parameter_list: 
+                return parameter_list(relation, slice, job);
+        case sym_parameter_declaration: 
+                return parameter_declaration(relation, slice, job);
+        case sym_enum_specifier: 
+                return enum_specifier(relation, slice, job);
+        case sym_union_specifier: 
+                return union_specifier(relation, slice, job);
+        case sym_pointer_declarator: 
+                return pointer_declarator(relation, slice, job);
+        case sym_pointer_expression: 
+                return pointer_expression(relation, slice, job);
+        case sym_sizeof_expression: 
+                return sizeof_expression(relation, slice, job);
+        case sym_cast_expression: 
+                return cast_expression(relation, slice, job);
+        case sym_type_descriptor: 
+                return type_descriptor(relation, slice, job);
+        case sym_abstract_pointer_declarator: 
+                return abstract_pointer_declarator(relation, slice, job);
+        case sym_compound_statement: 
+                return compound_statement(relation, slice, job);
+        case sym_declaration: 
+                return declaration(relation, slice, job);
+        case sym_init_declarator: 
+                return init_declarator(relation, slice, job);
+        case sym_struct_specifier: 
+                return struct_specifier(relation, slice, job);
+        case sym_field_declaration_list: 
+                return field_declaration_list(relation, slice, job);
+        case sym_field_declaration: 
+                return field_declaration(relation, slice, job);
+        case sym_initializer_list: 
+                return initializer_list(relation, slice, job);
+        case sym_initializer_pair: 
+                return initializer_pair(relation, slice, job);
+        case sym_array_declarator: 
+                return array_declarator(relation, slice, job);
+        case sym_subscript_designator: 
+                return subscript_designator(relation, slice, job);
+        case sym_subscript_expression:
+                return subscript_expression(relation, slice, job);
+        case sym_type_definition: 
+                return type_definition(relation, slice, job);
+        case sym_enumerator_list: 
+                return enumerator_list(relation, slice, job);
+        case sym_enumerator: 
+                return enumerator(relation, slice, job);
+        case sym_expression_statement: 
+                return expression_statement(relation, slice, job);
+        case sym_assignment_expression: 
+                return assignment_expression(relation, slice, job);
+        case sym_call_expression: 
+                return call_expression(relation, slice, job);
+        case sym_update_expression:
+                return update_expression(relation, slice, job);
+        case sym_conditional_expression:
+                return conditional_expression(relation, slice, job);
+        case sym_argument_list: 
+                return argument_list(relation, slice, job);
+        case sym_for_statement: 
+                return for_statement(relation, slice, job);
+        case sym_while_statement: 
+                return while_statement(relation, slice, job);
+        case sym_do_statement: 
+                return do_statement(relation, slice, job);
+        case sym_if_statement: 
+                return if_statement(relation, slice, job);
+        case sym_parenthesized_expression: 
+                return parenthesized_expression(relation, slice, job);
+        case sym_binary_expression: 
+                return binary_expression(relation, slice, job);
+        case sym_else_clause: 
+                return else_clause(relation, slice, job);
+        case sym_switch_statement: 
+                return switch_statement(relation, slice, job);
+        case sym_case_statement: 
+                return case_statement(relation, slice, job);
+
         case sym_translation_unit: 
-                return translation_unit(&relation, slice, job);
+                return translation_unit(relation, slice, job);
         case sym_linkage_specification: 
-                return linkage_specification(&relation, slice, job);
+                return linkage_specification(relation, slice, job);
         case sym_declaration_list: 
-                return declaration_list(&relation, slice, job);
-        //|| roots(&relation, slice, job);
+                return declaration_list(relation, slice, job);
+        //|| roots(relation, slice, job);
         default:
                 return false;
         }
@@ -1562,7 +1604,14 @@ void ooo_ruler(
                 .end = job->idx = ts_node_start_byte(node)
         };
 
-        if (!dispatcher(nodes, slice, job)) {
+        Relation relation = {0}; 
+        Relation_init(&relation, nodes); 
+
+        if (me(&relation) == sym_preproc_arg) {
+                OJob_set_pre_processor_line_continuation();
+        }
+
+        if (!dispatcher(&relation, slice, job)) {
                 for (size_t i = slice.begin; i < slice.end; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                 }
@@ -1589,5 +1638,8 @@ void ooo_ruler(
         } 
         for (size_t i = slice.begin; i < slice.end; i++) {
                 OStr_append_chr(&job->sink, job->source.at[i]);
+        }
+        if (me(&relation) == sym_preproc_arg) {
+                OJob_reset_pre_processor_line_continuation();
         }
 }
