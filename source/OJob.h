@@ -50,10 +50,24 @@ void OJob_swap(OJob *m) {
 }
 
 void OJob_LF(OJob *m) {
+        if (pre_processor_line_continuation) {
+                OStr_append_chr(&m->sink, ' ');
+                OStr_append_chr(&m->sink, '\\');
+                OStr_append_chr(&m->sink, '\n');
+                return;
+        }
         OStr_append_chr(&m->sink, '\n');
 }
 
 void OJob_2LF(OJob *m) {
+        if (pre_processor_line_continuation) {
+                OStr_append_chr(&m->sink, ' ');
+                OStr_append_chr(&m->sink, '\\');
+                OStr_append_chr(&m->sink, '\n');
+                OStr_append_chr(&m->sink, '\\');
+                OStr_append_chr(&m->sink, '\n');
+                return;
+        }
         OStr_append_number_of_chr(&m->sink, 2, '\n');
 }
 
@@ -63,6 +77,17 @@ void OJob_space(OJob *m) {
 
 void OJob_1_or_2LF(OJob *m, Slice const slice) {
         size_t const num_of_LF = OStr_need_1_or_2LF(&m->source, slice);
+        assert(num_of_LF == 1 | num_of_LF == 2);
+        if (pre_processor_line_continuation) {
+                OStr_append_chr(&m->sink, ' ');
+                OStr_append_chr(&m->sink, '\\');
+                OStr_append_chr(&m->sink, '\n');
+                if (num_of_LF == 2) {
+                        OStr_append_chr(&m->sink, '\\');
+                        OStr_append_chr(&m->sink, '\n');
+                }
+                return;
+        }
         OStr_append_number_of_chr(&m->sink, num_of_LF, '\n');
 }
 
@@ -71,7 +96,7 @@ void OJob_LF_or_space(OJob *m, Slice const slice) {
                 return;
         }
         char const chr = OStr_need_LF_or_space(&m->source, slice);
-        if (pre_processor_line_continuation) {
+        if (pre_processor_line_continuation & chr == '\n') {
                 OStr_append_chr(&m->sink, ' ');
                 OStr_append_chr(&m->sink, '\\');
         }

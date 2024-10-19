@@ -22,17 +22,17 @@ typedef struct {
 Nodes Nodes_init(size_t const SIZE);
 void Nodes_clear(Nodes *m);
 void Nodes_push(Nodes *m, TSNode const node);
-TSNode Nodes_at(Nodes *m, size_t const idx);
+TSNode Nodes_at(Nodes const *m, size_t const idx);
 
 typedef struct {
         TSNode grand;
         TSNode parent;
         uint32_t child_idx;
         uint32_t num_of_childs;
-        Nodes *nodes;
+        Nodes const *nodes;
 } Relation;
 
-void Relation_init(Relation *r, Nodes *nodes);
+void Relation_init(Relation *r, Nodes const *nodes);
 TSNode child(Relation const *r, unsigned int const i);
 TSSymbol unknown(Relation const *r);
 TSSymbol me(Relation const *r);

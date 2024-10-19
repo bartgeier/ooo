@@ -73,13 +73,13 @@ void Nodes_push(Nodes *m, TSNode const node) {
         m->at[m->last] = node;
 }
 
-TSNode Nodes_at(Nodes *m, size_t const idx) {
+TSNode Nodes_at(Nodes const *m, size_t const idx) {
         assert(idx < m->SIZE);
         size_t i = (m->last >= idx) ? m->last - idx : m->SIZE - idx + m->last;
         return m->at[i];
 }
 
-void Relation_init(Relation *r, Nodes *nodes) {
+void Relation_init(Relation *r, Nodes const *nodes) {
         r->nodes = nodes;
         TSNode node = Nodes_at(nodes, 0);
         r->parent = super(1, node);
