@@ -51,6 +51,23 @@ static bool preproc_def(Relation const *node, Slice const slice, OJob *job) {
         return false;
 }
 
+static bool preproc_call(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                /* #pragma */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (me(node) == sym_preproc_arg) {
+                /* #pragma once */
+                /*        ^     */
+                OJob_space(job);
+                return true;
+        }
+        return false;
+}
+
 static bool preproc_function_def(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* #define */
@@ -73,7 +90,7 @@ static bool preproc_function_def(Relation const *node, Slice const slice, OJob *
         if (me(node) == sym_preproc_arg) {
                 /* #define ALICE(a, b) a + b */
                 /*                    ^      */
-                OJob_space(job);
+                OJob_LF_or_space(job, slice);
                 return true;
         }
         return false;
@@ -108,6 +125,12 @@ static bool preproc_params(Relation const *node, Slice const slice, OJob *job) {
         //OJob_LF_or_space(job, slice); // todo version with line continuation
         if (me(node) == sym_identifier) {
                 /* #define ALICE(A, B)  */
+                /*                 ^    */
+                OJob_LF_or_space(job, slice);
+                return true;
+        }
+        if (me(node) == anon_sym_DOT_DOT_DOT) {
+                /* #define ALICE(A, ...)  */
                 /*                 ^    */
                 OJob_LF_or_space(job, slice);
                 return true;
@@ -1554,6 +1577,8 @@ bool dispatcher(
                 return preproc_include(&relation, slice, job); 
         case sym_preproc_def: 
                 return preproc_def(&relation, slice, job);
+        case sym_preproc_call: 
+                return preproc_call(&relation, slice, job);
         case sym_preproc_function_def: 
                 return preproc_function_def(&relation, slice, job);
         case sym_preproc_ifdef: 
