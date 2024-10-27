@@ -1,5 +1,87 @@
 #include "indentation.h"
 #include "stdio.h"
+#include "tree_navigator.h"
+
+static size_t preproc_call(Relation const *node, size_t level) {
+        if (me(node) == sym_preproc_arg) {
+                TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
+                uint32_t const count = ts_node_child_count(me_n);
+                if (count == 1) {
+                        TSPoint a = ts_node_start_point(node->parent);
+                        TSPoint b = ts_node_start_point(me_n);
+                        if (a.row == b.row) {
+                                /* #pragma do { */
+                                /*     ...      */
+                                return level;
+                        }
+                }
+                /* #pragma \      */
+                /*     do {       */
+                /*         ...    */
+                level += 1;
+        }
+        return level;
+}
+
+static size_t preproc_def(Relation const *node, size_t level) {
+        if (me(node) == sym_preproc_arg) {
+                TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
+                uint32_t const count = ts_node_child_count(me_n);
+                if (count == 1) {
+                        TSPoint a = ts_node_start_point(node->parent);
+                        TSPoint b = ts_node_start_point(me_n);
+                        if (a.row == b.row) {
+                                /* #define FOO \  */
+                                /*     do {       */
+                                /*         ...    */
+                                return level;
+                        }
+                }
+                /* #define FOO \  */
+                /*     do {       */
+                /*         ...    */
+                level += 1;
+        }
+        return level;
+}
+
+static size_t preproc_function_def(Relation const *node, size_t level) {
+        if (me(node) == sym_preproc_arg) {
+                TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
+                uint32_t const count = ts_node_child_count(me_n);
+                if (count == 1) {
+                        TSPoint a = ts_node_start_point(node->parent);
+                        TSPoint b = ts_node_start_point(me_n);
+                        if (a.row == b.row) {
+                                /* #define FOO(a, b) do { */
+                                /*     ...                */
+                                return level;
+                        }
+                }
+                /* #define FOO(a, b) \ */
+                /*     do {            */
+                /*         ...         */
+                level += 1;
+        }
+        return level;
+}
+
+static size_t preproc_params(Relation const *node, size_t level) {
+        if (me(node) == anon_sym_RPAREN) {
+                return level;
+        }
+        level += 1;
+        return level;
+
+}
+
+static size_t preproc_arg(Relation const *node, size_t level) {
+        return level;
+}
+
+
+
+
 
 static size_t compound_statement(Relation const *node, size_t level) {
         if (grand(node) == sym_switch_statement
@@ -101,6 +183,14 @@ static size_t while_statement(Relation const *node, size_t level) {
         return level;
 }
 
+static size_t do_statement(Relation const *node, size_t level) {
+        // if (find_child(node, sym_compound_statement) < 0) {
+                //level += 1;
+         //       return level;
+        //}
+        return level;
+}
+
 static size_t if_statement(Relation const *node, size_t level) {
         if (me(node) == sym_else_clause) {
                 return level;
@@ -133,6 +223,19 @@ static size_t dispatcher(Nodes *nodes, size_t level) {
         Relation_init(&node, nodes);
 
         switch(parent(&node)) {
+
+        case sym_preproc_call: 
+                return preproc_call(&node, level);
+        case sym_preproc_def: 
+                return preproc_def(&node, level);
+        case sym_preproc_function_def: 
+                return preproc_function_def(&node, level);
+        case sym_preproc_params:
+                return preproc_params(&node, level);
+        case sym_preproc_arg: 
+                return preproc_arg(&node, level);
+
+
         case sym_compound_statement: 
                 return compound_statement(&node, level);
         case sym_field_declaration_list: 
@@ -151,6 +254,8 @@ static size_t dispatcher(Nodes *nodes, size_t level) {
                 return for_statement(&node, level);
         case sym_while_statement: 
                 return while_statement(&node, level);
+        case sym_do_statement: 
+                return do_statement(&node, level);
         case sym_if_statement: 
                 return if_statement(&node, level);
         case sym_else_clause: 
@@ -175,7 +280,6 @@ void ooo_set_indentation(
                 .begin = job->idx,
                 .end = job->idx = ts_node_start_byte(node)
         };
-
         indentation_level = dispatcher(nodes, indentation_level);
         for (size_t i = slice.begin; i < slice.end; i++) {
                 if (job->source.at[i] == '\n') {

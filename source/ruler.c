@@ -45,7 +45,7 @@ static bool preproc_def(Relation const *node, Slice const slice, OJob *job) {
         if (me(node) == sym_preproc_arg) {
                 /* #define ALICE 50 */
                 /*              ^   */
-                OJob_space(job);
+                OJob_LF_or_space(job, slice);
                 return true;
         }
         return false;
@@ -1585,10 +1585,10 @@ bool dispatcher(
                 return preproc_ifdef(&relation, slice, job); 
         case sym_preproc_if: 
                 return preproc_if(&relation, slice, job); 
-        case sym_preproc_arg: 
-                return preproc_arg(&relation, slice, job);
         case sym_preproc_params:
                 return preproc_params(&relation, slice, job);
+        case sym_preproc_arg: 
+                return preproc_arg(&relation, slice, job);
 
         case sym_function_definition: 
                 return function_definition(&relation, slice, job);

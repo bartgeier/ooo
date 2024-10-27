@@ -153,6 +153,15 @@ int main(int argc, char **argv) {
                         job.source.at,
                         job.source.size
                 );
+                if (oarg.action == OARG_PRINT) { 
+                        ooo_print_nodes(
+                                ts_tree_root_node(tree),
+                                oarg.print.row_begin,
+                                oarg.print.row_end, 
+                                0 // tree-branch level
+                        );
+                        return 0;
+                }
                 ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
                 ts_tree_delete(tree);
                 OJob_swap(&job);
@@ -164,15 +173,6 @@ int main(int argc, char **argv) {
                         job.source.at,
                         job.source.size
                 );
-                if (oarg.action == OARG_PRINT) { 
-                        ooo_print_nodes(
-                                ts_tree_root_node(tree),
-                                oarg.print.row_begin,
-                                oarg.print.row_end, 
-                                0 // tree-branch level
-                        );
-                        return 0;
-                }
                 serial_nodes = Nodes_init(20);
                 Nodes_push(&serial_nodes, ts_tree_root_node(tree));
                 ooo_ruler(
@@ -199,6 +199,8 @@ int main(int argc, char **argv) {
                 ts_tree_delete(tree);
                 OJob_swap(&job);
         }
+
+        // write_txt_file(&job.source, "-");
 
         last_iteration(&job);
         OJob_swap(&job);

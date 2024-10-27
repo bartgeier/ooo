@@ -148,7 +148,7 @@ static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
         for (size_t i = 0; i < A->size; i++) {
                 bool const found = Regex_signedComment(&reg, i, A->at[i]);
                 if (found) {
-                        // remove signe
+                        // remove sign
                         if (A->at[i] == '\n') {
                                 B->at[x - (i - reg.begin)] = '/';
                                 x -= reg.id_size;
@@ -182,9 +182,9 @@ static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
                         B->at[x++] = A->at[i];
                 }
         }
-        bool const found = Regex_signedComment(&reg, A->size, 0);
+        bool const found = Regex_signedComment(&reg, A->size, '\n');
         if (found) {
-                B->at[reg.begin] = '/';
+                B->at[x - (A->size - reg.begin)] = '/';
                 x -= reg.id_size;
         }
         B->at[x] = 0;
