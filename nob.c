@@ -1,5 +1,9 @@
+#define GEN_COMPILE_COMMANDS_IMPLEMENTATION
+#include "gen_compile_commands.h"
+
 #define NOB_IMPLEMENTATION
 #include "nob.h"
+
 #include <stdbool.h>
 
 #define OOO_BUILD_DIR "build"
@@ -247,6 +251,27 @@ bool googleTest_download_build(bool const clean) {
         return ok;
 }
 
+Nob_Cmd include_paths = {0};
+void create_include_paths(void) {
+        nob_cmd_append(&include_paths, "source");
+        nob_cmd_append(&include_paths, "tree-sitter/lib/include");
+        nob_cmd_append(&include_paths, "tree-sitter-c");
+}
+
+Nob_Cmd source_paths = {0};
+void create_source_paths(void) {
+        nob_cmd_append(&source_paths, "./source/main.c");
+        //nob_cmd_append(&source_paths, "./tree-sitter/libtree-sitter.a");
+        nob_cmd_append(&source_paths, "./tree-sitter-c/src/parser.c");
+        nob_cmd_append(&source_paths, "./source/node_printer.c");
+        nob_cmd_append(&source_paths, "./source/truncate.c");
+        nob_cmd_append(&source_paths, "./source/OArg.c");
+        nob_cmd_append(&source_paths, "./source/iteration.c");
+        nob_cmd_append(&source_paths, "./source/ruler.c");
+        nob_cmd_append(&source_paths, "./source/indentation.c");
+        nob_cmd_append(&source_paths, "./source/tree_navigator.c");
+}
+
 bool ooo_build(bool const clean) {
         if (clean) {
                 return true;
@@ -254,7 +279,7 @@ bool ooo_build(bool const clean) {
         nob_log(NOB_INFO, "BUILD: ooo ----> code styler");
         Nob_Cmd cmd = {0};
         //nob_cmd_append(&cmd, "gcc", "-O0", "-ggdb", "-pedantic");
-        nob_cmd_append(&cmd, "gcc", "-O0", "-pedantic");
+        nob_cmd_append(&cmd, "/usr/bin/gcc", "-O0", "-pedantic");
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
         nob_cmd_append(&cmd, "-I", "tree-sitter-c/");
         nob_cmd_append(&cmd, "-o", "build/ooo");
@@ -265,6 +290,7 @@ bool ooo_build(bool const clean) {
         nob_cmd_append(&cmd, "./source/ruler.c");
         nob_cmd_append(&cmd, "./source/indentation.c");
         nob_cmd_append(&cmd, "./source/tree_navigator.c");
+        generate_compile_commands("/home/berni/projects/ooo", &cmd, &source_paths);
         bool ok = nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);
         return ok;
@@ -326,6 +352,13 @@ int main(int argc, char **argv) {
                 char const *s = nob_shift_args(&argc, &argv);
                 if (strcmp(s, "clean") == 0) flag.clean = true;
         }
+
+        create_source_paths();
+        create_include_paths();
+        //generate_compile_commands("home/berni/projects/ooo", "gcc", &include_paths, &source_paths);
+        //return  0;
+
+
         ok &= create_build_dir(flag.clean);
         ok &= treesitter_download_build(flag.clean);       
         ok &= tree_sitter_c_download(flag.clean);        
@@ -338,7 +371,7 @@ int main(int argc, char **argv) {
                 return false;
         }
         nob_log(NOB_INFO ,"Successful done! %llu ms", nob_millis() - t_start);
-        return 0;
+        return  0;
 }
 
 /* https://docs.github.com/en/repositories/working-with-files/using-files/downloading-source-code-archives */
