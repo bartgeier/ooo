@@ -604,6 +604,19 @@ static bool compound_statement(Relation const *node, Slice const slice, OJob *jo
                 OJob_LF(job);
                 return true;
         }
+        if (me(node) == sym_expression_statement) {
+                TSNode n_me = Nodes_at(node->nodes, 0);
+                TSSymbol s = sym(ts_node_child(n_me, 0));
+                if (slice.begin == 0) {
+                        return false;
+                }
+                char x = job->source.at[slice.begin - 1];
+                if (s == anon_sym_SEMI & x != ';') {
+                        /* do { ... } while(0); */
+                        /*                   ^^ */
+                        return true;
+                }
+        }
         OJob_1_or_2LF(job, slice);
         return true;
 }
@@ -980,6 +993,7 @@ static bool enumerator(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
+// bart
 static bool expression_statement(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* ach(); */
