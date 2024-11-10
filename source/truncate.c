@@ -83,7 +83,7 @@ static size_t trunc_spaces_in_comment(OJob *job, size_t const begin, size_t cons
         sink->size = n;
         return new_comment_size;
 }
-
+#include <stdio.h>
 void ooo_truncate_spaces(
         TSNode node,
         OJob *job
@@ -125,6 +125,15 @@ void ooo_truncate_spaces(
                 );
                 size_t const idx = job->sink.size - new_comment_size;
                 if (job->sink.at[idx] == '/' & job->sink.at[idx + 1] == '/') {
+                        for (uint32_t i = idx; i < idx + new_comment_size - 1; i++) {
+                                // remove block comment inside C++ comment, replace '*' with '\t'
+                                if (job->sink.at[i] == '/' & job->sink.at[i+1] == '*') {
+                                        job->sink.at[i+1] = '\t';
+                                }
+                                if (job->sink.at[i] == '*' & job->sink.at[i+1] == '/') {
+                                        job->sink.at[i] = '\t';
+                                }
+                        }
                         /* line comment becomes a block comment */
                         // a comment
                         /* a comment */

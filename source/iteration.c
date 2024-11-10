@@ -108,13 +108,6 @@ static void replace_tabs_with_one_space(OStr *B, OStr *A) {
         OStr_clear(A);
 }
 
-#if 0
-#include <stdio.h>
-void first_iteration(OJob *job) {
-        NEW_LINE = set_NewLine_with_LineFeed(&job->sink, &job->source);
-        replace_tabs_with_one_space(&job->source, &job->sink);
-}
-#else
 void first_iteration(OJob *job) {
         OStr *source = &job->source;
         OStr *sink = &job->sink;
@@ -135,7 +128,6 @@ void first_iteration(OJob *job) {
         OJob_swap(job);
 }
 
-#endif
 
 static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
         size_t x = 0;
@@ -162,10 +154,10 @@ static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
 
                 if (A->at[i] == '\n') {
                         switch (lineFeed) {
-                        case 'r':
-                                B->at[x++] = '\r';
-                                break;
-                        case 'n':
+                                case 'r':
+                                        B->at[x++] = '\r';
+                                        break;
+                                case 'n':
                                 B->at[x++] = '\n';
                                 break;
                         case 'R':
@@ -179,7 +171,14 @@ static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
                                 break;
                         }
                 } else {
-                        B->at[x++] = A->at[i];
+                        if (A->at[i] == '\t') {
+                                // see truncate.c 
+                                // remove block comment inside C++ comment, replace '*' with '\t'
+                                // but here we delete '\t' and restore '*' block comment
+                                B->at[x++] = '*';
+                        } else {
+                                B->at[x++] = A->at[i];
+                        }
                 }
         }
         bool const found = Regex_signedComment(&reg, A->size, '\n');
