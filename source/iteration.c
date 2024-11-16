@@ -128,8 +128,26 @@ void first_iteration(OJob *job) {
         OJob_swap(job);
 }
 
+// see truncate.c in:
+//     removes block comment inside C++ comment, replace '*' with '\t'
+// But here we replace '\t' with '*' or '/'
+//    so we restore block comment inside a C++ comment
+static void replace_A_with_B(
+        OStr *s, 
+        uint32_t const begin, uint32_t const end,
+        char A, char B
+) {
+        for (uint32_t i = begin; i < end; i++) {
+                if (s->at[i] == A) {
+                        s->at[i] = B;
+                }
+        }
+}
 
-static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
+void last_iteration(OJob *job) {
+        OStr *A = &job->source;
+        OStr *B = &job->sink; 
+
         size_t x = 0;
         Regex_signedComment_t reg = {
                 .state = RSC_IDLE, 
@@ -142,10 +160,14 @@ static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
                 if (found) {
                         // remove sign
                         if (A->at[i] == '\n') {
-                                B->at[x - (i - reg.begin)] = '/';
+                                uint32_t begin = x - (i - reg.begin);
+                                B->at[begin] = '/';
                                 x -= reg.id_size;
+                                replace_A_with_B(B, begin, x, '\t', '*'); 
                         } else {
+                                uint32_t begin = x - (i - reg.begin);
                                 x -= reg.id_size;
+                                replace_A_with_B(B, begin, x, '\t', '/'); 
                                 B->at[x++] = ' ';
                                 B->at[x++] = '*';
                                 B->at[x++] = '/';
@@ -153,11 +175,12 @@ static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
                 }
 
                 if (A->at[i] == '\n') {
-                        switch (lineFeed) {
-                                case 'r':
-                                        B->at[x++] = '\r';
-                                        break;
-                                case 'n':
+                        // replace line feed
+                        switch (NEW_LINE) {
+                        case 'r':
+                                B->at[x++] = '\r';
+                                break;
+                        case 'n':
                                 B->at[x++] = '\n';
                                 break;
                         case 'R':
@@ -171,27 +194,18 @@ static void replace_LineFeed(OStr *B, OStr *A, char const lineFeed) {
                                 break;
                         }
                 } else {
-                        if (A->at[i] == '\t') {
-                                // see truncate.c 
-                                // remove block comment inside C++ comment, replace '*' with '\t'
-                                // but here we delete '\t' and restore '*' block comment
-                                B->at[x++] = '*';
-                        } else {
-                                B->at[x++] = A->at[i];
-                        }
+                        B->at[x++] = A->at[i];
                 }
         }
-        bool const found = Regex_signedComment(&reg, A->size, '\n');
+        bool const found = Regex_signedComment(&reg, A->size, 0);
         if (found) {
-                B->at[x - (A->size - reg.begin)] = '/';
+                uint32_t begin = x - (A->size - reg.begin);
+                B->at[begin] = '/';
                 x -= reg.id_size;
+                replace_A_with_B(B, begin, x, '\t', '*'); 
         }
         B->at[x] = 0;
         B->size = x;
         OStr_clear(A);
-}
 
-void last_iteration(OJob *job) {
-        replace_LineFeed(&job->sink, &job->source, NEW_LINE);
 }
-

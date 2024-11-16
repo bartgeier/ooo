@@ -185,11 +185,19 @@ void switch_statement_with_curly_brace(void) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                comment indentation
+//           comment indentation
+//           comment c block comment inside a c++ comment
 ////////////////////////////////////////////////////////////////////////////////
 
 void comment_indentation(void) {
     /* abcd
            abcd
     */
+}
+
+void comment_from_c_style_to_Cpp_style(void) {
+    // nested /* comment */ Foo
+    
+    y = b * c
+    * /* nested // comment // Bar */ d * e;
 }

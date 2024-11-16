@@ -129,8 +129,10 @@ int main(int argc, char **argv) {
     { int A = 5; }
     int s = sizeof(A);
     #define FOO 5 == n
-    /* comment */
-    (void)a;
+    /* comment */( \
+        void \
+    )
+    a;
     char a = (char)A;
     char const *a = (char const *)A;
     const char *a = (const char *)A;

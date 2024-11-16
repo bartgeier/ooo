@@ -28,7 +28,6 @@ typedef struct json_tag {
 }Json_t;
 
 bool write_txt_file(Json_t const *source, char const *path) {
-        printf("Hello from "__FILE__);
         if (strcmp(path,"-") == 0) { 
                 printf("source_code:\n%s", source->at);
                 return true;
