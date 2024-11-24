@@ -6,6 +6,8 @@
 #include "Regex_lineFeed.h"
 #define REGEX_TAB_FILTER_IMPLEMENTATION
 #include "Regex_tabFilter.h"
+#define REGEX_LINE_UP_IMPLEMENTATION
+#include "Regex_lineUp.h"
 
 /* B = A; and lineFeeds are replaced with \n            */
 /* A->size = 0;                                         */
@@ -128,16 +130,56 @@ void first_iteration(OJob *job) {
         OJob_swap(job);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+static void line_up(OJob *job, Regex_lineUp_t const *regex) {
+        uint32_t column = 0;
+        for (uint32_t i = regex->begin; i < regex->end; i++) {
+                if (job->source.at[i] == '\\' & job->source.at[i + 1] == '\n') {
+                        uint32_t num_of_spaces = regex->max_col - column;
+                        OStr_append_spaces(&job->sink, num_of_spaces);
+                        OStr_append_chr(&job->sink, '\\');
+                } else {
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                }
+                if (job->source.at[i] == '\n') {
+                        column = 0;
+                } else {
+                        column++;
+                }
+        }
+}
+
+static void line_up_line_continuation(OJob *job) {
+        OStr *A = &job->source;
+        OStr *B = &job->sink; 
+        A->at[A->size] = 0;
+        Regex_lineUp_t regex;
+        Regex_lineUp_first(&regex, 0);
+        for (uint32_t i = 0; i < A->size + 1; i++) {
+                if (Regex_lineUp(&regex, A->at[i], i)) {
+                        uint32_t delta = i - regex.begin;
+                        B->size -= delta;
+                        line_up(job, &regex); 
+                } else {
+                        OStr_append_chr(B, A->at[i]);
+                }
+        }
+}
+
 // see truncate.c in:
 //     removes block comment inside C++ comment, replace '*' with '\t'
 // But here we replace '\t' with '*' or '/'
 //    so we restore block comment inside a C++ comment
 static void replace_A_with_B(
         OStr *s, 
-        uint32_t const begin, uint32_t const end,
+        uint32_t const begin, 
         char A, char B
 ) {
-        for (uint32_t i = begin; i < end; i++) {
+        for (uint32_t i = begin; i < s->size; i++) {
                 if (s->at[i] == A) {
                         s->at[i] = B;
                 }
@@ -148,7 +190,6 @@ void last_iteration(OJob *job) {
         OStr *A = &job->source;
         OStr *B = &job->sink; 
 
-        size_t x = 0;
         Regex_signedComment_t reg = {
                 .state = RSC_IDLE, 
                 .found = false,
@@ -160,17 +201,17 @@ void last_iteration(OJob *job) {
                 if (found) {
                         // remove sign
                         if (A->at[i] == '\n') {
-                                uint32_t begin = x - (i - reg.begin);
+                                uint32_t begin = B->size - (i - reg.begin);
                                 B->at[begin] = '/';
-                                x -= reg.id_size;
-                                replace_A_with_B(B, begin, x, '\t', '*'); 
+                                B->size -= reg.id_size;
+                                replace_A_with_B(B, begin, '\t', '*'); 
                         } else {
-                                uint32_t begin = x - (i - reg.begin);
-                                x -= reg.id_size;
-                                replace_A_with_B(B, begin, x, '\t', '/'); 
-                                B->at[x++] = ' ';
-                                B->at[x++] = '*';
-                                B->at[x++] = '/';
+                                uint32_t begin = B->size - (i - reg.begin);
+                                B->size -= reg.id_size;
+                                replace_A_with_B(B, begin, '\t', '/'); 
+                                OStr_append_chr(B, ' ');
+                                OStr_append_chr(B, '*');
+                                OStr_append_chr(B, '/');
                         }
                 }
 
@@ -178,34 +219,36 @@ void last_iteration(OJob *job) {
                         // replace line feed
                         switch (NEW_LINE) {
                         case 'r':
-                                B->at[x++] = '\r';
+                                OStr_append_chr(B, '\r');
                                 break;
                         case 'n':
-                                B->at[x++] = '\n';
+                                OStr_append_chr(B, '\n');
                                 break;
                         case 'R':
-                                B->at[x++] = '\r';
-                                B->at[x++] = '\n';
+                                OStr_append_chr(B, '\r');
+                                OStr_append_chr(B, '\n');
                                 break;
                         case 'N':
                                 /* this is not normal */
-                                B->at[x++] = '\n';
-                                B->at[x++] = '\r';
+                                OStr_append_chr(B, '\n');
+                                OStr_append_chr(B, '\r');
                                 break;
                         }
                 } else {
-                        B->at[x++] = A->at[i];
+                        OStr_append_chr(B, A->at[i]);
                 }
         }
         bool const found = Regex_signedComment(&reg, A->size, 0);
         if (found) {
-                uint32_t begin = x - (A->size - reg.begin);
+                uint32_t begin = B->size - (A->size - reg.begin);
                 B->at[begin] = '/';
-                x -= reg.id_size;
-                replace_A_with_B(B, begin, x, '\t', '*'); 
+                B->size -= reg.id_size;
+                replace_A_with_B(B, begin, '\t', '*'); 
         }
-        B->at[x] = 0;
-        B->size = x;
         OStr_clear(A);
 
+        OJob_swap(job);
+        line_up_line_continuation(job);
+        todo uint tests for 0 end_of_string
 }
+

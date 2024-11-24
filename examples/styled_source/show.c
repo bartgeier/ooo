@@ -185,8 +185,8 @@ void switch_statement_with_curly_brace(void) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//           comment indentation
-//           comment c block comment inside a c++ comment
+//               comment indentation
+//               c block comment inside a c++ comment
 ////////////////////////////////////////////////////////////////////////////////
 
 void comment_indentation(void) {

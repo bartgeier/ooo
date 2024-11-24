@@ -130,7 +130,7 @@ int main(int argc, char **argv) {
     int s = sizeof(A);
     #define FOO 5 == n
     /* comment */( \
-        void \
+        void       \
     )
     a;
     char a = (char)A;
