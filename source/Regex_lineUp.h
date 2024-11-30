@@ -28,8 +28,11 @@ bool Regex_lineUp(Regex_lineUp_t *self, char const chr, uint32_t const idx);
 #ifdef REGEX_LINE_UP_IMPLEMENTATION
 
 void Regex_lineUp_first(Regex_lineUp_t *self, uint32_t const column_idx) {
-        self->column = column_idx;
         self->state = RLU_LF;
+        self->begin = 0;
+        self->end = 0;
+        self->max_col = 0;
+        self->column = column_idx;
 }
 
 static uint32_t rlu_max(uint32_t a, uint32_t b) {
@@ -65,6 +68,8 @@ static bool rlu_end_of_string(Regex_lineUp_t *self, uint32_t idx) {
         switch(self->state) {
         case RLU_LF:
         case RLU_FIRST:
+                self->state = RLU_LF;
+                self->column = 0;
                 break;
         case RLU_LINE_CONT:
                 self->state = RLU_LF;

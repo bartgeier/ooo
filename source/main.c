@@ -141,6 +141,7 @@ int main(int argc, char **argv) {
         if (!read_txt_file(&job.source, oarg.input_path)) return 2;
         
         first_iteration(&job);
+        OJob_swap(&job);
 
         memory_for_treesitter = OArena_make(10 * 1024 * 1024);
         ts_set_allocator(ooo_malloc, ooo_calloc, ooo_realloc, ooo_free);
@@ -195,11 +196,11 @@ int main(int argc, char **argv) {
                         &job,
                         &serial_nodes,
                         0
+
                 );
                 ts_tree_delete(tree);
                 OJob_swap(&job);
         }
-
         // write_txt_file(&job.source, "-");
 
         last_iteration(&job);

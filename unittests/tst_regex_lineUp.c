@@ -77,3 +77,50 @@ TEST(regex_lineUp, lineUp) {
         EXPECT_EQ(regex.column, (uint32_t)0);
 }
 
+TEST(regex_lineUp, lineUp_end_of_string) {
+        Regex_lineUp_t regex;
+        Regex_lineUp_first(&regex, 0);
+        EXPECT_EQ(regex.state, RLU_LF);
+        EXPECT_EQ(regex.begin, (uint32_t)0);
+        EXPECT_EQ(regex.end, (uint32_t)0);
+        EXPECT_EQ(regex.max_col, (uint32_t)0);
+        EXPECT_EQ(regex.column, (uint32_t)0);
+
+        uint32_t idx = 3;
+        regex.state = RLU_LF;
+        regex.column = 11;
+        EXPECT_FALSE(Regex_lineUp(&regex, 0, idx));
+        EXPECT_EQ(regex.state, RLU_LF);
+        EXPECT_EQ(regex.begin, (uint32_t)0);
+        EXPECT_EQ(regex.end, (uint32_t)0);
+        EXPECT_EQ(regex.max_col, (uint32_t)0);
+        EXPECT_EQ(regex.column, (uint32_t)0);
+
+        regex.state = RLU_FIRST;
+        regex.column = 11;
+        EXPECT_FALSE(Regex_lineUp(&regex, 0, idx));
+        EXPECT_EQ(regex.state, RLU_LF);
+        EXPECT_EQ(regex.begin, (uint32_t)0);
+        EXPECT_EQ(regex.end, (uint32_t)0);
+        EXPECT_EQ(regex.max_col, (uint32_t)0);
+        EXPECT_EQ(regex.column, (uint32_t)0);
+
+        regex.state = RLU_LINE_CONT;
+        regex.column = 11;
+        EXPECT_TRUE(Regex_lineUp(&regex, 0, idx));
+        EXPECT_EQ(regex.state, RLU_LF);
+        EXPECT_EQ(regex.begin, (uint32_t)0);
+        EXPECT_EQ(regex.end, (uint32_t)4);
+        EXPECT_EQ(regex.max_col, (uint32_t)0);
+        EXPECT_EQ(regex.column, (uint32_t)0);
+        
+        regex.state = RLU_BACK_SLASH;
+        regex.column = 11;
+        EXPECT_TRUE(Regex_lineUp(&regex, 0, idx));
+        EXPECT_EQ(regex.state, RLU_LF);
+        EXPECT_EQ(regex.begin, (uint32_t)0);
+        EXPECT_EQ(regex.end, (uint32_t)4);
+        EXPECT_EQ(regex.max_col, (uint32_t)10);
+        EXPECT_EQ(regex.column, (uint32_t)0);
+}
+
