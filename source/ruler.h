@@ -5,10 +5,6 @@
 #include "OJob.h"
 #include <stdbool.h>
 
-
-
 void ooo_ruler(Nodes *nodes, OJob *job);
-
-
 
 #endif

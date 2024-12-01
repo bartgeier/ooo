@@ -2,8 +2,8 @@
 #include "OJob.h"
 #include "OStr.h"
 #include "tree_navigator.h"
-#include <stdio.h>
 #include <string.h>
+#include <stdio.h>
 
 static bool preproc_include(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
@@ -1158,8 +1158,8 @@ static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
         int l = find_child(node, anon_sym_LPAREN);
         int r = find_child(node, anon_sym_RPAREN);
         if ( l >= 0 & r >= 0) {
-                size_t A = ts_node_start_point(child(node, l)).row;
-                size_t B = ts_node_end_point(child(node, r)).row;
+                uint32_t A = ts_node_start_point(child(node, l)).row;
+                uint32_t B = ts_node_end_point(child(node, r)).row;
                 single_line_PAREN = ((A - B) == 0);
         }
         if (me(node) == sym_comment | unknown(node)) {
@@ -1712,7 +1712,7 @@ void ooo_ruler(
         };
 
         if (!dispatcher(nodes, slice, job)) {
-                for (size_t i = slice.begin; i < slice.end; i++) {
+                for (uint32_t i = slice.begin; i < slice.end; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                 }
         }
@@ -1721,8 +1721,8 @@ void ooo_ruler(
                 OJob_set_pre_processor_line_continuation();
         }
 
-        size_t num_of_childs = ts_node_child_count(node);
-        for (size_t it = 0; it < num_of_childs; it++) {
+        uint32_t num_of_childs = ts_node_child_count(node);
+        for (uint32_t it = 0; it < num_of_childs; it++) {
                TSNode child = ts_node_child(node, it);
                Nodes_push(nodes,  child);
                ooo_ruler(nodes, job);
@@ -1741,7 +1741,7 @@ void ooo_ruler(
                 job->idx--;
                 slice.end = job->idx;
         } 
-        for (size_t i = slice.begin; i < slice.end; i++) {
+        for (uint32_t i = slice.begin; i < slice.end; i++) {
                 OStr_append_chr(&job->sink, job->source.at[i]);
         }
 

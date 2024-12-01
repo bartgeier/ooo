@@ -14,7 +14,7 @@ typedef enum {
 void ooo_set_indentation(
         OJob *job,
         Nodes *nodes,
-        size_t indentation_level
+        uint32_t indentation_level
 );
 
 #endif

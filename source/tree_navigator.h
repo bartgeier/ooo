@@ -14,15 +14,15 @@ TSNode super(int i, TSNode n);
 TSNode sibling(int i, TSNode n);
 
 typedef struct {
-        size_t SIZE;
-        size_t last;
+        uint32_t SIZE;
+        uint32_t last;
         TSNode *at;
 } Nodes;
 
-Nodes Nodes_init(size_t const SIZE);
+Nodes Nodes_init(uint32_t const SIZE);
 void Nodes_clear(Nodes *m);
 void Nodes_push(Nodes *m, TSNode const node);
-TSNode Nodes_at(Nodes const *m, size_t const idx);
+TSNode Nodes_at(Nodes const *m, uint32_t const idx);
 
 typedef struct {
         TSNode grand;

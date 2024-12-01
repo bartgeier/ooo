@@ -13,15 +13,15 @@
 
 /* \n is the last character in a row */
 /* returns the column idx            */
-static size_t getColumn(char const *str, size_t idx) {
-        size_t i = idx;
+static uint32_t getColumn(char const *str, uint32_t idx) {
+        uint32_t i = idx;
         while (i > 0) {
                 i--;
                 if (str[i] == '\n') {
                         break;
                 }
         }
-        size_t result = (i > 0) ? idx - i - 1 : idx;
+        uint32_t result = (i > 0) ? idx - i - 1 : idx;
         return result;
 }
 
@@ -30,7 +30,7 @@ static size_t getColumn(char const *str, size_t idx) {
 //      - nodes damaged by line continuation are repaired
 //        by removing the line continuation.
 //      - begin end slice between two tree-sitter nodes
-static void trunc_spaces(OJob *job, size_t const begin, size_t const end) {
+static void trunc_spaces(OJob *job, uint32_t const begin, size_t const end) {
         OStr const *source= &job->source;
         OStr *sink = &job->sink;
 
@@ -40,8 +40,10 @@ static void trunc_spaces(OJob *job, size_t const begin, size_t const end) {
         Regex_lineCont_t lineCont;
 
         Regex_truncNodeSpace_first(&nodeSpace, column);
-        Regex_lineCont_first(&lineCont, source->at[begin - 1]);
-
+        if (begin > 0) { 
+                Regex_lineCont_first(&lineCont, source->at[begin - 1]); 
+        }
+ 
         for (uint32_t i = begin; i < end; i++) {
                 // iterate slice between two tree-sitter nodes
                 n -= Regex_truncNodeSpace(&nodeSpace, source->at[i]);
@@ -83,7 +85,7 @@ static size_t trunc_spaces_in_comment(OJob *job, size_t const begin, size_t cons
         sink->size = n;
         return new_comment_size;
 }
-#include <stdio.h>
+
 void ooo_truncate_spaces(
         TSNode node,
         OJob *job

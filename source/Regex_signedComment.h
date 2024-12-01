@@ -1,7 +1,7 @@
 #ifndef REGEX_COMMENT_OPEN_H
 #define REGEX_COMMENT_OPEN_H
 
-#include <stddef.h>
+#include <stdint.h>
 #include <stdbool.h>
 
 #define REGEX_SIGNED_COMMENT_ID "|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|"
@@ -21,11 +21,11 @@ typedef enum {
 typedef struct {
         Regex_signedComment_e state;
         bool found;
-        size_t begin;
-        size_t id_size;
+        uint32_t begin;
+        uint32_t id_size;
 } Regex_signedComment_t;
 
-bool Regex_signedComment(Regex_signedComment_t *self, size_t const idx, char const chr);
+bool Regex_signedComment(Regex_signedComment_t *self, uint32_t const idx, char const chr);
 
 #endif
 
@@ -57,7 +57,7 @@ static bool rsc_endOfLine(Regex_signedComment_t *self) {
 }
 
 
-static bool rsc_asterisk(Regex_signedComment_t *self, size_t const idx) {
+static bool rsc_asterisk(Regex_signedComment_t *self, uint32_t const idx) {
         switch (self->state) {
         case RSC_IDLE:
         case RSC_CPP:
@@ -162,7 +162,7 @@ static bool rsc_default_char(Regex_signedComment_t *self, char const chr) {
         return false;
 }
 
-bool Regex_signedComment(Regex_signedComment_t *self, size_t const idx, char const chr) {
+bool Regex_signedComment(Regex_signedComment_t *self, uint32_t const idx, char const chr) {
         (void)idx;
         switch(chr) {
         case 0:

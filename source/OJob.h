@@ -4,7 +4,7 @@
 #include "OStr.h"
 
 typedef struct {
-        size_t idx;
+        uint32_t idx;
         OStr sink;
         OStr source;
 } OJob;
@@ -76,7 +76,7 @@ void OJob_space(OJob *m) {
 }
 
 void OJob_1_or_2LF(OJob *m, Slice const slice) {
-        size_t const num_of_LF = OStr_need_1_or_2LF(&m->source, slice);
+        uint32_t const num_of_LF = OStr_need_1_or_2LF(&m->source, slice);
         assert(num_of_LF == 1 | num_of_LF == 2);
         if (pre_processor_line_continuation) {
                 OStr_append_chr(&m->sink, ' ');

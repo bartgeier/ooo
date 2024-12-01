@@ -6,7 +6,7 @@
 static inline TSNode node_null(void) {
 #ifdef __cplusplus //because of google-test
         TSNode n;
-        for (size_t i = 0; i < 4; i++) { n.context[i] = 0; }
+        for (uint32_t i = 0; i < 4; i++) { n.context[i] = 0; }
         n.id = NULL;
         n.tree = NULL;
         return n;
@@ -29,7 +29,7 @@ TSSymbol sym(TSNode n) {
 }
 
 TSNode super(int i, TSNode n) {
-        while (i > 0 & !ts_node_is_null(n)) {
+        while ((i > 0) & !ts_node_is_null(n)) {
                 n = ts_node_parent(n);
                 i--;
         }
@@ -37,25 +37,25 @@ TSNode super(int i, TSNode n) {
 }
 
 TSNode sibling(int i, TSNode n) {
-        while (i > 0 & !ts_node_is_null(n)) {
+        while ((i > 0) & !ts_node_is_null(n)) {
                 n = ts_node_next_sibling(n);
                 i--;
         }
-        while (i < 0 & !ts_node_is_null(n)) {
+        while ((i < 0) & !ts_node_is_null(n)) {
                 n = ts_node_prev_sibling(n);
                 i++;
         }
         return n;
 }
 
-Nodes Nodes_init(size_t const SIZE) {
+Nodes Nodes_init(uint32_t const SIZE) {
         Nodes m = {
                 .SIZE = SIZE,
                 .last = 0,
                 .at = 0 
         };
         m.at = (TSNode*)calloc(m.SIZE, sizeof(TSNode));
-        for (size_t i = 0; i < m.SIZE; i++) {
+        for (uint32_t i = 0; i < m.SIZE; i++) {
                 m.at[i] = node_null();
         }
         return m;
@@ -63,7 +63,7 @@ Nodes Nodes_init(size_t const SIZE) {
 
 void Nodes_clear(Nodes *m) {
         m->last = 0;
-        for (size_t i = 0; i < m->SIZE; i++) {
+        for (uint32_t i = 0; i < m->SIZE; i++) {
                 m->at[i] = node_null();
         }
 }
@@ -73,9 +73,9 @@ void Nodes_push(Nodes *m, TSNode const node) {
         m->at[m->last] = node;
 }
 
-TSNode Nodes_at(Nodes const *m, size_t const idx) {
+TSNode Nodes_at(Nodes const *m, uint32_t const idx) {
         assert(idx < m->SIZE);
-        size_t i = (m->last >= idx) ? m->last - idx : m->SIZE - idx + m->last;
+        uint32_t i = (m->last >= idx) ? m->last - idx : m->SIZE - idx + m->last;
         return m->at[i];
 }
 
@@ -163,7 +163,7 @@ uint32_t me_size(Relation const *r) {
 
 /* return -1 not found => return >= 0 found child idx */
 int find_child(Relation const *r, TSSymbol const symbol) {
-        for (size_t i = 0; i < r->num_of_childs; i++) {
+        for (uint32_t i = 0; i < r->num_of_childs; i++) {
                 if (sym(ts_node_child(r->parent, i)) == symbol) {
                        return i;
                }

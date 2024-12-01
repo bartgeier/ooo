@@ -68,15 +68,15 @@ Symbol symbol(TSNode node) {
         return UNKNOWN;
 }
 
-void append_slice(OStr *snk, OStr const *src, size_t const begin, size_t const end) {
-        for (size_t i = begin; i < end; i++) {
+void append_slice(OStr *snk, OStr const *src, uint32_t const begin, uint32_t const end) {
+        for (uint32_t i = begin; i < end; i++) {
                 snk->at[snk->size++] = src->at[i];
         }
 }
 
-bool equal_slice(char const *refstr, OStr const *str, size_t const begin, size_t const end){
+bool equal_slice(char const *refstr, OStr const *str, uint32_t const begin, uint32_t const end){
         if (strlen(refstr) != end - begin) return false;
-        for (size_t i = 0; i < end - begin; i++) {
+        for (uint32_t i = 0; i < end - begin; i++) {
                 if (refstr[i] != str->at[i + begin]) return false;
         }
         return true;
@@ -96,19 +96,18 @@ void generate_sym_unknown(
         TSNode last_enum_identifier;
 
         if (me == ENUMERATOR_LIST & sibling == TYPE_IDENTIFIER & parent == ENUM_SPECIFIER) {
-                size_t start_idx = ts_node_start_byte(sibling_node);
-                size_t end_idx = ts_node_end_byte(sibling_node);
-                printf("asdfasd %zu %zu",start_idx, end_idx);
+                uint32_t start_idx = ts_node_start_byte(sibling_node);
+                uint32_t end_idx = ts_node_end_byte(sibling_node);
                 if (equal_slice("ts_symbol_identifiers", &job->source, start_idx, end_idx)) {
-                        size_t num_of_childs = ts_node_child_count(node);
-                        for (size_t i = 0; i < num_of_childs; i++) {
+                        uint32_t num_of_childs = ts_node_child_count(node);
+                        for (uint32_t i = 0; i < num_of_childs; i++) {
                                 TSNode n = ts_node_child(node, i);
                                 if (symbol(n) == ENUMERATOR) {
                                         first_enum_identifier = ts_node_child(n, 0);
                                         break;
                                 }
                         }
-                        for (size_t i = num_of_childs - 1; i < num_of_childs; i--) {
+                        for (uint32_t i = num_of_childs - 1; i < num_of_childs; i--) {
                                 TSNode n = ts_node_child(node, i);
                                 if (symbol(n) == ENUMERATOR) {
                                         last_enum_identifier = ts_node_child(n, 0);
@@ -150,8 +149,8 @@ void tree_runner(
         Symbol parent = symbol(parent_node);  
 
         if (true & me == TYPE_IDENTIFIER & parent == ENUM_SPECIFIER) {
-                size_t start_idx = ts_node_start_byte(node);
-                size_t end_idx = ts_node_end_byte(node);
+                uint32_t start_idx = ts_node_start_byte(node);
+                uint32_t end_idx = ts_node_end_byte(node);
                 if (equal_slice("ts_symbol_identifiers", &job->source, start_idx, end_idx)) {
                         OStr_append_cstring(&job->sink, "#ifndef OOO_TREESITTER_SYMBOL_IDS_H\n");
                         OStr_append_cstring(&job->sink, "#define OOO_TREESITTER_SYMBOL_IDS_H\n\n");
@@ -170,7 +169,7 @@ void tree_runner(
                 }
         }
         generate_sym_unknown(node, job);
-        for (size_t it = 0; it < ts_node_child_count(node); it++) {
+        for (uint32_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode child = ts_node_child(node, it);
                 tree_runner(child, job);
         }

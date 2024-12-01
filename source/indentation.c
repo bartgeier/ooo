@@ -1,8 +1,8 @@
 #include "indentation.h"
-#include "stdio.h"
 #include "tree_navigator.h"
+#include "stdio.h"
 
-static size_t preproc_call(Relation const *node, size_t level) {
+static uint32_t preproc_call(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
                 TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
                 uint32_t const count = ts_node_child_count(me_n);
@@ -23,7 +23,7 @@ static size_t preproc_call(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t preproc_def(Relation const *node, size_t level) {
+static uint32_t preproc_def(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
                 TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
                 uint32_t const count = ts_node_child_count(me_n);
@@ -45,7 +45,7 @@ static size_t preproc_def(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t preproc_function_def(Relation const *node, size_t level) {
+static uint32_t preproc_function_def(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
                 TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
                 uint32_t const count = ts_node_child_count(me_n);
@@ -66,7 +66,7 @@ static size_t preproc_function_def(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t preproc_params(Relation const *node, size_t level) {
+static uint32_t preproc_params(Relation const *node, uint32_t level) {
         if (me(node) == anon_sym_RPAREN) {
                 return level;
         }
@@ -75,7 +75,7 @@ static size_t preproc_params(Relation const *node, size_t level) {
 
 }
 
-static size_t preproc_arg(Relation const *node, size_t level) {
+static uint32_t preproc_arg(Relation const *node, uint32_t level) {
         return level;
 }
 
@@ -83,7 +83,7 @@ static size_t preproc_arg(Relation const *node, size_t level) {
 
 
 
-static size_t compound_statement(Relation const *node, size_t level) {
+static uint32_t compound_statement(Relation const *node, uint32_t level) {
         if (grand(node) == sym_switch_statement
         && me(node) == sym_case_statement) {
                 return level;
@@ -101,7 +101,7 @@ static size_t compound_statement(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t field_declaration_list(Relation const *node, size_t level) {
+static uint32_t field_declaration_list(Relation const *node, uint32_t level) {
         if (me(node) == anon_sym_LBRACE) {
                 return level;
         }
@@ -112,7 +112,7 @@ static size_t field_declaration_list(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t enumerator_list(Relation const *node, size_t level) {
+static uint32_t enumerator_list(Relation const *node, uint32_t level) {
         if (me(node) == anon_sym_LBRACE) {
                 return level;
         }
@@ -123,7 +123,7 @@ static size_t enumerator_list(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t initializer_list(Relation const *node, size_t level) {
+static uint32_t initializer_list(Relation const *node, uint32_t level) {
         if (me(node) == anon_sym_LBRACE) {
                 return level;
         }
@@ -134,7 +134,7 @@ static size_t initializer_list(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t parameter_list(Relation const *node, size_t level) {
+static uint32_t parameter_list(Relation const *node, uint32_t level) {
         if (me(node) == anon_sym_LPAREN) {
                 return level;
         }
@@ -145,7 +145,7 @@ static size_t parameter_list(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t argument_list(Relation const *node, size_t level) {
+static uint32_t argument_list(Relation const *node, uint32_t level) {
         if (me(node) == anon_sym_LPAREN) {
                 return level;
         }
@@ -156,12 +156,12 @@ static size_t argument_list(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t case_statement(Relation const *node, size_t level) {
+static uint32_t case_statement(Relation const *node, uint32_t level) {
         level += 1;
         return level;
 }
 
-static size_t for_statement(Relation const *node, size_t level) {
+static uint32_t for_statement(Relation const *node, uint32_t level) {
         if (me(node) == anon_sym_LPAREN) {
                 return level;
         }
@@ -175,7 +175,7 @@ static size_t for_statement(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t while_statement(Relation const *node, size_t level) {
+static uint32_t while_statement(Relation const *node, uint32_t level) {
         if (find_child(node, sym_compound_statement) < 0) {
                 level += 1;
                 return level;
@@ -183,7 +183,7 @@ static size_t while_statement(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t do_statement(Relation const *node, size_t level) {
+static uint32_t do_statement(Relation const *node, uint32_t level) {
         // if (find_child(node, sym_compound_statement) < 0) {
                 //level += 1;
          //       return level;
@@ -191,7 +191,7 @@ static size_t do_statement(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t if_statement(Relation const *node, size_t level) {
+static uint32_t if_statement(Relation const *node, uint32_t level) {
         if (me(node) == sym_else_clause) {
                 return level;
         }
@@ -202,7 +202,7 @@ static size_t if_statement(Relation const *node, size_t level) {
         return level;
 }
 
-static size_t else_clause(Relation const *node, size_t level) {
+static uint32_t else_clause(Relation const *node, uint32_t level) {
         if (me(node) == sym_if_statement) {
                 return level;
         }
@@ -213,12 +213,12 @@ static size_t else_clause(Relation const *node, size_t level) {
         return level;
 }
                 
-static size_t conditional_expression(Relation const *node, size_t level) {
+static uint32_t conditional_expression(Relation const *node, uint32_t level) {
        level +=1;
        return level; 
 }
 
-static size_t dispatcher(Nodes *nodes, size_t level) {
+static uint32_t dispatcher(Nodes *nodes, uint32_t level) {
         Relation node;
         Relation_init(&node, nodes);
 
@@ -271,7 +271,7 @@ static size_t dispatcher(Nodes *nodes, size_t level) {
 void ooo_set_indentation(
         OJob *job,
         Nodes *nodes,
-        size_t indentation_level
+        uint32_t indentation_level
 ) {
         TSNode const node = Nodes_at(nodes, 0);
         TSSymbol const me = sym(node);
@@ -281,7 +281,7 @@ void ooo_set_indentation(
                 .end = job->idx = ts_node_start_byte(node)
         };
         indentation_level = dispatcher(nodes, indentation_level);
-        for (size_t i = slice.begin; i < slice.end; i++) {
+        for (uint32_t i = slice.begin; i < slice.end; i++) {
                 if (job->source.at[i] == '\n') {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                         OStr_append_spaces(&job->sink, 4 * indentation_level); // <-- her plays the magic
@@ -290,7 +290,7 @@ void ooo_set_indentation(
                 }
         }
 
-        for (size_t it = 0; it < ts_node_child_count(node); it++) {
+        for (uint32_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode const child = ts_node_child(node, it);
                 Nodes_push(nodes,  child);
                 ooo_set_indentation(
@@ -314,7 +314,7 @@ void ooo_set_indentation(
         } 
         if (me == sym_comment) {
                 /* inside of block comment */
-                for (size_t i = slice.begin; i < slice.end; i++) {
+                for (uint32_t i = slice.begin; i < slice.end; i++) {
                         if (job->source.at[i] == '\n') {
                                 OStr_append_chr(&job->sink, job->source.at[i]);
                                 OStr_append_spaces(&job->sink, 4 * indentation_level);
@@ -323,7 +323,7 @@ void ooo_set_indentation(
                         }
                 }
         } else {
-                for (size_t i = slice.begin; i < slice.end; i++) {
+                for (uint32_t i = slice.begin; i < slice.end; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                 }
         }
