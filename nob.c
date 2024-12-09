@@ -143,9 +143,12 @@ bool tree_sitter_c_download(bool const clean) {
         ok &= nob_mkdir_if_not_exists("tree-sitter-c");
         ok &= nob_mkdir_if_not_exists("tree-sitter-c/src");
         ok &= nob_mkdir_if_not_exists("tree-sitter-c/src/tree_sitter");
-        ok &= nob_copy_file("../tree-sitter/tree-sitter-c/LICENSE", "tree-sitter-c/LICENSE");
-        ok &= nob_copy_file("../tree-sitter/tree-sitter-c/src/tree_sitter/parser.h", "tree-sitter-c/src/tree_sitter/parser.h");
-        ok &= nob_copy_file("../tree-sitter/tree-sitter-c/src/parser.c", "tree-sitter-c/src/parser.c");
+        // ok &= nob_copy_file("../tree-sitter/tree-sitter-c/LICENSE", "tree-sitter-c/LICENSE");
+        // ok &= nob_copy_file("../tree-sitter/tree-sitter-c/src/tree_sitter/parser.h", "tree-sitter-c/src/tree_sitter/parser.h");
+        // ok &= nob_copy_file("../tree-sitter/tree-sitter-c/src/parser.c", "tree-sitter-c/src/parser.c");
+        ok &= nob_copy_file("../tree-sitter-c/LICENSE", "tree-sitter-c/LICENSE");
+        ok &= nob_copy_file("../tree-sitter-c/src/tree_sitter/parser.h", "tree-sitter-c/src/tree_sitter/parser.h");
+        ok &= nob_copy_file("../tree-sitter-c/src/parser.c", "tree-sitter-c/src/parser.c");
         return ok;
 }
 #endif
