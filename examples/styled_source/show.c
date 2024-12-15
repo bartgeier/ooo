@@ -273,12 +273,13 @@ void comment_from_c_style_to_Cpp_style(void) {
 
 #define LIST_OF_THINGS \
     X(TABLE)           \
-X(DRAWER)              \
-X(CAR)                 \
-X(BOOK)                \
-X(TRAIN)
+    X(DRAWER)          \
+    X(CAR)             \
+    X(BOOK)            \
+    X(TRAIN)
 
-#define X(name) name,
+#define X(name) name \
+    ,
 typedef enum {
     LIST_OF_THINGS
 } Things;
