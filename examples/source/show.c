@@ -210,7 +210,7 @@ void comment_from_c_style_to_Cpp_style(void) {
 #define FOO    \
         int a = 3; \
         b = c + a; \
-        put(d);
+        put(d)
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
@@ -240,12 +240,12 @@ void comment_from_c_style_to_Cpp_style(void) {
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
-//               function like with return value current_max
+//               GCC macro statement expression
 //               https://youtu.be/4DS5E5tgxIA?si=MhdEZI9ggf4GMHzZ
 ////////////////////////////////////////////////////////////////////////////////
 
 #define find_max(array, length) ({ \
-                typeof(array[0] current_max = array[0]; \
+                typeof(array[0]) current_max = array[0]; \
         for (int i = 1; i < length; i++) \
         if (array[i] > current_max) \
         current_max = array[i]; \

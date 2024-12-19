@@ -210,76 +210,77 @@ void comment_from_c_style_to_Cpp_style(void) {
 
 #define NUMBER 345
 
-#define FOO    \
-    int a = 3; \
-    b = c + a; \
-    put(d);
+#define FOO        \
+int a = 3;         \
+        b = c + a; \
+        put(d)
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
 //               expression
 ////////////////////////////////////////////////////////////////////////////////
 
-#define ADD(a, b) ((a) + (b))
+#define ADD(a, b) ( 
+(a) + (b)
+)
 
 #define ADD(a, b) \
-    ((a) + (b))
+( 
+(a) + (b)
+)
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
 //               call expression
 ////////////////////////////////////////////////////////////////////////////////
 
-#define ADD(a, b) add((a), (b))
+#define ADD(a, b) add( ( a ), ( b )    )
 
 #define ADD(a, b) \
-    add((a), (b))
+add( ( a ), ( b )    )
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
-//               function like with return value current_max
+//               GCC macro statement expression
 //               https://youtu.be/4DS5E5tgxIA?si=MhdEZI9ggf4GMHzZ
 ////////////////////////////////////////////////////////////////////////////////
 
-#define find_max(array, length) ({           \
-    typeof(array [0] current_max = array[0]; \
-    for (int i = 1; i < length; i++)         \
-        if (array[i] > current_max)          \
-            current_max = array[i];          \
-    current_max;                             \
-})
+#define find_max(array, length) ({                       \
+                typeof(array[0]) current_max = array[0]; \
+        for (int i = 1; i < length; i++)                 \
+        if (array[i] > current_max)                      \
+        current_max = array[i];                          \
+        current_max;                                     \
+        })
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro statement
 //               do { ... } while(0)
 ////////////////////////////////////////////////////////////////////////////////
 
-#define MORE(a, b, c) do { c = a + b; } while (0)
+#define MORE(a, b, c) do { c = a + b; } while(0)
 
 #define MORE(a, b, c) do { \
-    c = a + b;             \
-} while (0)
+c = a + b; } while(0)
 
-#define MORE(a, b, c) \
-    do {              \
-        c = a + b;    \
-    } while (0)
+#define MORE(a, b, c)          \
+do {    c = a + b;             \
+} while (0)
 
 ////////////////////////////////////////////////////////////////////////////////
 //               x macros
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LIST_OF_THINGS \
-    X(TABLE)           \
-    X(DRAWER)          \
-    X(CAR)             \
-    X(BOOK)            \
-    X(TRAIN)
+X(TABLE)               \
+        X(DRAWER)      \
+        X(CAR)         \
+        X(BOOK)        \
+        X(TRAIN)
 
-#define X(name) name \
-    ,
+#define X(name) name,
 typedef enum {
     LIST_OF_THINGS
 } Things;

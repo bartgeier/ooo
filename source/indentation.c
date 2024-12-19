@@ -18,7 +18,7 @@ static uint32_t preproc_call(Relation const *node, uint32_t level) {
                 /* #pragma \      */
                 /*     do {       */
                 /*         ...    */
-                level += 1;
+                // level += 1;
         }
         return level;
 }
@@ -40,7 +40,7 @@ static uint32_t preproc_def(Relation const *node, uint32_t level) {
                 /* #define FOO \  */
                 /*     do {       */
                 /*         ...    */
-                level += 1;
+                // level += 1;
         }
         return level;
 }
@@ -61,7 +61,7 @@ static uint32_t preproc_function_def(Relation const *node, uint32_t level) {
                 /* #define FOO(a, b) \ */
                 /*     do {            */
                 /*         ...         */
-                level += 1;
+                // level += 1;
         }
         return level;
 }
