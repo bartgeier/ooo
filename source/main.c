@@ -63,7 +63,7 @@ bool write_txt_file(OStr const *source, char const *path) {
 }
 
 #define ARENA
-OArena *memory_for_treesitter;
+OArena *arena_treesitter;
 void *ooo_malloc(size_t size) {
 #ifndef ARENA
         void *p = malloc(size);
@@ -71,7 +71,7 @@ void *ooo_malloc(size_t size) {
         return p;
 #else
         // printf("OArena_malloc -> size %zu \n", size);
-        void *p = OArena_malloc(memory_for_treesitter, size);
+        void *p = OArena_malloc(arena_treesitter, size);
         // printf("OArena_malloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
 #endif
@@ -83,7 +83,7 @@ void *ooo_calloc(size_t nitems, size_t size) {
         return calloc(nitems, size);
 #else
         // printf("OArena_calloc -> new_nitems %zu new_size %zu \n", nitems, size);
-        void *p = OArena_calloc(memory_for_treesitter, nitems, size);
+        void *p = OArena_calloc(arena_treesitter, nitems, size);
         // printf("OArena_calloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
 #endif
@@ -95,7 +95,7 @@ void *ooo_realloc(void *buffer, size_t size) {
         return realloc(buffer, size);
 #else
         // printf("OArena_realloc -> %p new_size %zu \n", buffer, size);
-        void *p = OArena_realloc(memory_for_treesitter, buffer, size);
+        void *p = OArena_realloc(arena_treesitter, buffer, size);
         // printf("OArena_realloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
 #endif
@@ -107,7 +107,7 @@ void ooo_free(void *buffer) {
         free(buffer);
 #else
         // printf("OArena_free %p\n", buffer);
-        OArena_free(memory_for_treesitter, buffer);
+        OArena_free(arena_treesitter, buffer);
 #endif
 }
 
@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
         first_iteration(&job);
         OJob_swap(&job);
 
-        memory_for_treesitter = OArena_make(10 * 1024 * 1024);
+        arena_treesitter = OArena_make(10 * 1024 * 1024);
         ts_set_allocator(ooo_malloc, ooo_calloc, ooo_realloc, ooo_free);
         TSParser *parser = ts_parser_new();
         ts_parser_set_language(parser, tree_sitter_c());
