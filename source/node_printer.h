@@ -1,10 +1,7 @@
 #ifndef NODE_PRINTER_H
 #define NODE_PRINTER_H
 
-
 #include "tree_navigator.h"
-// #include "OJob.h"
-
 
 void ooo_print_nodes(
         TSNode node,

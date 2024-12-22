@@ -273,6 +273,7 @@ void create_source_paths(void) {
         nob_cmd_append(&source_paths, "./source/ruler.c");
         nob_cmd_append(&source_paths, "./source/indentation.c");
         nob_cmd_append(&source_paths, "./source/tree_navigator.c");
+        nob_cmd_append(&source_paths, "./source/Pars.c");
 }
 
 bool ooo_build(bool const clean) {
@@ -287,12 +288,16 @@ bool ooo_build(bool const clean) {
         nob_cmd_append(&cmd, "-I", "tree-sitter-c/");
         nob_cmd_append(&cmd, "-o", "build/ooo");
         nob_cmd_append(&cmd, "./source/main.c");
-        nob_cmd_append(&cmd, "./tree-sitter/libtree-sitter.a", "./tree-sitter-c/src/parser.c");;
-        nob_cmd_append(&cmd, "./source/node_printer.c", "./source/truncate.c", "./source/OArg.c");
+        nob_cmd_append(&cmd, "./tree-sitter-c/src/parser.c");
+        nob_cmd_append(&cmd, "./source/node_printer.c");
+        nob_cmd_append(&cmd, "./source/truncate.c");
+        nob_cmd_append(&cmd, "./source/OArg.c");
         nob_cmd_append(&cmd, "./source/iteration.c");
         nob_cmd_append(&cmd, "./source/ruler.c");
         nob_cmd_append(&cmd, "./source/indentation.c");
         nob_cmd_append(&cmd, "./source/tree_navigator.c");
+        nob_cmd_append(&cmd, "./source/Pars.c");
+        nob_cmd_append(&cmd, "./tree-sitter/libtree-sitter.a");
         generate_compile_commands("/home/berni/projects/ooo", &cmd, &source_paths);
         bool ok = nob_cmd_run_sync(cmd);
         nob_cmd_free(cmd);

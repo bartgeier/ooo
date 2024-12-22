@@ -1,5 +1,11 @@
 #include "indentation.h"
 #include "iteration.h"
+#include "Pars.h"
+#include "tree_navigator.h"
+#include "ruler.h"
+#include "truncate.h"
+#include "node_printer.h"
+#include "OArg.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
@@ -9,21 +15,12 @@
 #include <getopt.h>
 #define OARENA_IMPLEMENTATION
 #include "OArena.h"
-#include "tree_navigator.h"
-#include "ruler.h"
-#include "node_printer.h"
-#include "truncate.h"
-#include "OArg.h"
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
 #define OJOB_IMPLEMENTATION
 #include "OJob.h"
 #define NOB_IMPLEMENTATION
 #include "../nob.h"
-
-// Declare the `tree_sitter_json` function, which is
-// implemented by the `tree-sitter-json` library.
-TSLanguage *tree_sitter_c();
 
 /* return true => success */ 
 bool read_txt_file(OStr *source, char const *path) {
@@ -125,6 +122,7 @@ int main(int argc, char **argv) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
+                .inside_macro = 0,
                 .idx = 0,
                 .sink = {
                         .capacity = MEM_SIZE,
@@ -145,69 +143,50 @@ int main(int argc, char **argv) {
 
         arena_treesitter = OArena_make(10 * 1024 * 1024);
         ts_set_allocator(ooo_malloc, ooo_calloc, ooo_realloc, ooo_free);
-        TSParser *parser = ts_parser_new();
-        ts_parser_set_language(parser, tree_sitter_c());
+        Pars_setArena(arena_treesitter);
         {
-                TSTree *tree = ts_parser_parse_string(
-                        parser,
-                        NULL,
-                        job.source.at,
-                        job.source.size
-                );
+                RootNode_t root = Pars_getTree(job.source.at, job.source.size);
                 if (oarg.action == OARG_PRINT) { 
                         ooo_print_nodes(
-                                ts_tree_root_node(tree),
+                                root.node,
                                 oarg.print.row_begin,
                                 oarg.print.row_end, 
                                 0 // tree-branch level
                         );
                         return 0;
                 }
-                ooo_truncate_spaces(ts_tree_root_node(tree), &job); 
-                ts_tree_delete(tree);
+                ooo_truncate_spaces(root.node, &job); 
+                Pars_free(root.idx);
                 OJob_swap(&job);
         }
         {
-                TSTree *tree = ts_parser_parse_string(
-                        parser,
-                        NULL,
-                        job.source.at,
-                        job.source.size
-                );
+                RootNode_t root = Pars_getTree(job.source.at, job.source.size);
                 serial_nodes = Nodes_init(20);
-                Nodes_push(&serial_nodes, ts_tree_root_node(tree));
+                Nodes_push(&serial_nodes, root.node);
                 ooo_ruler(
                         &serial_nodes,
                         &job
                 );
-                ts_tree_delete(tree);
+                Pars_free(root.idx);
                 OJob_swap(&job);
         }
         {
-                TSTree *tree = ts_parser_parse_string(
-                        parser,
-                        NULL,
-                        job.source.at,
-                        job.source.size
-                );
+                RootNode_t root = Pars_getTree(job.source.at, job.source.size);
                 Nodes_clear(&serial_nodes);
-                Nodes_push(&serial_nodes, ts_tree_root_node(tree));
+                Nodes_push(&serial_nodes, root.node);
                 ooo_set_indentation(
                         &job,
                         &serial_nodes,
                         0
 
                 );
-                ts_tree_delete(tree);
+                Pars_free(root.idx);
                 OJob_swap(&job);
         }
-        // write_txt_file(&job.source, "-");
-
         last_iteration(&job);
         OJob_swap(&job);
 
         write_txt_file(&job.source, oarg.output_path);
-        ts_parser_delete(parser);
         printf("%lu ms\n", (nob_millis() - t_start));
         return 0;
 }

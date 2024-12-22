@@ -1718,7 +1718,7 @@ void ooo_ruler(
         }
 
         if (symbol == sym_preproc_def | symbol == sym_preproc_function_def | symbol == sym_preproc_call) {
-                OJob_set_pre_processor_line_continuation();
+                OJob_set_pre_processor_line_continuation(job);
         }
 
         uint32_t num_of_childs = ts_node_child_count(node);
@@ -1746,6 +1746,6 @@ void ooo_ruler(
         }
 
         if (symbol == sym_preproc_def | symbol == sym_preproc_function_def | symbol == sym_preproc_call) {
-                OJob_reset_pre_processor_line_continuation();
+                OJob_reset_pre_processor_line_continuation(job);
         }
 }
