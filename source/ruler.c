@@ -2,6 +2,7 @@
 #include "OJob.h"
 #include "OStr.h"
 #include "tree_navigator.h"
+#include "Pars.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -1718,7 +1719,7 @@ void ooo_ruler(
         }
 
         if (symbol == sym_preproc_def | symbol == sym_preproc_function_def | symbol == sym_preproc_call) {
-                OJob_set_pre_processor_line_continuation(job);
+                OJob_set_lineContinuation(job);
         }
 
         uint32_t num_of_childs = ts_node_child_count(node);
@@ -1741,11 +1742,21 @@ void ooo_ruler(
                 job->idx--;
                 slice.end = job->idx;
         } 
-        for (uint32_t i = slice.begin; i < slice.end; i++) {
-                OStr_append_chr(&job->sink, job->source.at[i]);
-        }
+
+  //      if (symbol == sym_preproc_arg) {
+  //              uint32_t const o = job->offset;
+  //              job->idx = job->offset = slice.begin;
+  //              RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
+  //              ooo_ruler(root.node, job);
+  //              Pars_freeTree(root);
+  //              job->offset = o;
+  //      } else {
+                for (uint32_t i = slice.begin; i < slice.end; i++) {
+                        OStr_append_chr(&job->sink, job->source.at[i]);
+                }
+  //      }
 
         if (symbol == sym_preproc_def | symbol == sym_preproc_function_def | symbol == sym_preproc_call) {
-                OJob_reset_pre_processor_line_continuation(job);
+                OJob_reset_lineContinuation(job);
         }
 }

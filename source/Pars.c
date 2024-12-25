@@ -28,6 +28,6 @@ RootNode_t Pars_getTree(char const *string, uint32_t size) {
         //ts_tree_delete(tree);
 }
 
-void Pars_free(uint32_t idx) {
-        arena->size = idx;
+void Pars_freeTree(RootNode_t root) {
+        arena->size = root.idx;
 }

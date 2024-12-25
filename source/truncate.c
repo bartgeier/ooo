@@ -1,6 +1,8 @@
 #include "truncate.h"
 #include "OJob.h"
+#include "Pars.h"
 #include "Regex_signedComment.h"
+#include <stdint.h>
 
 #define REGEX_TRUNC_NODE_SPACE_IMPLEMENTATION
 #include "Regex_truncNodeSpace.h"
@@ -94,7 +96,7 @@ void ooo_truncate_spaces(
 
         Slice slice = {
                 .begin = job->idx,
-                .end = job->idx = ts_node_start_byte(node)
+                .end = job->idx = (ts_node_start_byte(node) + job->offset),
         };
 
         trunc_spaces(
@@ -102,13 +104,14 @@ void ooo_truncate_spaces(
                 slice.begin,
                 slice.end
         );
+
         for (size_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode child = ts_node_child(node, it);
                 ooo_truncate_spaces(child, job);
         }
 
         slice.begin = job->idx;
-        slice.end = job->idx = ts_node_end_byte(node);
+        slice.end = job->idx = (ts_node_end_byte(node) + job->offset);
         if (slice.end > 0 && job->source.at[slice.end - 1] == '\n') {
                 /* \n is last member byte in the node   */
                 /* that caused and unexpected line feed */
@@ -119,7 +122,15 @@ void ooo_truncate_spaces(
                 job->idx--;
                 slice.end = job->idx;
         } 
-        if (me == sym_comment) {
+
+        if (me == sym_preproc_arg) {
+                uint32_t const o = job->offset;
+                job->idx = job->offset = slice.begin;
+                RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
+                ooo_truncate_spaces(root.node, job);
+                Pars_freeTree(root);
+                job->offset = o;
+        } else if (me == sym_comment) {
                 size_t const new_comment_size = trunc_spaces_in_comment(
                         job,
                         slice.begin,
@@ -138,7 +149,7 @@ void ooo_truncate_spaces(
                         }
                         /* line comment becomes a block comment */
                         // a comment
-                        /* a comment */
+                        /* a comment|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|*/
                         job->sink.at[idx] = '/';
                         job->sink.at[idx + 1] = '*';
                         OStr_append_cstring(&job->sink, REGEX_SIGNED_COMMENT_ID"*/");

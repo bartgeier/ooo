@@ -210,10 +210,10 @@ void comment_from_c_style_to_Cpp_style(void) {
 
 #define NUMBER 345
 
-#define FOO        \
-int a = 3;         \
-        b = c + a; \
-        put(d)
+#define FOO \
+int a = 3;  \
+b = c + a;  \
+put(d)
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
@@ -247,13 +247,13 @@ add( ( a ), ( b )    )
 //               https://youtu.be/4DS5E5tgxIA?si=MhdEZI9ggf4GMHzZ
 ////////////////////////////////////////////////////////////////////////////////
 
-#define find_max(array, length) ({                       \
-                typeof(array[0]) current_max = array[0]; \
-        for (int i = 1; i < length; i++)                 \
-        if (array[i] > current_max)                      \
-        current_max = array[i];                          \
-        current_max;                                     \
-        })
+#define find_max(array, length) ({       \
+typeof(array[0]) current_max = array[0]; \
+for (int i = 1; i < length; i++)         \
+if (array[i] > current_max)              \
+current_max = array[i];                  \
+current_max;                             \
+})
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro statement
@@ -269,16 +269,22 @@ c = a + b; } while(0)
 do {    c = a + b;             \
 } while (0)
 
+#define MORE(a, b, c)  \
+do {                   \
+c = a + b;             \
+} while (0)
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //               x macros
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LIST_OF_THINGS \
 X(TABLE)               \
-        X(DRAWER)      \
-        X(CAR)         \
-        X(BOOK)        \
-        X(TRAIN)
+X(DRAWER)              \
+X(CAR)                 \
+X(BOOK)                \
+X(TRAIN)
 
 #define X(name) name,
 typedef enum {

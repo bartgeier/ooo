@@ -4,7 +4,8 @@
 #include "OStr.h"
 
 typedef struct {
-        uint32_t inside_macro;
+        uint32_t lineContinuation;
+        uint32_t offset;
         uint32_t idx;
         OStr sink;
         OStr source;
@@ -17,18 +18,21 @@ void OJob_space(OJob *m);
 void OJob_1_or_2LF(OJob *m, Slice const slice);
 void OJob_LF_or_space(OJob *m, Slice const slice);
 
-void OJob_reset_pre_processor_line_continuation(OJob *m);
-void OJob_set_pre_processor_line_continuation(OJob *m);
+void OJob_reset_lineContinuation(OJob *m);
+void OJob_set_lineContinuation(OJob *m);
 #endif
 
 #ifdef OJOB_IMPLEMENTATION 
 
-void OJob_reset_pre_processor_line_continuation(OJob *m) {
-        m->inside_macro = false;
+void OJob_reset_lineContinuation(OJob *m) {
+        if (m->lineContinuation > 0) {
+                m->lineContinuation--;
+        }
 }
 
-void OJob_set_pre_processor_line_continuation(OJob *m) {
-        m->inside_macro = true;
+void OJob_set_lineContinuation(OJob *m) {
+        assert(m->lineContinuation != ~0);
+        m->lineContinuation++;
 }
 
 void OJob_swap(OJob *m) {
@@ -49,7 +53,7 @@ void OJob_swap(OJob *m) {
 }
 
 void OJob_LF(OJob *m) {
-        if (m->inside_macro) {
+        if (m->lineContinuation) {
                 OStr_append_chr(&m->sink, ' ');
                 OStr_append_chr(&m->sink, '\\');
                 OStr_append_chr(&m->sink, '\n');
@@ -59,7 +63,7 @@ void OJob_LF(OJob *m) {
 }
 
 void OJob_2LF(OJob *m) {
-        if (m->inside_macro) {
+        if (m->lineContinuation) {
                 OStr_append_chr(&m->sink, ' ');
                 OStr_append_chr(&m->sink, '\\');
                 OStr_append_chr(&m->sink, '\n');
@@ -77,7 +81,7 @@ void OJob_space(OJob *m) {
 void OJob_1_or_2LF(OJob *m, Slice const slice) {
         uint32_t const num_of_LF = OStr_need_1_or_2LF(&m->source, slice);
         assert(num_of_LF == 1 | num_of_LF == 2);
-        if (m->inside_macro) {
+        if (m->lineContinuation) {
                 OStr_append_chr(&m->sink, ' ');
                 OStr_append_chr(&m->sink, '\\');
                 OStr_append_chr(&m->sink, '\n');
@@ -95,7 +99,7 @@ void OJob_LF_or_space(OJob *m, Slice const slice) {
                 return;
         }
         char const chr = OStr_need_LF_or_space(&m->source, slice);
-        if (m->inside_macro & chr == '\n') {
+        if (m->lineContinuation & chr == '\n') {
                 OStr_append_chr(&m->sink, ' ');
                 OStr_append_chr(&m->sink, '\\');
         }

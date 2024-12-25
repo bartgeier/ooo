@@ -203,7 +203,7 @@ void comment_from_c_style_to_Cpp_style(void) {
 //               macro
 ////////////////////////////////////////////////////////////////////////////////
 
-#define X(name) name
+#define X(name)          name
 
 #define NUMBER             345
 
@@ -265,6 +265,12 @@ c = a + b; } while(0)
 #define MORE(a, b, c) \
 do {    c = a + b;             \
 } while (0)
+
+#define MORE(a, b, c) \
+do { \
+        c = a + b;             \
+} while (0)
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //               x macros

@@ -16,6 +16,7 @@ void create_list_A(void) {
     nob_cmd_append(&list, "conway.c");
     nob_cmd_append(&list, "donut.c");
     nob_cmd_append(&list, "show.c");
+    nob_cmd_append(&list, "macro_do.c");
 }
 
 void print_line_count(Nob_File_Paths *file_list, char *input_dir) {

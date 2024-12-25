@@ -59,53 +59,31 @@ bool write_txt_file(OStr const *source, char const *path) {
         }
 }
 
-#define ARENA
 OArena *arena_treesitter;
 void *ooo_malloc(size_t size) {
-#ifndef ARENA
-        void *p = malloc(size);
-        // printf("malloc %p %zu \n ", p, size);
-        return p;
-#else
         // printf("OArena_malloc -> size %zu \n", size);
         void *p = OArena_malloc(arena_treesitter, size);
         // printf("OArena_malloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
-#endif
 }
 
 void *ooo_calloc(size_t nitems, size_t size) {
-#ifndef ARENA
-        // printf("calloc %zu %zu \n ", nitems, size);
-        return calloc(nitems, size);
-#else
         // printf("OArena_calloc -> new_nitems %zu new_size %zu \n", nitems, size);
         void *p = OArena_calloc(arena_treesitter, nitems, size);
         // printf("OArena_calloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
-#endif
 }
 
 void *ooo_realloc(void *buffer, size_t size) {
-#ifndef ARENA
-        // printf("reallo %p %zu <----------------------\n ", buffer, size);
-        return realloc(buffer, size);
-#else
         // printf("OArena_realloc -> %p new_size %zu \n", buffer, size);
         void *p = OArena_realloc(arena_treesitter, buffer, size);
         // printf("OArena_realloc -> %p size %zu \n", p, memory_for_treesitter->size);
         return p;
-#endif
 }
 
 void ooo_free(void *buffer) {
-#ifndef ARENA
-        // printf("free %p \n", buffer);
-        free(buffer);
-#else
         // printf("OArena_free %p\n", buffer);
         OArena_free(arena_treesitter, buffer);
-#endif
 }
 
 
@@ -122,7 +100,8 @@ int main(int argc, char **argv) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         OJob job = {
-                .inside_macro = 0,
+                .lineContinuation = 0,
+                .offset = 0,
                 .idx = 0,
                 .sink = {
                         .capacity = MEM_SIZE,
@@ -156,7 +135,7 @@ int main(int argc, char **argv) {
                         return 0;
                 }
                 ooo_truncate_spaces(root.node, &job); 
-                Pars_free(root.idx);
+                Pars_freeTree(root);
                 OJob_swap(&job);
         }
         {
@@ -167,7 +146,7 @@ int main(int argc, char **argv) {
                         &serial_nodes,
                         &job
                 );
-                Pars_free(root.idx);
+                Pars_freeTree(root);
                 OJob_swap(&job);
         }
         {
@@ -180,7 +159,7 @@ int main(int argc, char **argv) {
                         0
 
                 );
-                Pars_free(root.idx);
+                Pars_freeTree(root);
                 OJob_swap(&job);
         }
         last_iteration(&job);
