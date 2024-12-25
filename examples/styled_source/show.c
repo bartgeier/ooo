@@ -212,24 +212,20 @@ void comment_from_c_style_to_Cpp_style(void) {
 
 #define NUMBER 345
 
-#define FOO \
-int a = 3;  \
-b = c + a;  \
-put(d)
+#define FOO    \
+    int a = 3; \
+    b = c + a; \
+    put(d)
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
 //               expression
 ////////////////////////////////////////////////////////////////////////////////
 
-#define ADD(a, b) ( 
-(a) + (b)
-)
+#define ADD(a, b) ((a) + (b))
 
 #define ADD(a, b) \
-( 
-(a) + (b)
-)
+    ((a) + (b))
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
@@ -239,7 +235,7 @@ put(d)
 #define ADD(a, b) add((a), (b))
 
 #define ADD(a, b) \
-add((a), (b))
+    add((a), (b))
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
@@ -249,12 +245,12 @@ add((a), (b))
 //               https://youtu.be/4DS5E5tgxIA?si=MhdEZI9ggf4GMHzZ
 ////////////////////////////////////////////////////////////////////////////////
 
-#define find_max(array, length) ({        \
-typeof(array [0]) current_max = array[0]; \
-for (int i = 1; i < length; i++)          \
-if (array[i] > current_max)               \
-current_max = array[i];                   \
-current_max;                              \
+#define find_max(array, length) ({            \
+    typeof(array [0]) current_max = array[0]; \
+    for (int i = 1; i < length; i++)          \
+        if (array[i] > current_max)           \
+            current_max = array[i];           \
+    current_max;                              \
 })
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -262,21 +258,21 @@ current_max;                              \
 //               do { ... } while(0)
 ////////////////////////////////////////////////////////////////////////////////
 
-#define MORE(a, b, c) do { c = a + b; } while (0)
+#define MORE(a, b, c) do { (c) = (a) + (b); } while (0)
 
 #define MORE(a, b, c) do { \
-c = a + b;                 \
+    (c) = (a) + (b);       \
 } while (0)
 
-#define MORE(a, b, c) \
-do {                  \
-c = a + b;            \
-} while (0)
+#define MORE(a, b, c)    \
+    do {                 \
+        (c) = (a) + (b); \
+    } while (0)
 
-#define MORE(a, b, c) \
-do {                  \
-c = a + b;            \
-} while (0)
+#define MORE(a, b, c)    \
+    do {                 \
+        (c) = (a) + (b); \
+    } while (0)
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -284,11 +280,11 @@ c = a + b;            \
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LIST_OF_THINGS \
-X(TABLE)               \
-X(DRAWER)              \
-X(CAR)                 \
-X(BOOK)                \
-X(TRAIN)
+    X(  TABLE  )       \
+    X(DRAWER)          \
+    X(CAR)             \
+    X(BOOK)            \
+    X(TRAIN)
 
 #define X(name) name,
 typedef enum {
@@ -296,7 +292,9 @@ typedef enum {
 } Things;
 
 #undef X
-#define X(name) [name] = #name,
+#define X(name) [name] = #name  ,
 char *thing_strings[] = {
     LIST_OF_THINGS
 };
+
+#name ,

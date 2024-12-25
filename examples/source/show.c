@@ -218,13 +218,12 @@ void comment_from_c_style_to_Cpp_style(void) {
 //               expression
 ////////////////////////////////////////////////////////////////////////////////
 
-#define ADD(a,b) ( 
-                ( a ) + ( b )    
-                )
-
+#define ADD(a,b) ( ( a )  +  ( b ) )
+           
+                
 #define ADD(a,b) \
-        ( 
-                ( a ) + ( b )    
+        (\
+                ( a ) + ( b )    \
                 )
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -258,18 +257,18 @@ void comment_from_c_style_to_Cpp_style(void) {
 //               do { ... } while(0) 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define MORE(a, b, c) do { c = a + b; } while(0)
+#define MORE(a, b, c) do { (c) = (a) + (b) ; } while( 0 )
 
 #define MORE(a, b, c) do { \
-c = a + b; } while(0)
+(c   )= (a) + (b)  ; } while(0)
 
 #define MORE(a, b, c) \
-do {    c = a + b;             \
+do {    ( c ) = ( a ) + ( b );             \
 } while (0)
 
 #define MORE(a, b, c) \
 do { \
-        c = a + b;             \
+        (c) = (a) + (b);             \
 } while (0)
 
 
@@ -278,18 +277,22 @@ do { \
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LIST_OF_THINGS \
-        X(TABLE)\
-        X(DRAWER) \
-        X(CAR) \
-        X(BOOK) \
-        X(TRAIN)
+        X(  TABLE  )\
+        X(  DRAWER  ) \
+        X(  CAR  ) \
+        X(  BOOK  ) \
+        X(  TRAIN  )
 
 #define X(name) name,
 typedef enum { LIST_OF_THINGS
 }Things;
 
 #undef X
-#define X(name) [name] = #name,
+#define X(name) [ name ] = #name  ,
 char * thing_strings[] = { LIST_OF_THINGS
 };
+
+
+
+#name  ,
 

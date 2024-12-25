@@ -1,24 +1,21 @@
 #include "indentation.h"
 #include "tree_navigator.h"
-#include "stdio.h"
+#include "Pars.h"
 
 static uint32_t preproc_call(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
                 TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
-                uint32_t const count = ts_node_child_count(me_n);
-                if (count == 1) {
-                        TSPoint a = ts_node_start_point(node->parent);
-                        TSPoint b = ts_node_start_point(me_n);
-                        if (a.row == b.row) {
-                                /* #pragma do { */
-                                /*     ...      */
-                                return level;
-                        }
+                TSPoint a = ts_node_start_point(node->parent);
+                TSPoint b = ts_node_start_point(me_n);
+                if (a.row == b.row) {
+                        /* #pragma do { */
+                        /*     ...      */
+                        return level;
                 }
                 /* #pragma \      */
                 /*     do {       */
                 /*         ...    */
-                // level += 1;
+                level += 1;
         }
         return level;
 }
@@ -26,21 +23,18 @@ static uint32_t preproc_call(Relation const *node, uint32_t level) {
 static uint32_t preproc_def(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
                 TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
-                uint32_t const count = ts_node_child_count(me_n);
-                if (count == 1) {
-                        TSPoint a = ts_node_start_point(node->parent);
-                        TSPoint b = ts_node_start_point(me_n);
-                        if (a.row == b.row) {
-                                /* #define FOO \  */
-                                /*     do {       */
-                                /*         ...    */
-                                return level;
-                        }
+                TSPoint a = ts_node_start_point(node->parent);
+                TSPoint b = ts_node_start_point(me_n);
+                if (a.row == b.row) {
+                        /* #define FOO \  */
+                        /*     do {       */
+                        /*         ...    */
+                        return level;
                 }
                 /* #define FOO \  */
                 /*     do {       */
                 /*         ...    */
-                // level += 1;
+                level += 1;
         }
         return level;
 }
@@ -48,20 +42,17 @@ static uint32_t preproc_def(Relation const *node, uint32_t level) {
 static uint32_t preproc_function_def(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
                 TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
-                uint32_t const count = ts_node_child_count(me_n);
-                if (count == 1) {
-                        TSPoint a = ts_node_start_point(node->parent);
-                        TSPoint b = ts_node_start_point(me_n);
-                        if (a.row == b.row) {
-                                /* #define FOO(a, b) do { */
-                                /*     ...                */
-                                return level;
-                        }
+                TSPoint a = ts_node_start_point(node->parent);
+                TSPoint b = ts_node_start_point(me_n);
+                if (a.row == b.row) {
+                        /* #define FOO(a, b) do { */
+                        /*     ...                */
+                        return level;
                 }
                 /* #define FOO(a, b) \ */
                 /*     do {            */
                 /*         ...         */
-                // level += 1;
+                level += 1;
         }
         return level;
 }
@@ -184,10 +175,6 @@ static uint32_t while_statement(Relation const *node, uint32_t level) {
 }
 
 static uint32_t do_statement(Relation const *node, uint32_t level) {
-        // if (find_child(node, sym_compound_statement) < 0) {
-                //level += 1;
-         //       return level;
-        //}
         return level;
 }
 
@@ -212,7 +199,7 @@ static uint32_t else_clause(Relation const *node, uint32_t level) {
         }
         return level;
 }
-                
+
 static uint32_t conditional_expression(Relation const *node, uint32_t level) {
        level +=1;
        return level; 
@@ -278,7 +265,7 @@ void ooo_set_indentation(
 
         Slice slice = {
                 .begin = job->idx,
-                .end = job->idx = ts_node_start_byte(node)
+                .end = job->idx = (ts_node_start_byte(node) + job->offset)
         };
         indentation_level = dispatcher(nodes, indentation_level);
         for (uint32_t i = slice.begin; i < slice.end; i++) {
@@ -301,7 +288,7 @@ void ooo_set_indentation(
         }
 
         slice.begin = job->idx;
-        slice.end = job->idx = ts_node_end_byte(node);
+        slice.end = job->idx = (ts_node_end_byte(node) + job->offset);
         if (slice.end > 0 && job->source.at[slice.end - 1] == '\n') {
                 /* \n is last member byte in the node  */
                 /* thats caused missing indentation    */
@@ -322,6 +309,14 @@ void ooo_set_indentation(
                                 OStr_append_chr(&job->sink, job->source.at[i]);
                         }
                 }
+        } else if (me == sym_preproc_arg) {
+                uint32_t const o = job->offset;
+                job->idx = job->offset = slice.begin;
+                RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
+                Nodes_push(nodes, root.node);
+                ooo_set_indentation(job, nodes, indentation_level);
+                Pars_freeTree(root);
+                job->offset = o;
         } else {
                 for (uint32_t i = slice.begin; i < slice.end; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);
