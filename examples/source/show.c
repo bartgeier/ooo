@@ -203,13 +203,14 @@ void comment_from_c_style_to_Cpp_style(void) {
 //               macro
 ////////////////////////////////////////////////////////////////////////////////
 
+#define BAR
+
 #define X(name)          name
 
 #define NUMBER             345
 
 #define FOO    \
-        int a = 3; \
-        b = c + a; \
+        int a = 3;  b = c + a; \
         put(d)
 
 ////////////////////////////////////////////////////////////////////////////////

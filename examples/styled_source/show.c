@@ -206,6 +206,8 @@ void comment_from_c_style_to_Cpp_style(void) {
 //               macro
 ////////////////////////////////////////////////////////////////////////////////
 
+#define BAR
+
 #define X(name) name
 
 #define NUMBER 345
@@ -234,10 +236,10 @@ put(d)
 //               call expression
 ////////////////////////////////////////////////////////////////////////////////
 
-#define ADD(a, b) add( ( a ), ( b )    )
+#define ADD(a, b) add((a), (b))
 
 #define ADD(a, b) \
-add( ( a ), ( b )    )
+add((a), (b))
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
@@ -247,12 +249,12 @@ add( ( a ), ( b )    )
 //               https://youtu.be/4DS5E5tgxIA?si=MhdEZI9ggf4GMHzZ
 ////////////////////////////////////////////////////////////////////////////////
 
-#define find_max(array, length) ({       \
-typeof(array[0]) current_max = array[0]; \
-for (int i = 1; i < length; i++)         \
-if (array[i] > current_max)              \
-current_max = array[i];                  \
-current_max;                             \
+#define find_max(array, length) ({        \
+typeof(array [0]) current_max = array[0]; \
+for (int i = 1; i < length; i++)          \
+if (array[i] > current_max)               \
+current_max = array[i];                   \
+current_max;                              \
 })
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -260,18 +262,20 @@ current_max;                             \
 //               do { ... } while(0)
 ////////////////////////////////////////////////////////////////////////////////
 
-#define MORE(a, b, c) do { c = a + b; } while(0)
+#define MORE(a, b, c) do { c = a + b; } while (0)
 
 #define MORE(a, b, c) do { \
-c = a + b; } while(0)
-
-#define MORE(a, b, c)          \
-do {    c = a + b;             \
+c = a + b;                 \
 } while (0)
 
-#define MORE(a, b, c)  \
-do {                   \
-c = a + b;             \
+#define MORE(a, b, c) \
+do {                  \
+c = a + b;            \
+} while (0)
+
+#define MORE(a, b, c) \
+do {                  \
+c = a + b;            \
 } while (0)
 
 

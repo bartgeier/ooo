@@ -4,7 +4,6 @@
 #include "tree_navigator.h"
 #include "Pars.h"
 #include <string.h>
-#include <stdio.h>
 
 static bool preproc_include(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
@@ -1709,7 +1708,7 @@ void ooo_ruler(
 
         Slice slice = {
                 .begin = job->idx,
-                .end = job->idx = ts_node_start_byte(node)
+                .end = job->idx = (ts_node_start_byte(node) + job->offset)
         };
 
         if (!dispatcher(nodes, slice, job)) {
@@ -1729,9 +1728,8 @@ void ooo_ruler(
                ooo_ruler(nodes, job);
         }
 
-
         slice.begin = job->idx;
-        slice.end = job->idx = ts_node_end_byte(node);
+        slice.end = job->idx = (ts_node_end_byte(node) + job->offset);
         if (slice.end > 0 && job->source.at[slice.end - 1] == '\n') {
                 /* \n is last member byte in the node   */
                 /* that caused and unexpected line feed */
@@ -1743,18 +1741,19 @@ void ooo_ruler(
                 slice.end = job->idx;
         } 
 
-  //      if (symbol == sym_preproc_arg) {
-  //              uint32_t const o = job->offset;
-  //              job->idx = job->offset = slice.begin;
-  //              RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
-  //              ooo_ruler(root.node, job);
-  //              Pars_freeTree(root);
-  //              job->offset = o;
-  //      } else {
+        if (symbol == sym_preproc_arg) {
+                uint32_t const o = job->offset;
+                job->idx = job->offset = slice.begin;
+                RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
+                Nodes_push(nodes, root.node);
+                ooo_ruler(nodes, job);
+                Pars_freeTree(root);
+                job->offset = o;
+        } else {
                 for (uint32_t i = slice.begin; i < slice.end; i++) {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                 }
-  //      }
+        }
 
         if (symbol == sym_preproc_def | symbol == sym_preproc_function_def | symbol == sym_preproc_call) {
                 OJob_reset_lineContinuation(job);
