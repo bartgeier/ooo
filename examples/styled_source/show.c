@@ -215,6 +215,7 @@ void comment_from_c_style_to_Cpp_style(void) {
 #define FOO    \
     int a = 3; \
     b = c + a; \
+    ;          \
     put(d)
 
 ////////////////////////////////////////////////////////////////////////////////

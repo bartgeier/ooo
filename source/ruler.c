@@ -117,12 +117,10 @@ static bool preproc_params(Relation const *node, Slice const slice, OJob *job) {
                 }
         }
         if (me(node) == anon_sym_COMMA) {
-                /* #define ALICE( A, B)  */
-                /*                ^^     */
+                /* #define ALICE(A, B)  */
+                /*               ^^     */
                 return true;
         }
-        //OJob_space(job);
-        //OJob_LF_or_space(job, slice); // todo version with line continuation
         if (me(node) == sym_identifier) {
                 /* #define ALICE(A, B)  */
                 /*                 ^    */
@@ -152,28 +150,9 @@ static bool preproc_params(Relation const *node, Slice const slice, OJob *job) {
                 /*                  ^^  */
                 return true;
         }
-        OJob_1_or_2LF(job, slice); // todo version with line continuation
+        OJob_1_or_2LF(job, slice);
         return true;
 }
-
-static bool preproc_arg(Relation const *node, Slice const slice, OJob *job) {
-        if (is_first_child(node)) {
-                return true;
-        }
-        if (me(node) == sym_comment | unknown(node)) {
-                return false;
-        }
-        //OJob_space(job);
-        //OJob_LF_or_space(job, slice); // todo version with line continuation
-        if (me(node) == anon_sym_SEMI) {
-                /* enum AE { A, B, C }; */
-                /*                   ^^ */
-                return true;
-        }
-        OJob_1_or_2LF(job, slice); // todo version with line continuation
-        return true;
-}
-
 
 #if 0
 static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
@@ -282,7 +261,6 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
         OJob_1_or_2LF(job, slice);
         return true;
 }
-
 #endif
 
 static bool preproc_if(Relation const *node, Slice const slice, OJob *job) {
@@ -317,10 +295,13 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
         if (me(node) == sym_comment | unknown(node)) {
                 return false;
         }
-        // if (sym(child(node, node->child_idx - 1)) == sym_function_definition) {
-        //         OJob_2LF(job);
-        //         return true;
-        // }
+        if (me(node) == sym_compound_statement) {
+                /* workaround for issue => (google test) TEST(hello, init) { */
+                /* TEST(int a, int b) { */
+                /*                   ^  */ // todo K&R option
+                OJob_space(job);
+                return true;
+        }
         if (me(node) == anon_sym_SEMI) {
                 /* enum AE { A, B, C }; */
                 /*                   ^^ */
@@ -424,7 +405,7 @@ static bool function_definition(Relation const *node, Slice const slice, OJob *j
         }
         if (me(node) == sym_storage_class_specifier) {
                 /* extern static void foo(int a, int b) */
-                /*       ^                       */
+                /*       ^                              */
                 OJob_space(job);
                 return true;
         }
@@ -556,7 +537,6 @@ static bool union_specifier(Relation const *node, Slice const slice, OJob *job) 
 static bool compound_statement(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* { */
-                /* { */
                 return true;
         }
         if (unknown(node)) {
@@ -604,19 +584,6 @@ static bool compound_statement(Relation const *node, Slice const slice, OJob *jo
                 OJob_LF(job);
                 return true;
         }
-        if (me(node) == sym_expression_statement) {
-                TSNode n_me = Nodes_at(node->nodes, 0);
-                TSSymbol s = sym(ts_node_child(n_me, 0));
-                if (slice.begin == 0) {
-                        return false;
-                }
-                char x = job->source.at[slice.begin - 1];
-                if (s == anon_sym_SEMI & x != ';') {
-                        /* do { ... } while(0); */
-                        /*                   ^^ */
-                        return true;
-                }
-        }
         OJob_1_or_2LF(job, slice);
         return true;
 }
@@ -645,7 +612,7 @@ static bool pointer_declarator(Relation const *node, Slice const slice, OJob *jo
 static bool pointer_expression(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* &alice */
-                /* *      */
+                /* ^      */
                 return true;
         }
         if (me(node) == sym_comment | unknown(node)) {
@@ -993,7 +960,6 @@ static bool enumerator(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-// bart
 static bool expression_statement(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* ach(); */
@@ -1074,6 +1040,8 @@ static bool update_expression(Relation const *node, Slice const slice, OJob *job
 
 static bool conditional_expression(Relation const *node,Slice const slice,OJob *job) {
         if (is_first_child(node)) {
+                /* (a > b) ? a : b; */
+                /* ^                */
                 return true;
         }
         if (me(node) == sym_comment | unknown(node)) {
@@ -1553,29 +1521,29 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-static bool roots(Relation const *node, Slice const slice, OJob *job) {
-        if (parent(node) != sym_translation_unit 
-        & parent(node) != sym_preproc_ifdef
-        & parent(node) != sym_linkage_specification
-        & parent(node) != sym_declaration_list) {
-                return false;
-        }
-        if (is_first_child(node)) {
-                return true;
-        }
-        if (unknown(node)) {
-                return false;
-        }
-        if (me(node) == sym_comment) {
-                if (ts_node_start_point(Nodes_at(node->nodes, 0)).column == 0) {
-                        OJob_1_or_2LF(job, slice);
-                        return true;
-                }
-                return false;
-        }
-        OJob_1_or_2LF(job, slice);
-        return true;
-}
+// static bool roots(Relation const *node, Slice const slice, OJob *job) {
+//         if (parent(node) != sym_translation_unit 
+//         & parent(node) != sym_preproc_ifdef
+//         & parent(node) != sym_linkage_specification
+//         & parent(node) != sym_declaration_list) {
+//                 return false;
+//         }
+//         if (is_first_child(node)) {
+//                 return true;
+//         }
+//         if (unknown(node)) {
+//                 return false;
+//         }
+//         if (me(node) == sym_comment) {
+//                 if (ts_node_start_point(Nodes_at(node->nodes, 0)).column == 0) {
+//                         OJob_1_or_2LF(job, slice);
+//                         return true;
+//                 }
+//                 return false;
+//         }
+//         OJob_1_or_2LF(job, slice);
+//         return true;
+// }
 
 bool dispatcher(
         Nodes const *nodes,
@@ -1601,8 +1569,6 @@ bool dispatcher(
                 return preproc_if(&relation, slice, job); 
         case sym_preproc_params:
                 return preproc_params(&relation, slice, job);
-        case sym_preproc_arg: 
-                return preproc_arg(&relation, slice, job);
 
         case sym_function_definition: 
                 return function_definition(&relation, slice, job);
