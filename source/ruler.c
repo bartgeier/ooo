@@ -1,6 +1,7 @@
 #include "ruler.h"
 #include "OJob.h"
 #include "OStr.h"
+#include "ooo_treesitter_symbol_ids.h"
 #include "tree_navigator.h"
 #include "Pars.h"
 #include <string.h>
@@ -151,6 +152,19 @@ static bool preproc_params(Relation const *node, Slice const slice, OJob *job) {
                 return true;
         }
         OJob_1_or_2LF(job, slice);
+        return true;
+}
+
+static bool macro_type_specifier(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                /*typeof */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        /* typeof(xxxx) */
+        /*      ^^   ^ */
         return true;
 }
 
@@ -683,6 +697,11 @@ static bool type_descriptor(Relation const *node, Slice const slice, OJob *job) 
                 OJob_space(job);
                 return true;
         }
+        if (me(node) == sym_abstract_array_declarator) {
+                /* list[0]  */
+                /*    ^^    */
+                return true;
+        }
         /* char const * */
         /*     ^       */
         /* const char * */
@@ -702,6 +721,19 @@ static bool abstract_pointer_declarator(Relation const *node, Slice const slice,
                 return true;
         }
         return false;
+}
+
+static bool abstract_array_declarator(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                /* [ */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        /* [1234] */
+        /* ^^  ^^ */
+        return true;
 }
 
 static bool declaration(Relation const *node, Slice const slice, OJob *job) {
@@ -1569,6 +1601,8 @@ bool dispatcher(
                 return preproc_if(&relation, slice, job); 
         case sym_preproc_params:
                 return preproc_params(&relation, slice, job);
+        case sym_macro_type_specifier:
+                return macro_type_specifier(&relation, slice, job);
 
         case sym_function_definition: 
                 return function_definition(&relation, slice, job);
@@ -1594,6 +1628,8 @@ bool dispatcher(
                 return type_descriptor(&relation, slice, job);
         case sym_abstract_pointer_declarator: 
                 return abstract_pointer_declarator(&relation, slice, job);
+        case sym_abstract_array_declarator: 
+                return abstract_array_declarator(&relation, slice, job);
         case sym_compound_statement: 
                 return compound_statement(&relation, slice, job);
         case sym_declaration: 

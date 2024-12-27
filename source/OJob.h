@@ -17,6 +17,7 @@ void OJob_2LF(OJob *m);
 void OJob_space(OJob *m);
 void OJob_1_or_2LF(OJob *m, Slice const slice);
 void OJob_LF_or_space(OJob *m, Slice const slice);
+void OJob_set_final_LF(OJob *m);
 
 void OJob_reset_lineContinuation(OJob *m);
 void OJob_set_lineContinuation(OJob *m);
@@ -106,5 +107,14 @@ void OJob_LF_or_space(OJob *m, Slice const slice) {
         OStr_append_chr(&m->sink, chr);
 }
 
+void OJob_set_final_LF(OJob *m) {
+        bool no_LF = true;
+        if (m->sink.size > 0) {
+                no_LF = m->sink.at[m->sink.size - 1] != '\n';
+        }
+        if (no_LF) {
+                OStr_append_chr(&m->sink, '\n');
+        }
+}
 #endif
 #undef OJOB_IMPLEMENTATION

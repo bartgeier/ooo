@@ -160,6 +160,7 @@ int main(int argc, char **argv) {
 
                 );
                 Pars_freeTree(root);
+                OJob_set_final_LF(&job);
                 OJob_swap(&job);
         }
         last_iteration(&job);

@@ -213,6 +213,11 @@ void comment_from_c_style_to_Cpp_style(void) {
         int a = 3;  b = c + a;; \
         put(d)
 
+#define FOO   int a = 3; \
+        b = c + a; \
+        ;          \
+        put(d)
+
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
 //               expression
@@ -244,13 +249,26 @@ void comment_from_c_style_to_Cpp_style(void) {
 //               https://youtu.be/4DS5E5tgxIA?si=MhdEZI9ggf4GMHzZ
 ////////////////////////////////////////////////////////////////////////////////
 
-#define find_max(array, length) ({ \
+#define find_max(array, length) (\
+                { \
                 typeof(array[0]) current_max = array[0]; \
         for (int i = 1; i < length; i++) \
         if (array[i] > current_max) \
         current_max = array[i]; \
         current_max; \
-        })
+        }\
+                )
+
+#define find_max(array, length) \
+        (\
+                { \
+                typeof(array[0]) current_max = array[0]; \
+        for (int i = 1; i < length; i++) \
+        if (array[i] > current_max) \
+        current_max = array[i]; \
+        current_max; \
+        }\
+                )
                 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro statement 
@@ -288,11 +306,9 @@ typedef enum { LIST_OF_THINGS
 }Things;
 
 #undef X
-#define X(name) [ name ] = #name  ,
+#define X(  name   ) [ name ]   =    #name  ,
 char * thing_strings[] = { LIST_OF_THINGS
 };
 
 
-
-#name  ,
 

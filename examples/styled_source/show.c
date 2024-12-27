@@ -79,7 +79,7 @@ char hello[] = {
 void binary_expression(void) {
     int a = 1, b = 2, c = 3, d = 4, e = 5, x = 6, y = 7;
     x = b * c + d * e;
-    
+
     y = b * c
     + d * e;
 }
@@ -91,7 +91,7 @@ void binary_expression(void) {
 void if_statement(void) {
     int a = 1, b = 2, c = 3;
     if (a > b) c = a; else c = b;
-    
+
     if (a > b)
         c = a;
     else
@@ -105,7 +105,7 @@ void if_statement(void) {
 void if_statement_with_curly_braces(void) {
     int a = 1, b = 2, c = 3;
     if (a > b) { c = a; } else { c = b; }
-    
+
     if (a > b) {
         c = a;
     } else {
@@ -120,10 +120,10 @@ void if_statement_with_curly_braces(void) {
 void conditional_expression(void) {
     int a = 1, b = 2, c = 3;
     c = (a > b) ? a : b;
-    
+
     c = (a > b)
         ? a : b;
-    
+
     c = (a > b)
         ? a
         : b;
@@ -197,7 +197,7 @@ void comment_indentation(void) {
 
 void comment_from_c_style_to_Cpp_style(void) {
     // nested /* comment */ Foo
-    
+
     y = b * c
     * /* nested // comment // Bar */ d * e;
 }
@@ -217,6 +217,11 @@ void comment_from_c_style_to_Cpp_style(void) {
     b = c + a; \
     ;          \
     put(d)
+
+#define FOO int a = 3; \
+b = c + a;             \
+;                      \
+put(d)
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
@@ -246,13 +251,22 @@ void comment_from_c_style_to_Cpp_style(void) {
 //               https://youtu.be/4DS5E5tgxIA?si=MhdEZI9ggf4GMHzZ
 ////////////////////////////////////////////////////////////////////////////////
 
-#define find_max(array, length) ({            \
-    typeof(array [0]) current_max = array[0]; \
-    for (int i = 1; i < length; i++)          \
-        if (array[i] > current_max)           \
-            current_max = array[i];           \
-    current_max;                              \
+#define find_max(array, length) ({           \
+    typeof(array[0]) current_max = array[0]; \
+    for (int i = 1; i < length; i++)         \
+        if (array[i] > current_max)          \
+            current_max = array[i];          \
+    current_max;                             \
 })
+
+#define find_max(array, length)                  \
+    ({                                           \
+        typeof(array[0]) current_max = array[0]; \
+        for (int i = 1; i < length; i++)         \
+            if (array[i] > current_max)          \
+                current_max = array[i];          \
+        current_max;                             \
+    })
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro statement
@@ -281,7 +295,7 @@ void comment_from_c_style_to_Cpp_style(void) {
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LIST_OF_THINGS \
-    X(  TABLE  )       \
+    X(TABLE)           \
     X(DRAWER)          \
     X(CAR)             \
     X(BOOK)            \
@@ -293,9 +307,7 @@ typedef enum {
 } Things;
 
 #undef X
-#define X(name) [name] = #name  ,
+#define X(name) [name]   =    #name  ,
 char *thing_strings[] = {
     LIST_OF_THINGS
 };
-
-#name ,

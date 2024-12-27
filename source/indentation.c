@@ -271,7 +271,10 @@ void ooo_set_indentation(
         for (uint32_t i = slice.begin; i < slice.end; i++) {
                 if (job->source.at[i] == '\n') {
                         OStr_append_chr(&job->sink, job->source.at[i]);
-                        OStr_append_spaces(&job->sink, 4 * indentation_level); // <-- her plays the magic
+                        if (job->source.at[i+1] != '\n'
+                        & job->source.at[i+1] != 0) {
+                                OStr_append_spaces(&job->sink, 4 * indentation_level); // <-- her plays the magic
+                        }
                 } else {
                         OStr_append_chr(&job->sink, job->source.at[i]);
                 }

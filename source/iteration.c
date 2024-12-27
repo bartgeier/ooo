@@ -119,7 +119,9 @@ void last_iteration(OJob *job) {
                                         break;
                                 }
                         } else {
-                                OStr_append_chr(B, A->at[i]);
+                                if (A->at[i] != 0) {
+                                        OStr_append_chr(B, A->at[i]);
+                                }
                         }
                 }
         }
@@ -127,6 +129,7 @@ void last_iteration(OJob *job) {
         OJob_swap(job);
 
         {
+                /* line up => line continuation '\' character */
                 OStr const *A = &job->source; 
                 OStr *B = &job->sink; 
                 Regex_lineUp_t regex;
@@ -137,8 +140,11 @@ void last_iteration(OJob *job) {
                                 B->size -= delta;
                                 line_up(job, &regex); 
                         } else {
-                                OStr_append_chr(B, A->at[i]);
+                                if (A->at[i] != 0) {
+                                        OStr_append_chr(B, A->at[i]);
+                                }
                         }
                 }
         }
 }
+

@@ -70,16 +70,16 @@ int main(int argc, char **argv) {
     // declaration, init_declarator
     int a = 11;
     int const b = 13;
-    
+
     int a = a + b;
-    
+
     int x = a > b ? 5 : 0;
     int x = a > b ? 5 : 0;
     int x = a > b ? 5
         : 0;
     int x = a > b ? 5 : 0;
     int x = a > b ? : ;
-    
+
     int x = a > b
         ? 5
         : 0;
@@ -92,26 +92,26 @@ int main(int argc, char **argv) {
     ++alice;
     bob--;
     --bob;
-    
+
     /*  block comment
     *  indentation
     is ... */
-    
+
     /*  block comment
      *  indentation
         is ... */
-    
+
     (void)x;   /*  block comment
     *  indentation
     is ... */
-    
+
     /* comment */
     // comment
     int const **c = &a;
     int *const *d = &a;
     const char chr[] = "Hello world!";
     int num[3] = {0};
-    
+
     foo(a, b);
     x = bar(
         a,
@@ -138,17 +138,17 @@ int main(int argc, char **argv) {
     const char **a = (const char **)A;
     #ifdef _WIN32
     /* comment */
-    
+
     #else
-    
-    
-    
-    
-    
+
+
+
+
+
     /* comment */
-    
+
     #endif
-    
+
     #if
     /* comment */ 0
     (void)a;
@@ -157,7 +157,7 @@ int main(int argc, char **argv) {
     const char *a = (const char *)A;
     char const **a = (char const **)A;
     const char **a = (const char **)A;
-    
+
     #else
     (void)a;
     char a = (char)A;
@@ -165,7 +165,7 @@ int main(int argc, char **argv) {
     const char *a = (const char *)A;
     char const **a = (char const **)A;
     const char **a = (const char **)A;
-    
+
     #endif
     if (a == b) { return true; }
     if (a == b) {
@@ -181,13 +181,13 @@ int main(int argc, char **argv) {
     } else {
         return 0;
     }
-    
+
     if (a == 0
     | b == 4 & c == 5
     | f == 1) {
         printf("give me five");
     }
-    
+
     if (A) {
         foo();
     } else if (B) {
@@ -195,7 +195,7 @@ int main(int argc, char **argv) {
     } else {
         normal();
     }
-    
+
     if (A) {
         foo();
     } else
@@ -204,17 +204,17 @@ int main(int argc, char **argv) {
     } else {
         normal();
     }
-    
+
     if (A) {
         foo();
     } else if (B) { bar(); } else { normal(); }
-    
+
     if (A) { foo(); } else if (B) {
         bar();
     } else {
         normal();
     }
-    
+
     for (size_t i = 0; i < max; i++) { printf("i => %d\n", i); }
     for (
         size_t i = 0;
@@ -231,16 +231,16 @@ int main(int argc, char **argv) {
     for (size_t i = 0; i < max; i++)
         printf("i => %d\n", i);
     for (size_t i = 0; i < max; i++) printf("i => %d\n", i);
-    
+
     for (size_t i = 0; i < max; i++)
         if (a == b)
             printf("i => %d\n", i);
-    
+
     do { a++; } while (a < 10);
     do {
         a++;
     } while (a < 10);
-    
+
     while (a < 10) { a++; }
     while (a < 10) {
         a++;
@@ -248,14 +248,14 @@ int main(int argc, char **argv) {
     while (a < 10)
         a++;
     while (a < 10) a++;
-    
+
     switch (state) {
         int a;
     case a:
         break;
     case c: {
         break; }
-    
+
     case d: {
         for (size_t i = 0; i < max; i++) {
             a++;
