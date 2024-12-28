@@ -2,6 +2,7 @@
 #define OARENA_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
 typedef struct {
         size_t const SIZE;
@@ -21,6 +22,8 @@ void OArena_free(OArena *arena, void *buffer);
 
 #include <stddef.h>
 #include <assert.h>
+#include <string.h>
+
 // https://www.gingerbill.org/article/2019/02/08/memory-allocation-strategies-002/
 
 #define HEAD_TYPE uint64_t

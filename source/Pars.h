@@ -9,7 +9,7 @@ typedef struct {
         TSNode node;
 } RootNode_t;
 
-void Pars_setArena(OArena *a);
+void Pars_init(void);
 RootNode_t Pars_getTree(char const *string, uint32_t size);
 void Pars_freeTree(RootNode_t root);
 
