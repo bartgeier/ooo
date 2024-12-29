@@ -199,6 +199,9 @@ void nob_cmd_render(Nob_Cmd cmd, Nob_String_Builder *render);
 #define nob_cmd_append(cmd, ...) \
     nob_da_append_many(cmd, ((const char*[]){__VA_ARGS__}), (sizeof((const char*[]){__VA_ARGS__})/sizeof(const char*)))
 
+#define nob_cmd_append_cmd(cmd_a, cmd_b) \
+    nob_da_append_many(cmd_a, (cmd_b)->items, (cmd_b)->count)
+
 // Free all the memory allocated by command arguments
 #define nob_cmd_free(cmd) NOB_FREE(cmd.items)
 
@@ -528,6 +531,18 @@ void nob_cmd_render(Nob_Cmd cmd, Nob_String_Builder *render)
         }
     }
 }
+
+#if 0
+void nob_cmd_append_cmd(Nob_Cmd *a, Nob_Cmd const *b) {
+        for (size_t i = 0; i < b->count; i++) {
+                nob_cmd_append(a, *(b->items + i));
+        }
+}
+// #else
+void nob_cmd_append_cmd(Nob_Cmd *a, Nob_Cmd const *b) {
+                nob_da_append_many(a, b->items, b->count);
+}
+#endif
 
 Nob_Proc nob_cmd_run_async(Nob_Cmd cmd)
 {

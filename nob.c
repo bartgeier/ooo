@@ -226,15 +226,14 @@ bool download_build_googleTest(bool const clean) {
 
 Nob_Cmd include_paths = {0};
 void create_include_paths(void) {
-        nob_cmd_append(&include_paths, "source");
-        nob_cmd_append(&include_paths, "tree-sitter/lib/include");
-        nob_cmd_append(&include_paths, "tree-sitter-c");
+        nob_cmd_append(&include_paths, "-I", "source");
+        nob_cmd_append(&include_paths, "-I", "tree-sitter/lib/include");
+        nob_cmd_append(&include_paths, "-I", "tree-sitter-c");
 }
 
 Nob_Cmd source_paths = {0};
 void create_source_paths(void) {
         nob_cmd_append(&source_paths, "./source/main.c");
-        //nob_cmd_append(&source_paths, "./tree-sitter/libtree-sitter.a");
         nob_cmd_append(&source_paths, "./tree-sitter-c/src/parser.c");
         nob_cmd_append(&source_paths, "./source/node_printer.c");
         nob_cmd_append(&source_paths, "./source/truncate.c");
@@ -244,6 +243,7 @@ void create_source_paths(void) {
         nob_cmd_append(&source_paths, "./source/indentation.c");
         nob_cmd_append(&source_paths, "./source/tree_navigator.c");
         nob_cmd_append(&source_paths, "./source/Pars.c");
+        nob_cmd_append(&source_paths, "./tree-sitter/libtree-sitter.a");
 }
 
 bool ooo_build(bool const clean) {
@@ -251,25 +251,25 @@ bool ooo_build(bool const clean) {
                 return true;
         }
         nob_log(NOB_INFO, "BUILD: ooo ----> code styler");
-        Nob_Cmd cmd = {0};
+        Nob_Cmd c_ompiler = {0};
         //nob_cmd_append(&cmd, "gcc", "-O0", "-ggdb", "-pedantic");
-        nob_cmd_append(&cmd, "/usr/bin/gcc", "-O0", "-pedantic");
-        nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
-        nob_cmd_append(&cmd, "-I", "tree-sitter-c/");
+        nob_cmd_append(&c_ompiler, "/usr/bin/gcc", "-O0", "-pedantic"); 
+
+        Nob_Cmd cmd = {0};
+        nob_cmd_append_cmd(&cmd, &c_ompiler);
         nob_cmd_append(&cmd, "-o", "build/ooo");
-        nob_cmd_append(&cmd, "./source/main.c");
-        nob_cmd_append(&cmd, "./tree-sitter-c/src/parser.c");
-        nob_cmd_append(&cmd, "./source/node_printer.c");
-        nob_cmd_append(&cmd, "./source/truncate.c");
-        nob_cmd_append(&cmd, "./source/OArg.c");
-        nob_cmd_append(&cmd, "./source/iteration.c");
-        nob_cmd_append(&cmd, "./source/ruler.c");
-        nob_cmd_append(&cmd, "./source/indentation.c");
-        nob_cmd_append(&cmd, "./source/tree_navigator.c");
-        nob_cmd_append(&cmd, "./source/Pars.c");
-        nob_cmd_append(&cmd, "./tree-sitter/libtree-sitter.a");
-        generate_compile_commands("/home/berni/projects/ooo", &cmd, &source_paths);
+        nob_cmd_append_cmd(&cmd, &include_paths);
+        nob_cmd_append_cmd(&cmd, &source_paths);
         bool ok = nob_cmd_run_sync(cmd);
+
+        cmd.count = 0;
+        nob_cmd_append_cmd(&cmd, &c_ompiler);
+        nob_cmd_append(&cmd, "-o", "build/ooo");
+        nob_cmd_append_cmd(&cmd, &include_paths);
+        // Language server
+        generate_compile_commands("/home/berni/projects/ooo", &cmd, &source_paths);
+
+        nob_cmd_free(c_ompiler);
         nob_cmd_free(cmd);
         return ok;
 }
@@ -333,16 +333,16 @@ int main(int argc, char **argv) {
                 if (strcmp(s, "clean") == 0) flag.clean = true;
         }
 
-        create_source_paths();
-        create_include_paths();
-
         ok &= create_build_dir(flag.clean);
         ok &= download_build_treesitter(flag.clean);       
         ok &= download_build_tree_sitter_c(flag.clean);        
         ok &= copy_treesitter_symbols(flag.clean);
         ok &= download_build_googleTest(flag.clean);        
 
+        create_source_paths();
+        create_include_paths();
         ok &= ooo_build(flag.clean);
+
         ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
