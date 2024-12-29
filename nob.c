@@ -257,8 +257,8 @@ bool ooo_build(bool const clean) {
 
         Nob_Cmd cmd = {0};
         nob_cmd_append_cmd(&cmd, &c_ompiler);
-        nob_cmd_append(&cmd, "-o", "build/ooo");
         nob_cmd_append_cmd(&cmd, &include_paths);
+        nob_cmd_append(&cmd, "-o", "build/ooo");
         nob_cmd_append_cmd(&cmd, &source_paths);
         bool ok = nob_cmd_run_sync(cmd);
 

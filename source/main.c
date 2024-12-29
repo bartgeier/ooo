@@ -95,7 +95,6 @@ int main(int argc, char **argv) {
         Pars_init();
         {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
-                return 0;
                 if (oarg.action == OARG_PRINT) { 
                         ooo_print_nodes(
                                 root.node,
