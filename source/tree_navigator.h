@@ -29,10 +29,12 @@ typedef struct {
         TSNode parent;
         uint32_t child_idx;
         uint32_t num_of_childs;
-        Nodes const *nodes;
+        Nodes *nodes;
 } Relation;
 
-void Relation_init(Relation *r, Nodes const *nodes);
+void Relation_init(Relation *r, Nodes *nodes);
+void Relation_serial_push(Relation *r, TSNode const node);
+
 TSNode child(Relation const *r, unsigned int const i);
 TSSymbol unknown(Relation const *r);
 TSSymbol me(Relation const *r);

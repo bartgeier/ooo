@@ -205,50 +205,46 @@ static uint32_t conditional_expression(Relation const *node, uint32_t level) {
        return level; 
 }
 
-static uint32_t dispatcher(Nodes *nodes, uint32_t level) {
-        Relation node;
-        Relation_init(&node, nodes);
-
-        switch(parent(&node)) {
+static uint32_t dispatcher(Relation *node, uint32_t level) {
+        switch(parent(node)) {
 
         case sym_preproc_call: 
-                return preproc_call(&node, level);
+                return preproc_call(node, level);
         case sym_preproc_def: 
-                return preproc_def(&node, level);
+                return preproc_def(node, level);
         case sym_preproc_function_def: 
-                return preproc_function_def(&node, level);
+                return preproc_function_def(node, level);
         case sym_preproc_params:
-                return preproc_params(&node, level);
+                return preproc_params(node, level);
         case sym_preproc_arg: 
-                return preproc_arg(&node, level);
-
+                return preproc_arg(node, level);
 
         case sym_compound_statement: 
-                return compound_statement(&node, level);
+                return compound_statement(node, level);
         case sym_field_declaration_list: 
-                return field_declaration_list(&node, level);
+                return field_declaration_list(node, level);
         case sym_enumerator_list: 
-                return enumerator_list(&node, level);
+                return enumerator_list(node, level);
         case sym_initializer_list: 
-                return initializer_list(&node, level);
+                return initializer_list(node, level);
         case sym_parameter_list: 
-                return parameter_list(&node, level);
+                return parameter_list(node, level);
         case sym_argument_list: 
-                return argument_list(&node, level);
+                return argument_list(node, level);
         case sym_case_statement: 
-                return case_statement(&node, level);
+                return case_statement(node, level);
         case sym_for_statement: 
-                return for_statement(&node, level);
+                return for_statement(node, level);
         case sym_while_statement: 
-                return while_statement(&node, level);
+                return while_statement(node, level);
         case sym_do_statement: 
-                return do_statement(&node, level);
+                return do_statement(node, level);
         case sym_if_statement: 
-                return if_statement(&node, level);
+                return if_statement(node, level);
         case sym_else_clause: 
-                return else_clause(&node, level);
+                return else_clause(node, level);
         case sym_conditional_expression:
-                return conditional_expression(&node, level);
+                return conditional_expression(node, level);
         default:
                 return level;
         }
@@ -257,17 +253,17 @@ static uint32_t dispatcher(Nodes *nodes, uint32_t level) {
 
 void ooo_set_indentation(
         OJob *job,
-        Nodes *nodes,
+        Relation *relation,
         uint32_t indentation_level
 ) {
-        TSNode const node = Nodes_at(nodes, 0);
+        TSNode const node = Nodes_at(relation->nodes, 0);
         TSSymbol const me = sym(node);
 
         Slice slice = {
                 .begin = job->idx,
                 .end = job->idx = (ts_node_start_byte(node) + job->offset)
         };
-        indentation_level = dispatcher(nodes, indentation_level);
+        indentation_level = dispatcher(relation, indentation_level);
         for (uint32_t i = slice.begin; i < slice.end; i++) {
                 if (job->source.at[i] == '\n') {
                         OStr_append_chr(&job->sink, job->source.at[i]);
@@ -282,10 +278,10 @@ void ooo_set_indentation(
 
         for (uint32_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode const child = ts_node_child(node, it);
-                Nodes_push(nodes,  child);
+                Relation_serial_push(relation, child);
                 ooo_set_indentation(
                         job,
-                        nodes,
+                        relation,
                         indentation_level
                 );
         }
@@ -316,8 +312,8 @@ void ooo_set_indentation(
                 uint32_t const o = job->offset;
                 job->idx = job->offset = slice.begin;
                 RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
-                Nodes_push(nodes, root.node);
-                ooo_set_indentation(job, nodes, indentation_level);
+                Relation_serial_push(relation, root.node);
+                ooo_set_indentation(job, relation, indentation_level);
                 Pars_freeTree(root);
                 job->offset = o;
         } else {

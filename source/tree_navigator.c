@@ -79,9 +79,26 @@ TSNode Nodes_at(Nodes const *m, uint32_t const idx) {
         return m->at[i];
 }
 
-void Relation_init(Relation *r, Nodes const *nodes) {
+void Relation_init(Relation *r, Nodes *nodes) {
         r->nodes = nodes;
         TSNode node = Nodes_at(nodes, 0);
+        r->parent = super(1, node);
+        if (ts_node_is_null(r->parent)) {
+                return;
+        }
+        r->grand = super(1, r->parent);
+        r->num_of_childs = ts_node_child_count(r->parent);
+        for (uint32_t i = 0; i < r->num_of_childs; i++) {
+                if (node.id == ts_node_child(r->parent, i).id) {
+                        r->child_idx = i;
+                        return;
+                }
+        }
+        r->child_idx = 0;
+}
+
+void Relation_serial_push(Relation *r, TSNode const node) {
+        Nodes_push(r->nodes, node);
         r->parent = super(1, node);
         if (ts_node_is_null(r->parent)) {
                 return;

@@ -112,8 +112,12 @@ int main(int argc, char **argv) {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
                 serial_nodes = Nodes_init(20);
                 Nodes_push(&serial_nodes, root.node);
+
+                Relation relation = {0}; 
+                Relation_init(&relation, &serial_nodes);
+
                 ooo_ruler(
-                        &serial_nodes,
+                        &relation,
                         &job
                 );
                 Pars_freeTree(root);
@@ -123,11 +127,14 @@ int main(int argc, char **argv) {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
                 Nodes_clear(&serial_nodes);
                 Nodes_push(&serial_nodes, root.node);
+
+                Relation relation = {0}; 
+                Relation_init(&relation, &serial_nodes);
+
                 ooo_set_indentation(
                         &job,
-                        &serial_nodes,
+                        &relation,
                         0
-
                 );
                 Pars_freeTree(root);
                 OJob_set_final_LF(&job);
