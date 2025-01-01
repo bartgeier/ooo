@@ -17,23 +17,20 @@ typedef struct {
         uint32_t SIZE;
         uint32_t last;
         TSNode *at;
-} Nodes;
-
-Nodes Nodes_init(uint32_t const SIZE);
-void Nodes_clear(Nodes *m);
-void Nodes_push(Nodes *m, TSNode const node);
-TSNode Nodes_at(Nodes const *m, uint32_t const idx);
+} Track;
 
 typedef struct {
         TSNode grand;
         TSNode parent;
         uint32_t child_idx;
         uint32_t num_of_childs;
-        Nodes *nodes;
+        Track tracks;
 } Relation;
 
-void Relation_init(Relation *r, Nodes *nodes);
-void Relation_serial_push(Relation *r, TSNode const node);
+Relation Relation_make(uint32_t const SIZE);
+void Relation_clear(Relation *r);
+void Relation_track(Relation *r, TSNode const node);
+TSNode Relation_track_node(Relation const *r, uint32_t const idx);
 
 TSNode child(Relation const *r, unsigned int const i);
 TSSymbol unknown(Relation const *r);

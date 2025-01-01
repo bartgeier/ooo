@@ -58,8 +58,8 @@ bool write_txt_file(OStr const *source, char const *path) {
 }
 
 
-
-Nodes serial_nodes;
+Relation relation;
+Track serial_nodes;
 #define MEM_SIZE 1024*1024
 
 int main(int argc, char **argv) {
@@ -110,11 +110,8 @@ int main(int argc, char **argv) {
         }
         {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
-                serial_nodes = Nodes_init(20);
-                Nodes_push(&serial_nodes, root.node);
-
-                Relation relation = {0}; 
-                Relation_init(&relation, &serial_nodes);
+                relation = Relation_make(20);
+                Relation_track(&relation, root.node);
 
                 ooo_ruler(
                         &relation,
@@ -125,11 +122,8 @@ int main(int argc, char **argv) {
         }
         {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
-                Nodes_clear(&serial_nodes);
-                Nodes_push(&serial_nodes, root.node);
-
-                Relation relation = {0}; 
-                Relation_init(&relation, &serial_nodes);
+                Relation_clear(&relation);
+                Relation_track(&relation, root.node);
 
                 ooo_set_indentation(
                         &job,

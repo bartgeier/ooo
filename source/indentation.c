@@ -4,7 +4,7 @@
 
 static uint32_t preproc_call(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
-                TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
+                TSNode me_n = Relation_track_node(node, 0); // me as TSNode
                 TSPoint a = ts_node_start_point(node->parent);
                 TSPoint b = ts_node_start_point(me_n);
                 if (a.row == b.row) {
@@ -22,7 +22,7 @@ static uint32_t preproc_call(Relation const *node, uint32_t level) {
 
 static uint32_t preproc_def(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
-                TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
+                TSNode me_n = Relation_track_node(node, 0); // me as TSNode
                 TSPoint a = ts_node_start_point(node->parent);
                 TSPoint b = ts_node_start_point(me_n);
                 if (a.row == b.row) {
@@ -41,7 +41,7 @@ static uint32_t preproc_def(Relation const *node, uint32_t level) {
 
 static uint32_t preproc_function_def(Relation const *node, uint32_t level) {
         if (me(node) == sym_preproc_arg) {
-                TSNode me_n = Nodes_at(node->nodes, 0); // me as TSNode
+                TSNode me_n = Relation_track_node(node, 0); // me as TSNode
                 TSPoint a = ts_node_start_point(node->parent);
                 TSPoint b = ts_node_start_point(me_n);
                 if (a.row == b.row) {
@@ -256,7 +256,7 @@ void ooo_set_indentation(
         Relation *relation,
         uint32_t indentation_level
 ) {
-        TSNode const node = Nodes_at(relation->nodes, 0);
+        TSNode const node = Relation_track_node(relation, 0);
         TSSymbol const me = sym(node);
 
         Slice slice = {
@@ -278,7 +278,7 @@ void ooo_set_indentation(
 
         for (uint32_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode const child = ts_node_child(node, it);
-                Relation_serial_push(relation, child);
+                Relation_track(relation, child);
                 ooo_set_indentation(
                         job,
                         relation,
@@ -312,7 +312,7 @@ void ooo_set_indentation(
                 uint32_t const o = job->offset;
                 job->idx = job->offset = slice.begin;
                 RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
-                Relation_serial_push(relation, root.node);
+                Relation_track(relation, root.node);
                 ooo_set_indentation(job, relation, indentation_level);
                 Pars_freeTree(root);
                 job->offset = o;

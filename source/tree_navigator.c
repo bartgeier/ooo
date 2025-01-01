@@ -48,57 +48,49 @@ TSNode sibling(int i, TSNode n) {
         return n;
 }
 
-Nodes Nodes_init(uint32_t const SIZE) {
-        Nodes m = {
-                .SIZE = SIZE,
-                .last = 0,
-                .at = 0 
-        };
-        m.at = (TSNode*)calloc(m.SIZE, sizeof(TSNode));
-        for (uint32_t i = 0; i < m.SIZE; i++) {
-                m.at[i] = node_null();
-        }
-        return m;
+TSNode Relation_track_node(Relation const *r, uint32_t const idx) {
+        Track const *tracks = &r->tracks;
+        assert(idx < tracks->SIZE);
+        uint32_t i = (tracks->last >= idx) ? tracks->last - idx : tracks->SIZE - idx + tracks->last;
+        return tracks->at[i];
 }
 
-void Nodes_clear(Nodes *m) {
-        m->last = 0;
-        for (uint32_t i = 0; i < m->SIZE; i++) {
-                m->at[i] = node_null();
-        }
-}
-
-void Nodes_push(Nodes *m, TSNode const node) {
-        m->last = (m->last + 1) % m->SIZE;
-        m->at[m->last] = node;
-}
-
-TSNode Nodes_at(Nodes const *m, uint32_t const idx) {
-        assert(idx < m->SIZE);
-        uint32_t i = (m->last >= idx) ? m->last - idx : m->SIZE - idx + m->last;
-        return m->at[i];
-}
-
-void Relation_init(Relation *r, Nodes *nodes) {
-        r->nodes = nodes;
-        TSNode node = Nodes_at(nodes, 0);
-        r->parent = super(1, node);
-        if (ts_node_is_null(r->parent)) {
-                return;
-        }
-        r->grand = super(1, r->parent);
-        r->num_of_childs = ts_node_child_count(r->parent);
-        for (uint32_t i = 0; i < r->num_of_childs; i++) {
-                if (node.id == ts_node_child(r->parent, i).id) {
-                        r->child_idx = i;
-                        return;
+Relation Relation_make(uint32_t const SIZE) {
+        Relation r = { 
+                .grand = node_null(),
+                .parent = node_null(),
+                .child_idx = 0,
+                .num_of_childs = 0,
+                .tracks = {
+                        .SIZE = SIZE,
+                        .last = 0,
+                        .at = NULL 
                 }
+        };
+        r.tracks.at = (TSNode*)calloc(r.tracks.SIZE, sizeof(TSNode));
+        for (uint32_t i = 0; i < r.tracks.SIZE; i++) {
+                r.tracks.at[i] = node_null();
         }
-        r->child_idx = 0;
+        return r;
 }
 
-void Relation_serial_push(Relation *r, TSNode const node) {
-        Nodes_push(r->nodes, node);
+void Relation_clear(Relation *r) {
+        r->grand = node_null(),
+        r->parent = node_null(),
+        r->child_idx = 0;
+        r->num_of_childs = 0;
+        r->tracks.last = 0;
+        for (uint32_t i = 0; i < r->tracks.SIZE; i++) {
+                r->tracks.at[i] = node_null();
+        }
+}
+
+void Relation_track(Relation *r, TSNode const node) {
+        {
+                // push serial track
+                r->tracks.last = (r->tracks.last + 1) % r->tracks.SIZE;
+                r->tracks.at[r->tracks.last] = node;
+        }
         r->parent = super(1, node);
         if (ts_node_is_null(r->parent)) {
                 return;
@@ -127,7 +119,7 @@ TSSymbol unknown(Relation const *r) {
 }
 
 TSSymbol me(Relation const *r) {
-        return sym(Nodes_at(r->nodes, 0));
+        return sym(Relation_track_node(r, 0));
 }
 
 TSSymbol parent(Relation const *r) {
@@ -139,7 +131,7 @@ TSSymbol grand(Relation const *r) {
 }
 
 bool is_error(Relation const *r) {
-        TSNode n = Nodes_at(r->nodes, 0);
+        TSNode n = Relation_track_node(r, 0);
         return ts_node_has_error(n) || ts_node_is_error(n);
 }
 
@@ -174,7 +166,7 @@ bool is_before_child(Relation const *r, TSSymbol symbol) {
 }
 
 uint32_t me_size(Relation const *r) {
-        TSNode n = Nodes_at(r->nodes, 0);
+        TSNode n = Relation_track_node(r, 0);
         return (ts_node_end_byte(n) - ts_node_start_byte(n));
 }
 
