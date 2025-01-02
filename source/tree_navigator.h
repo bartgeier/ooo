@@ -30,7 +30,7 @@ typedef struct {
 Relation Relation_make(uint32_t const SIZE);
 void Relation_clear(Relation *r);
 void Relation_track(Relation *r, TSNode const node, uint32_t const child_idx);
-void Relation_parent_push(Relation *r, TSNode const node);
+void Relation_parent_push(Relation *r, TSNode const node, uint32_t const num_of_childs);
 TSNode Relation_track_node(Relation const *r, uint32_t const idx);
 
 TSNode child(Relation const *r, unsigned int const i);
