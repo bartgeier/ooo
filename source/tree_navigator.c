@@ -85,25 +85,11 @@ void Relation_clear(Relation *r) {
         }
 }
 
-void Relation_track(Relation *r, TSNode const node) {
-        {
-                // push serial track
-                r->tracks.last = (r->tracks.last + 1) % r->tracks.SIZE;
-                r->tracks.at[r->tracks.last] = node;
-        }
-        // r->parent = super(1, node);
-        // if (ts_node_is_null(r->parent)) {
-        //         return;
-        // }
-        // r->grand = super(1, r->parent);
-        // r->num_of_childs = ts_node_child_count(r->parent);
-        for (uint32_t i = 0; i < r->num_of_childs; i++) {
-                if (node.id == ts_node_child(r->parent, i).id) {
-                        r->child_idx = i;
-                        return;
-                }
-        }
-        r->child_idx = 0;
+// track: serialices the nodes in the same order, they are written in the c file.
+void Relation_track(Relation *r, TSNode const node, uint32_t const child_idx) {
+        r->tracks.last = (r->tracks.last + 1) % r->tracks.SIZE;
+        r->tracks.at[r->tracks.last] = node;
+        r->child_idx = child_idx;
 }
 
 void Relation_parent_push(Relation *r, TSNode const node) {

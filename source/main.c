@@ -111,7 +111,7 @@ int main(int argc, char **argv) {
         {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
                 relation = Relation_make(20);
-                Relation_track(&relation, root.node);
+                Relation_track(&relation, root.node, 0);
 
                 ooo_ruler(
                         &relation,
@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
         {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
                 Relation_clear(&relation);
-                Relation_track(&relation, root.node);
+                Relation_track(&relation, root.node, 0);
 
                 ooo_set_indentation(
                         &job,

@@ -1726,7 +1726,7 @@ void ooo_ruler(
         for (uint32_t it = 0; it < num_of_childs; it++) {
                TSNode child = ts_node_child(node, it);
                Relation_parent_push(relation, node);
-               Relation_track(relation, child);
+               Relation_track(relation, child, it);
                ooo_ruler(relation, job);
                //Relation_parent_pop(relation, node);
         }
@@ -1749,7 +1749,7 @@ void ooo_ruler(
                 job->idx = job->offset = slice.begin;
                 RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
                 Relation_parent_push(relation, node);
-                Relation_track(relation, root.node);
+                Relation_track(relation, root.node, 0);
                 ooo_ruler(relation, job);
                 Pars_freeTree(root);
                 job->offset = o;
