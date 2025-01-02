@@ -278,6 +278,7 @@ void ooo_set_indentation(
 
         for (uint32_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode const child = ts_node_child(node, it);
+                Relation_parent_push(relation, node);
                 Relation_track(relation, child);
                 ooo_set_indentation(
                         job,
@@ -312,6 +313,7 @@ void ooo_set_indentation(
                 uint32_t const o = job->offset;
                 job->idx = job->offset = slice.begin;
                 RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
+                Relation_parent_push(relation, node);
                 Relation_track(relation, root.node);
                 ooo_set_indentation(job, relation, indentation_level);
                 Pars_freeTree(root);
