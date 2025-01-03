@@ -291,7 +291,7 @@ put(d)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//               x macros
+//                           x macro
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LIST_OF_THINGS \
@@ -311,3 +311,17 @@ typedef enum {
 char *thing_strings[] = {
     LIST_OF_THINGS
 };
+
+////////////////////////////////////////////////////////////////////////////////
+//             macro template function
+//             The Tc function... interface does not format
+//             but it displays what the author has written.
+////////////////////////////////////////////////////////////////////////////////
+
+#define template_add(Ta, Tb, Tc)     \
+    Tc add_##Ta##_##Tb(Ta a, Tb b) { \
+        if ((Tc)a == (Tc)b) {        \
+            return (Tc)a;            \
+        }                            \
+        return (Tc)(a + b);          \
+    }

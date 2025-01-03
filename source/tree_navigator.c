@@ -92,13 +92,9 @@ void Relation_track(Relation *r, TSNode const node, uint32_t const child_idx) {
         r->child_idx = child_idx;
 }
 
-void Relation_parent_push(Relation *r, TSNode const node, uint32_t const num_of_childs) {
-        r->parent = node;
-        if (ts_node_is_null(r->parent)) {
-                return;
-        }
-        r->grand = super(1, r->parent);
-        //r->num_of_childs = ts_node_child_count(r->parent);
+void Relation_parent_push(Relation *r, TSNode const parent, uint32_t const num_of_childs, TSNode const grand) {
+        r->parent = parent;
+        r->grand = grand;
         r->num_of_childs = num_of_childs;
 }
 
