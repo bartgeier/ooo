@@ -253,7 +253,7 @@ bool ooo_build(bool const clean) {
         nob_log(NOB_INFO, "BUILD: ooo ----> code styler");
         Nob_Cmd c_ompiler = {0};
         //nob_cmd_append(&cmd, "gcc", "-O0", "-ggdb", "-pedantic");
-        nob_cmd_append(&c_ompiler, "/usr/bin/gcc", "-O0", "-pedantic"); 
+        nob_cmd_append(&c_ompiler, "gcc", "-O0", "-pedantic"); 
 
         Nob_Cmd cmd = {0};
         nob_cmd_append_cmd(&cmd, &c_ompiler);
