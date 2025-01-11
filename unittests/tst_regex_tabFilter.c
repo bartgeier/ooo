@@ -13,7 +13,7 @@ TEST(Regex_tabFilter, do) {
         strcpy(src, a);
         OStr source = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         OStr sink = {

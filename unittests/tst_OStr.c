@@ -16,7 +16,7 @@ TEST(OStr, append) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         EXPECT_EQ(source_str.size, strlen(a));
@@ -40,7 +40,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_ONE) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         Slice s = {.begin = 3, .end = 3};
@@ -59,7 +59,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_NONE) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         Slice s = {.begin = 3, .end = 4};
@@ -78,7 +78,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_TWO) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         Slice s = {.begin = 3, .end = 6};
@@ -97,7 +97,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_ANOTHER_ONE) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         Slice s = {.begin = 3, .end = 5};
@@ -116,7 +116,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_ANOTHER_ONE_) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         Slice s = {.begin = 3, .end = 8};
@@ -135,7 +135,7 @@ TEST(OStr, OStr_need_LF_or_space_GOT_LF) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         Slice s = {.begin = 3, .end = 6};
@@ -155,7 +155,7 @@ TEST(OStr, OStr_need_LF_or_space_GOT_SPACE) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         Slice s = {.begin = 4, .end = 5};
@@ -175,7 +175,7 @@ TEST(OStr, OStr_need_LF_or_space_GOT_SPACE_) {
         src[strlen(a)] = 0;
         OStr source_str = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         Slice s = {.begin = 3, .end = 3};

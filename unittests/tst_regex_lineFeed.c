@@ -13,7 +13,7 @@ TEST(Regex_lineFeed, lineFeed_rn) {
         strcpy(src, a);
         OStr source = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         OStr sink = {
@@ -45,7 +45,7 @@ TEST(Regex_lineFeed, lineFeed_r) {
         strcpy(src, a);
         OStr source = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         OStr sink = {
@@ -77,7 +77,7 @@ TEST(Regex_lineFeed, lineFeed_nr) {
         strcpy(src, a);
         OStr source = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         OStr sink = {
@@ -109,7 +109,7 @@ TEST(Regex_lineFeed, lineFeed_n) {
         strcpy(src, a);
         OStr source = {
                 .capacity = MEM_SIZE,
-                .size = strlen(a),
+                .size = (uint32_t)strlen(a),
                 .at = src
         };
         OStr sink = {

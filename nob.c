@@ -140,8 +140,8 @@ bool copy_treesitter_symbols(bool const clean) {
         bool ok = nob_cmd_run_sync(cmd);
         cmd.count = 0;
         #ifdef _WIN32
-                ok &= nob_rename("ooo_copy_treesitter_symbols.exe", "build/ooo_copy_treesitter_symbols.exe");
-                nob_cmd_append(&cmd,"build/ooo_copy_treesitter_symbols.exe" );
+                ok &= nob_rename("copy_treesitter_symbols.exe", "build/copy_treesitter_symbols.exe");
+                nob_cmd_append(&cmd,"build/copy_treesitter_symbols.exe" );
                 ok &= nob_cmd_run_sync(cmd);
         #else
                 ok &= nob_rename("copy_treesitter_symbols", "build/copy_treesitter_symbols");
@@ -293,15 +293,15 @@ bool unittests_build(bool const clean) {
         nob_cmd_append(&cmd, "-I", "tree-sitter-c/");
         nob_cmd_append(&cmd, "-L", "googletest/build/lib/");
         nob_cmd_append(&cmd, "-o", "build/otest");
-        // nob_cmd_append(&cmd, "source/tree_navigator.c");
-        // nob_cmd_append(&cmd, "unittests/tst_OStr.c");
-        // nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
-        // nob_cmd_append(&cmd, "unittests/tst_OArena.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex_lineFeed.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex_tabFilter.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex_signedComment.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex_truncNodeSpace.c");
-        // nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");
+        nob_cmd_append(&cmd, "source/tree_navigator.c");
+        nob_cmd_append(&cmd, "unittests/tst_OStr.c");
+        nob_cmd_append(&cmd, "unittests/tst_tree_navigator.c");
+        nob_cmd_append(&cmd, "unittests/tst_OArena.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_lineFeed.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_tabFilter.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_signedComment.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_truncNodeSpace.c");
+        nob_cmd_append(&cmd, "unittests/tst_regex_truncCommentSpace.c");
         nob_cmd_append(&cmd, "unittests/tst_regex_lineCont.c");
         nob_cmd_append(&cmd, "unittests/tst_regex_lineUp.c");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a");
