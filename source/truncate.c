@@ -3,6 +3,7 @@
 #include "Pars.h"
 #include "Regex_signedComment.h"
 #include <stdint.h>
+#include <stdio.h>
 
 #define REGEX_TRUNC_NODE_SPACE_IMPLEMENTATION
 #include "Regex_truncNodeSpace.h"
@@ -39,7 +40,7 @@ static void trunc_spaces(OJob *job, uint32_t const begin, size_t const end) {
         size_t const column = getColumn(source->at, begin);
         uint32_t n = sink->size;
         Regex_truncNodeSpace_t nodeSpace;
-        Regex_lineCont_t lineCont;
+        Regex_lineCont_t lineCont = {0};
 
         Regex_truncNodeSpace_first(&nodeSpace, column);
         if (begin > 0) { 

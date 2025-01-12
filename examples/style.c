@@ -16,10 +16,9 @@ void create_list_A(void) {
     nob_cmd_append(&list, "conway.c");
     nob_cmd_append(&list, "donut.c");
     nob_cmd_append(&list, "show.c");
-    nob_cmd_append(&list, "macro_do.c");
-    nob_cmd_append(&list, "experiment.c");
 }
 
+#if 0
 void print_line_count(Nob_File_Paths *file_list, char *input_dir) {
     Nob_Cmd cmd = {0};
     size_t total = 0;
@@ -50,6 +49,38 @@ void print_line_count(Nob_File_Paths *file_list, char *input_dir) {
     printf("%10zu total lines\n", total);
     nob_cmd_free(cmd);
 }
+#else
+void print_line_count(Nob_File_Paths *file_list, char *input_dir, uint64_t const duration) {
+    Nob_Cmd cmd = {0};
+    size_t total = 0;
+    for (size_t i = 0; i < file_list->count; i++) {
+        Nob_String_Builder sbi = {0};
+        nob_sb_append_cstr(&sbi, input_dir);
+        nob_sb_append_cstr(&sbi, file_list->items[i]);
+        nob_sb_append_null(&sbi);
+        char * file = nob_temp_strdup(sbi.items);
+        nob_sb_free(sbi);
+
+        size_t line_count = 0;
+        {
+            FILE *x = fopen(file, "r");
+            assert(x != NULL && "Error opening file");
+            char ch;
+            while ((ch = fgetc(x)) != EOF) {
+                if (ch == '\n') { line_count++; }
+            }
+            fclose(x);
+        }
+        printf("%10zu %s\n", line_count, file);
+
+        total += line_count;
+        nob_temp_reset(); 
+    }
+
+    printf("%10zu lines formated in %lu ms\n", total, duration);
+    nob_cmd_free(cmd);
+}        
+#endif
 
 bool style_list(Nob_File_Paths *file_list, char *output_dir, char *input_dir) {
     bool ok = true;
@@ -101,14 +132,13 @@ int main(int argc, char **argv) {
 
         uint64_t t_start = nob_millis();
         result &= style_list(&list, "styled_source/", "source/");
-
+        uint64_t duration = nob_millis() - t_start;
         printf("\n");
-        nob_log(NOB_INFO, "ooo styling duration %llu ms", nob_millis() - t_start);
+        
+        nob_log(NOB_INFO, "ooo benchmark:");
+        print_line_count(&list, "source/", duration);
         printf("\n");
-
-        print_line_count(&list, "source/");
-        printf("\n");
-
+      
         if (!result) { 
                 nob_log(NOB_ERROR, "style exit with an error");
                 return 2;
