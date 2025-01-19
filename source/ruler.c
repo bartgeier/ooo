@@ -277,6 +277,18 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
 }
 #endif
 
+static bool preproc_defined(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                /* defined */
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        /* defined(ALICE) */
+        return true;
+}
+
 static bool preproc_if(Relation const *node, Slice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* #if */
@@ -306,8 +318,12 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
         if (is_first_child(node)) {
                 return true;
         }
-        if (me(node) == sym_comment | unknown(node)) {
+        if (unknown(node)) {
                 return false;
+        }
+        if (me(node) == sym_comment) {
+                OJob_1_or_2LF_or_space(job, slice);
+                return true;
         }
         if (me(node) == sym_compound_statement) {
                 /* workaround for issue => (google test) TEST(hello, init) { */
@@ -676,12 +692,9 @@ static bool cast_expression(Relation const *node, Slice const slice, OJob *job) 
                 /*    ^^  */
                 return true;
         }
-        if (me(node) == sym_identifier) {
-                /* char)A */
-                /*     ^^ */
-                return true;
-        }
-        return false;
+        /* char)A */
+        /*     ^^ */
+        return true;
 }
 
 static bool type_descriptor(Relation const *node, Slice const slice, OJob *job) {
@@ -1553,6 +1566,14 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
+static bool unary_expression(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                /* operator !x ++x --x ect. */
+                return true;
+        }
+        return true;
+}
+
 // static bool roots(Relation const *node, Slice const slice, OJob *job) {
 //         if (parent(node) != sym_translation_unit 
 //         & parent(node) != sym_preproc_ifdef
@@ -1594,6 +1615,8 @@ bool dispatcher(
                 return preproc_function_def(relation, slice, job);
         case sym_preproc_ifdef: 
                 return preproc_ifdef(relation, slice, job); 
+        case sym_preproc_defined: 
+                return preproc_defined(relation, slice, job);
         case sym_preproc_if: 
                 return preproc_if(relation, slice, job); 
         case sym_preproc_params:
@@ -1692,7 +1715,8 @@ bool dispatcher(
                 return linkage_specification(relation, slice, job);
         case sym_declaration_list: 
                 return declaration_list(relation, slice, job);
-        //|| roots(relation, slice, job);
+        case sym_unary_expression:
+                return unary_expression(relation, slice, job);
         default:
                 return false;
         }

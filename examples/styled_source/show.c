@@ -208,9 +208,9 @@ void comment_from_c_style_to_Cpp_style(void) {
 
 #define BAR
 
-#define X(name) name
+#define X(name) name  
 
-#define NUMBER 345
+#define NUMBER 345  
 
 #define FOO    \
     int a = 3; \
@@ -221,7 +221,7 @@ void comment_from_c_style_to_Cpp_style(void) {
 #define FOO int a = 3; \
 b = c + a;             \
 ;                      \
-put(d)
+put(d)  
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
@@ -244,6 +244,12 @@ put(d)
     add((a), (b))
 
 #define min(a, b) ((a) < (b) ? (a) : (b))
+
+#define /* uint32_t */ BUF_READ_LE_U32_F(/* const uint8_t * */ buffer_p, /* uint */ offset) \
+    ((((uint32_t)(*(((const uint8_t *)buffer_p) + (offset) + 0))) << 0)                     \
+    | (((uint32_t)(*(((const uint8_t *)buffer_p) + (offset) + 1))) << 8)                    \
+    | (((uint32_t)(*(((const uint8_t *)buffer_p) + (offset) + 2))) << 16)                   \
+    | (((uint32_t)(*(((const uint8_t *)buffer_p) + (offset) + 3))) << 24))
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
@@ -289,7 +295,6 @@ put(d)
         (c) = (a) + (b); \
     } while (0)
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //                           x macro
 ////////////////////////////////////////////////////////////////////////////////
@@ -325,3 +330,24 @@ char *thing_strings[] = {
         }                            \
         return (Tc)(a + b);          \
     }
+
+////////////////////////////////////////////////////////////////////////////////
+//             Conditional preprocessor directive
+////////////////////////////////////////////////////////////////////////////////
+
+#ifndef HSE
+#define HSE ((uint32_t)13) 
+#endif
+
+#ifdef BOB
+#undef BOB  
+#endif
+
+#if !defined(HSE_VALUE)
+#define HSE_VALUE ((uint32_t)16000000) 
+#endif
+
+#if !defined(A) && defined(B)
+#define BOB ((uint32_t)11) 
+#endif
+

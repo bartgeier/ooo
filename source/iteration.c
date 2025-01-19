@@ -72,6 +72,27 @@ static void replace_A_with_B(
 
 void last_iteration(OJob *job) { 
         {
+                /* line up => line continuation '\' character */
+                OStr const *A = &job->source; 
+                OStr *B = &job->sink; 
+                Regex_lineUp_t regex;
+                Regex_lineUp_first(&regex, 0);
+                for (uint32_t i = 0; i < A->size + 1; i++) {
+                        if (Regex_lineUp(&regex, A->at[i], i)) {
+                                uint32_t delta = i - regex.begin;
+                                B->size -= delta;
+                                line_up(job, &regex); 
+                        } else {
+                                if (A->at[i] != 0) {
+                                        OStr_append_chr(B, A->at[i]);
+                                }
+                        }
+                }
+        }
+
+        OJob_swap(job);
+
+        {
                 OStr const *A = &job->source; 
                 OStr *B = &job->sink; 
                 Regex_signedComment_t reg = {
@@ -118,27 +139,6 @@ void last_iteration(OJob *job) {
                                         OStr_append_chr(B, '\r');
                                         break;
                                 }
-                        } else {
-                                if (A->at[i] != 0) {
-                                        OStr_append_chr(B, A->at[i]);
-                                }
-                        }
-                }
-        }
-
-        OJob_swap(job);
-
-        {
-                /* line up => line continuation '\' character */
-                OStr const *A = &job->source; 
-                OStr *B = &job->sink; 
-                Regex_lineUp_t regex;
-                Regex_lineUp_first(&regex, 0);
-                for (uint32_t i = 0; i < A->size + 1; i++) {
-                        if (Regex_lineUp(&regex, A->at[i], i)) {
-                                uint32_t delta = i - regex.begin;
-                                B->size -= delta;
-                                line_up(job, &regex); 
                         } else {
                                 if (A->at[i] != 0) {
                                         OStr_append_chr(B, A->at[i]);

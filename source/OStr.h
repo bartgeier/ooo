@@ -24,6 +24,7 @@ void OStr_append_cstring(OStr *m, char const * str);
 uint32_t OStr_need_1_or_2LF(OStr const *m, Slice const s);
 bool OStr_last_has_LF(OStr const *m, Slice const s);
 char OStr_need_LF_or_space(OStr const *m, Slice const s);
+uint32_t OStr_number_of_chr( OStr const *m, Slice const s, char const chr);
 
 #endif
 
@@ -63,6 +64,15 @@ uint32_t OStr_need_1_or_2LF(OStr const *m, Slice const s) {
                 if (m->at[i] == '\n') count++;
         }
         return (count < 2) ? 1 : 2;
+}
+
+uint32_t OStr_number_of_chr( OStr const *m, Slice const s, char const chr) {
+        assert(s.end <= m->size);
+        uint32_t count = 0;
+        for (uint32_t i = s.begin; i < s.end; i++) {
+                if (m->at[i] == chr) count++;
+        }
+        return count;
 }
 
 bool OStr_last_has_LF(OStr const *m, Slice const s) {

@@ -47,4 +47,4 @@ main() {
         );
         usleep(100 * 1000);
     }
-}   // (c) Tsoding
+} // (c) Tsoding
