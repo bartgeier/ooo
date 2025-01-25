@@ -679,21 +679,25 @@ static bool cast_expression(Relation const *node, Slice const slice, OJob *job) 
                 /* ( */
                 return true;
         }
-        if (me(node) == sym_comment | unknown(node)) {
-                return false;
-        }
-        if (me(node) == sym_type_descriptor) {
+        if (is_second_child(node)) {
                 /* (char */
                 /* ^^    */
                 return true;
+        }
+        if (is_last_child(node)) {
+                /* (char)X */
+                /*      ^^ */
+                return true;
+        }
+        if (me(node) == sym_comment) {
+                return false;
         }
         if (me(node) == anon_sym_RPAREN) {
                 /* char)  */
                 /*    ^^  */
                 return true;
         }
-        /* char)A */
-        /*     ^^ */
+        OJob_space(job);
         return true;
 }
 
@@ -1017,6 +1021,28 @@ static bool expression_statement(Relation const *node, Slice const slice, OJob *
         if (me(node) == anon_sym_SEMI) {
                 /* ach(); */
                 /*     ^^ */
+                return true;
+        }
+        return false;
+}
+
+static bool return_statement(Relation const *node, Slice const slice, OJob *job) {
+        if (is_first_child(node)) {
+                /* return */
+                return true;
+        }
+        if (is_second_child(node)) {
+                /* return X;*/
+                /*       ^  */
+                OJob_space(job);
+                return true;
+        }
+        if (me(node) == sym_comment | unknown(node)) {
+                return false;
+        }
+        if (me(node) == anon_sym_SEMI) {
+                /* return X; */
+                /*        ^^ */
                 return true;
         }
         return false;
@@ -1680,6 +1706,8 @@ bool dispatcher(
                 return enumerator(relation, slice, job);
         case sym_expression_statement: 
                 return expression_statement(relation, slice, job);
+        case sym_return_statement: 
+                return return_statement(relation, slice, job);
         case sym_assignment_expression: 
                 return assignment_expression(relation, slice, job);
         case sym_call_expression: 

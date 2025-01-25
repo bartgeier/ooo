@@ -130,6 +130,10 @@ bool is_first_child(Relation const *r) {
         return r->child_idx == 0;
 }
 
+bool is_second_child(Relation const *r) {
+        return r->child_idx == 1;
+}
+
 bool is_last_child(Relation const *r) {
         return r->child_idx == r->num_of_childs - 1;
 }

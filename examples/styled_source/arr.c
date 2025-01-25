@@ -274,9 +274,9 @@ int main(int argc, char **argv) {
     switch (state) {
         int a;
     case a:
-        return;
+        return ;
     case c:
-        return;
+        return ;
     case d: {
         for (size_t i = 0; i < max; i++) {
             a++;
@@ -284,8 +284,8 @@ int main(int argc, char **argv) {
         {
             a++;
         }
-        } return;
+        } return ;
     default:
-        return;
+        return ;
     }
 }            
