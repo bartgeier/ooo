@@ -16,7 +16,7 @@ void OJob_LF(OJob *m);
 void OJob_2LF(OJob *m);
 void OJob_space(OJob *m);
 void OJob_1_or_2LF(OJob *m, Slice const slice);
-void OJob_1_or_2LF_or_space(OJob *m, Slice const slice);
+bool OJob_max_2LF(OJob *m, Slice const slice);
 void OJob_LF_or_space(OJob *m, Slice const slice);
 void OJob_set_final_LF(OJob *m);
 
@@ -96,14 +96,15 @@ void OJob_1_or_2LF(OJob *m, Slice const slice) {
         OStr_append_number_of_chr(&m->sink, num_of_LF, '\n');
 }
 
-void OJob_1_or_2LF_or_space(OJob *m, Slice const slice) {
+/* return true => job->sink has changed */
+bool OJob_max_2LF(OJob *m, Slice const slice) {
         uint32_t const n = OStr_number_of_chr(&m->source, slice, '\n');
         uint32_t const num_of_LF = (n > 2) ? 2 : n;
         if (num_of_LF > 0) {
                 OJob_1_or_2LF(m, slice);
-                return;
+                return true;
         }
-        OJob_space(m);
+        return false;
 }
 
 void OJob_LF_or_space(OJob *m, Slice const slice) {

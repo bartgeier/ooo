@@ -201,8 +201,16 @@ static uint32_t else_clause(Relation const *node, uint32_t level) {
 }
 
 static uint32_t conditional_expression(Relation const *node, uint32_t level) {
-       level +=1;
-       return level; 
+        level +=1;
+        return level; 
+}
+
+static uint32_t init_declarator(Relation const *node, uint32_t level) {
+        if (me(node) == sym_concatenated_string & !is_single_line(node->parent)) {
+                level +=1;
+                return level;
+        }
+        return level; 
 }
 
 static uint32_t dispatcher(Relation *node, uint32_t level) {
@@ -245,6 +253,8 @@ static uint32_t dispatcher(Relation *node, uint32_t level) {
                 return else_clause(node, level);
         case sym_conditional_expression:
                 return conditional_expression(node, level);
+        case sym_init_declarator: 
+                return init_declarator(node, level);
         default:
                 return level;
         }

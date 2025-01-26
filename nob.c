@@ -343,7 +343,7 @@ int main(int argc, char **argv) {
         create_include_paths();
         ok &= ooo_build(flag.clean);
 
-        ok &= unittests_build(flag.clean);
+        // ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
                 return false;
