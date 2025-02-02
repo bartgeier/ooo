@@ -315,7 +315,7 @@ int main(int argc, char * * argv) {
                                {
                                        a++;
                                }
-                       }return;
+                       }return   a  +  b  ;
                default:
                        return;
        }

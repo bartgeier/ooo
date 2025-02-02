@@ -350,7 +350,7 @@ do { \
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//                           x macro
+//                           X macro
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LIST_OF_THINGS \
@@ -358,16 +358,24 @@ do { \
         X(  DRAWER  ) \
         X(  CAR  ) \
         X(  BOOK  ) \
-        X(  TRAIN  )
+        X(  TRAIN  )           
 
-#define X(name) name,
-typedef enum { LIST_OF_THINGS
+#define X ( name ) name,
+typedef enum { 
+
+
+
+LIST_OF_THINGS
+
+
 }Things;
-
 #undef X
+
 #define X(  name   ) [ name ]   =    #name  ,
-char * thing_strings[] = { LIST_OF_THINGS
+char * thing_strings[] = { 
+LIST_OF_THINGS
 };
+#undef    X
 
 ////////////////////////////////////////////////////////////////////////////////
 //             macro template function
@@ -403,6 +411,11 @@ if ( ( Tc ) a  == (Tc)b) {                       \
 #if ! defined( A )   &&    defined(  B )
 #define   BOB   ( ( uint32_t ) 11 ) 
 #endif
+
+
+
+
+
 
 
 

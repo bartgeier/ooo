@@ -129,6 +129,7 @@ int main(int argc, char **argv) {
     { int A = 5; }
     int s = sizeof(A);
     #define FOO 5 == n
+
     /* comment */
     (void)a;
     char a = (char)A;
@@ -270,9 +271,9 @@ int main(int argc, char **argv) {
     switch (state) {
         int a;
     case a:
-        return ;
+        return;
     case c:
-        return ;
+        return;
     case d: {
         for (size_t i = 0; i < max; i++) {
             a++;
@@ -280,8 +281,8 @@ int main(int argc, char **argv) {
         {
             a++;
         }
-        } return ;
+        } return a + b;
     default:
-        return ;
+        return;
     }
-}            
+}

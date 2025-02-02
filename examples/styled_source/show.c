@@ -246,9 +246,9 @@ void comment_from_c_style_to_Cpp_style(void) {
 
 #define BAR
 
-#define X(name) name  
+#define X(name) name
 
-#define NUMBER 345  
+#define NUMBER 345
 
 #define FOO    \
     int a = 3; \
@@ -259,7 +259,7 @@ void comment_from_c_style_to_Cpp_style(void) {
 #define FOO int a = 3; \
 b = c + a;             \
 ;                      \
-put(d)  
+put(d)
 
 ////////////////////////////////////////////////////////////////////////////////
 //               macro
@@ -334,7 +334,7 @@ put(d)
     } while (0)
 
 ////////////////////////////////////////////////////////////////////////////////
-//                           x macro
+//                           X macro
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LIST_OF_THINGS \
@@ -344,16 +344,19 @@ put(d)
     X(BOOK)            \
     X(TRAIN)
 
-#define X(name) name,
+#define X (name)name,
+
 typedef enum {
     LIST_OF_THINGS
 } Things;
-
 #undef X
+
 #define X(name) [name]   =    #name  ,
+
 char *thing_strings[] = {
     LIST_OF_THINGS
 };
+#undef X
 
 ////////////////////////////////////////////////////////////////////////////////
 //             macro template function
@@ -374,18 +377,21 @@ char *thing_strings[] = {
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef HSE
-#define HSE ((uint32_t)13) 
+#define HSE ((uint32_t)13)
+
 #endif
 
 #ifdef BOB
-#undef BOB  
+#undef BOB
+
 #endif
 
 #if !defined(ALICE)
-#define ALICE ((uint32_t)16000000) 
+#define ALICE ((uint32_t)16000000)
+
 #endif
 
 #if !defined(A) && defined(B)
-#define BOB ((uint32_t)11) 
-#endif
+#define BOB ((uint32_t)11)
 
+#endif

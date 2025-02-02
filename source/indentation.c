@@ -67,6 +67,7 @@ static uint32_t preproc_params(Relation const *node, uint32_t level) {
 }
 
 static uint32_t preproc_arg(Relation const *node, uint32_t level) {
+        (void) node;
         return level;
 }
 
@@ -148,6 +149,7 @@ static uint32_t argument_list(Relation const *node, uint32_t level) {
 }
 
 static uint32_t case_statement(Relation const *node, uint32_t level) {
+        (void) node;
         level += 1;
         return level;
 }
@@ -175,6 +177,7 @@ static uint32_t while_statement(Relation const *node, uint32_t level) {
 }
 
 static uint32_t do_statement(Relation const *node, uint32_t level) {
+        (void) node;
         return level;
 }
 
@@ -201,6 +204,7 @@ static uint32_t else_clause(Relation const *node, uint32_t level) {
 }
 
 static uint32_t conditional_expression(Relation const *node, uint32_t level) {
+        (void) node;
         level +=1;
         return level; 
 }

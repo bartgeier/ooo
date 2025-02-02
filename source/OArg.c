@@ -40,7 +40,6 @@ static OArgSplit create_split(char *vstr, char const split) {
                 .split = split,
                 .is_changed = false,
                 .at = vstr,
-                .is_changed = false,
         };
         return m;
 }
@@ -74,6 +73,7 @@ static char *next_split(OArgSplit *m) {
 }
 
 static char* next_argument(OArgSplit *split, char *optarg) {
+        (void) optarg;
         char *result = NULL;
         do {
                 result = next_split(split);

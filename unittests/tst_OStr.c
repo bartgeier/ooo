@@ -183,3 +183,40 @@ TEST(OStr, OStr_need_LF_or_space_GOT_SPACE_) {
         char chr = OStr_need_LF_or_space(&source_str, s);
         EXPECT_EQ(chr, (char)' ');
 }
+
+TEST(OStr, OStr_final_LF) {
+        char *src = (char*)malloc(MEM_SIZE);
+        char const *a = "Hello World   \n";
+        uint32_t a_size = strlen(a);
+        char const *b = "Hello World\n";
+        uint32_t b_size = strlen(b);
+
+        for (size_t i = 0; i <= a_size; i++) {
+                src[i] = a[i];
+        } 
+        OStr str = {
+                .capacity = MEM_SIZE,
+                .size = a_size,
+                .at = src
+        };
+        bool ok = true;
+        for (size_t i = 0; i <= str.size; i++) {
+                ok &= str.at[i] == a[i];
+        }
+        EXPECT_TRUE(ok);
+        EXPECT_EQ(str.size, a_size);
+
+        OStr_final_LF(&str);
+
+        EXPECT_EQ(str.size, b_size);
+        ok = true;
+        for (size_t i = 0; i <= str.size; i++) {
+                ok &= str.at[i] == b[i];
+        }
+        EXPECT_TRUE(ok);
+
+
+        str.size = 0;
+        OStr_final_LF(&str);
+        EXPECT_EQ(str.size, (uint32_t)0);
+}
