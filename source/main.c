@@ -105,6 +105,7 @@ int main(int argc, char **argv) {
                         return 0;
                 }
                 ooo_truncate_spaces(root.node, &job); 
+                OJob_set_final_LF(&job);
                 Pars_freeTree(root);
                 OJob_swap(&job);
         }
@@ -131,7 +132,6 @@ int main(int argc, char **argv) {
                         0
                 );
                 Pars_freeTree(root);
-                OJob_set_final_LF(&job);
                 OJob_swap(&job);
         }
         last_iteration(&job);
