@@ -1505,49 +1505,36 @@ static bool parenthesized_expression(Relation const *node, Slice const slice, OJ
 static bool binary_expression(Relation const *node, Slice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
-                /* a != 0 */
-                /* a      */
+                /* a + b */
+                /* a     */
                 return true;
         }
         if (me(node) == sym_comment | unknown(node)) {
                 return false;
         }
         if (strcmp(ts_node_field_name_for_child(node->parent, node->child_idx),"operator") == 0) {
-                TSNode const left = ts_node_child_by_field_id(node->parent, field_left);
-
-                uint32_t a;
-                if (sym(left) == sym_binary_expression) {
-                        a = ts_node_start_point(
-                                ts_node_child_by_field_id(left, field_right)
-                        ).row;
-                } else {
-                        a = ts_node_start_point(
-                                ts_node_child_by_field_id(node->parent, field_left)
-                        ).row;
-                }
-
-                uint32_t const b = ts_node_start_point(
+                uint32_t const left_row = ts_node_end_point(
+                        ts_node_child_by_field_id(node->parent, field_left)
+                ).row;
+                uint32_t const operator_row = ts_node_start_point(
                         Relation_track_node(node, 0)
                 ).row;
-
-                uint32_t const c = ts_node_start_point(
+                uint32_t const right_row = ts_node_start_point(
                         ts_node_child_by_field_id(node->parent, field_right)
                 ).row;
-
-                if (a == b & a == c) {
-                        /* a != 0 */
-                        /*  ^     */
-                        OJob_space(job);
-                        return true;  
-                } else {
-                        /* a\n!= 0 */
-                        /*  ^      */
+                if (left_row != operator_row | operator_row != right_row) {
+                        /* a\n* b */
+                        /*  ^    */
                         OJob_LF(job);
                         return true;
                 }
+                /* a * b */
+                /*  ^   */
+                OJob_space(job);
+                return true;
         }
-        /* a != 0 */
-        /*     ^  */
+        /* a * b */
+        /*    ^  */
         OJob_space(job);
         return true;
 }
