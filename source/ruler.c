@@ -1513,9 +1513,6 @@ static bool binary_expression(Relation const *node, Slice const slice, OJob *job
                 return false;
         }
         if (strcmp(ts_node_field_name_for_child(node->parent, node->child_idx),"operator") == 0) {
-                TSFieldId const field_left = 22;
-                TSFieldId const field_right = 32;
-
                 TSNode const left = ts_node_child_by_field_id(node->parent, field_left);
 
                 uint32_t a;

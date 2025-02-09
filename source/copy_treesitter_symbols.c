@@ -135,7 +135,7 @@ void generate_sym_unknown(
                                 end_idx
                         );
                         OStr_append_cstring(&job->sink, ")\n\n");
-                        OStr_append_cstring(&job->sink, "#endif\n");
+                        // OStr_append_cstring(&job->sink, "#endif\n");
                 }
         }
 }
@@ -168,7 +168,27 @@ void tree_runner(
                         OStr_append_cstring(&job->sink, ";\n");
                 }
         }
+
         generate_sym_unknown(node, job);
+
+        if (true & me == TYPE_IDENTIFIER & parent == ENUM_SPECIFIER) {
+                uint32_t start_idx = ts_node_start_byte(node);
+                uint32_t end_idx = ts_node_end_byte(node);
+                if (equal_slice("ts_field_identifiers", &job->source, start_idx, end_idx)) {
+                        start_idx = ts_node_start_byte(parent_node);
+                        end_idx = ts_node_end_byte(parent_node);
+                        append_slice(
+                                &job->sink,
+                                &job->source,
+                                ts_node_start_byte(parent_node), // -> start idx
+                                ts_node_end_byte(parent_node)    // -> end idx
+                        );
+                        OStr_append_cstring(&job->sink, ";\n");
+                        OStr_append_cstring(&job->sink, "\n");
+                        OStr_append_cstring(&job->sink, "#endif\n");
+                }
+        }
+
         for (uint32_t it = 0; it < ts_node_child_count(node); it++) {
                 TSNode child = ts_node_child(node, it);
                 tree_runner(child, job);
@@ -176,7 +196,7 @@ void tree_runner(
 }
 
 #define MEM_SIZE 10000*1024
-int main(int argc, char **argv) {
+int main(void) {
         char *snk = (char*)malloc(MEM_SIZE);
         char *src = (char*)malloc(MEM_SIZE);
         Job job = {
