@@ -184,11 +184,11 @@ TEST(OStr, OStr_need_LF_or_space_GOT_SPACE_) {
         EXPECT_EQ(chr, (char)' ');
 }
 
-TEST(OStr, OStr_final_LF) {
+TEST(OStr, OStr_final_truncate) {
         char *src = (char*)malloc(MEM_SIZE);
         char const *a = "Hello World   \n";
         uint32_t a_size = strlen(a);
-        char const *b = "Hello World\n";
+        char const *b = "Hello World";
         uint32_t b_size = strlen(b);
 
         for (size_t i = 0; i <= a_size; i++) {
@@ -206,7 +206,7 @@ TEST(OStr, OStr_final_LF) {
         EXPECT_TRUE(ok);
         EXPECT_EQ(str.size, a_size);
 
-        OStr_final_LF(&str);
+        OStr_final_truncate(&str);
 
         EXPECT_EQ(str.size, b_size);
         ok = true;
@@ -217,6 +217,6 @@ TEST(OStr, OStr_final_LF) {
 
 
         str.size = 0;
-        OStr_final_LF(&str);
+        OStr_final_truncate(&str);
         EXPECT_EQ(str.size, (uint32_t)0);
 }

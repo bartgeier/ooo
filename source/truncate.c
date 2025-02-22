@@ -129,7 +129,7 @@ void ooo_truncate_spaces(
                 job->idx = job->offset = slice.begin;
                 RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
                 ooo_truncate_spaces(root.node, job);
-                OJob_set_final_LF(job);
+                OJob_set_final_truncate(job);
                 Pars_freeTree(root);
                 job->offset = o;
         } else if (me == sym_comment) {

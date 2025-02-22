@@ -21,7 +21,7 @@ void OStr_append_chr(OStr *m, char const chr);
 void OStr_append_number_of_chr(OStr *m, uint32_t n, char chr);
 void OStr_append_spaces(OStr *m, uint32_t n);
 void OStr_append_cstring(OStr *m, char const * str);
-void OStr_final_LF(OStr *str);
+void OStr_final_truncate(OStr *str);
 uint32_t OStr_need_1_or_2LF(OStr const *m, Slice const s);
 bool OStr_last_has_LF(OStr const *m, Slice const s);
 char OStr_need_LF_or_space(OStr const *m, Slice const s);
@@ -59,7 +59,7 @@ void OStr_append_cstring(OStr *m, char const * str) {
         }
 }
 
-void OStr_final_LF(OStr *m) {
+void OStr_final_truncate(OStr *m) {
         assert(m->size < m->capacity - 1);
         if (m->size == 0) {
                 return;
@@ -67,7 +67,7 @@ void OStr_final_LF(OStr *m) {
         for (uint32_t i = m->size - 1; i < m->size; i--) {
                 if (m->at[i] != '\n' & m->at[i] != ' ' & m->at[i] != 0) {
                         m->size = i + 1;
-                        OStr_append_chr(m, '\n');
+                        m->at[m->size] = 0;
                         return;
                 }
         }

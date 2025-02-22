@@ -345,8 +345,8 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
         if (me(node) == sym_compound_statement) {
                 /* workaround for issue => (google test) TEST(hello, init) { */
                 /* TEST(int a, int b) { */
-                        /*                   ^  */ // todo K&R option
-                        OJob_space(job);
+                /*                   ^  */ // todo K&R option
+                OJob_space(job);
                 return true;
         }
         if (me(node) == anon_sym_SEMI) {

@@ -407,6 +407,13 @@ if ( ( Tc ) a  == (Tc)b) {                       \
 #undef   BOB  
 #endif
 
+#ifdef  NUMBER
+
+#define X 
+#define HSE ((uint32_t)13)   
+uint32_t numbere;
+#endif  
+
 #if ! defined  (ALICE)
 #define ALICE  ( ( uint32_t ) 16000000 ) 
 #endif
