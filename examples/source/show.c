@@ -5,8 +5,6 @@
 // - Mostly there is a single-line or multi-line style format
 // - see the ooo formated version of source/show.c under styled_source/show.c
 //
-// - todo on binary expression ?
-//
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -397,18 +395,38 @@ if ( ( Tc ) a  == (Tc)b) {                       \
 
 ////////////////////////////////////////////////////////////////////////////////
 //             Conditional preprocessor directive
+//             todo childs of #else are always indented
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef  HSE
-#define HSE ((uint32_t) 13) 
+#ifdef   BOB
+#undef          BOB
+#else
+#define     BOB
 #endif
 
-#ifdef   BOB
-#undef   BOB  
+#if ! defined  (ALICE)
+#define ALICE  ( ( uint32_t ) 16000000 ) 
+#else
+#undef ALICE
+#endif
+
+//------------------------------------------------------------------------------
+#ifndef FOO_H
+#define FOO_H
+
+#ifdef __cplusplus
+
+extern "C" {
+
+#endif
+
+#ifndef     HSE
+#define    HSE  ((uint32_t)13)
+#else
+#define     HSE_FAILED
 #endif
 
 #ifdef  NUMBER
-
 #define X 
 #define HSE ((uint32_t)13)   
 uint32_t numbere;
@@ -422,7 +440,13 @@ uint32_t numbere;
 #define   BOB   ( ( uint32_t ) 11 ) 
 #endif
 
+#ifdef __cplusplus
 
+}
+
+#endif
+
+#endif
 
 
 

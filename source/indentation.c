@@ -1,4 +1,5 @@
 #include "indentation.h"
+#include "ooo_treesitter_symbol_ids.h"
 #include "tree_navigator.h"
 #include "Pars.h"
 
@@ -71,9 +72,82 @@ static uint32_t preproc_arg(Relation const *node, uint32_t level) {
         return level;
 }
 
+#if 0
+static uint32_t preproc_ifdef(Relation const *node, uint32_t level) {
+        // if (grand(node) == sym_translation_unit
+        if (me(node) == sym_preproc_else 
+        || is_last_child(node)
+        || me(node) == sym_linkage_specification) {
+                return level;
+        }
+        if (grand(node) == sym_translation_unit) {
+                uint32_t const num_of_uncles = ts_node_child_count(node->grand);
+                for (uint32_t i = 0; i < num_of_uncles; i++) {
+                        TSNode const uncle = ts_node_child(node->grand, i);
+                        if (uncle.id == node->parent.id) {
+                                return level;        
+                        }
+                        if (sym(uncle) != sym_comment) {
+                                level += 1;
+                                return level;
+                        }
+                }
+                assert(false);
+        }
+        level += 1;
+        return level;
+}
 
+static uint32_t preproc_if(Relation const *node, uint32_t level) {
+        // if (grand(node) == sym_translation_unit
+        if (me(node) == sym_preproc_else 
+        || is_last_child(node)
+        || me(node) == sym_linkage_specification) {
+                return level;
+        }
+        if (grand(node) == sym_translation_unit) {
+                uint32_t const num_of_uncles = ts_node_child_count(node->grand);
+                for (uint32_t i = 0; i < num_of_uncles; i++) {
+                        TSNode const uncle = ts_node_child(node->grand, i);
+                        if (uncle.id == node->parent.id) {
+                                return level;        
+                        }
+                        if (sym(uncle) != sym_comment) {
+                                level += 1;
+                                return level;
+                        }
+                }
+                assert(false);
+        }
+        level += 1;
+        return level;
+}
+#else
+static uint32_t preproc_ifdef(Relation const *node, uint32_t level) {
+        if (grand(node) == sym_translation_unit
+        || me(node) == sym_preproc_else 
+        || is_last_child(node)
+        || me(node) == sym_linkage_specification) {
+                return level;
+        }
+        level += 1;
+        return level;
+}
 
+static uint32_t preproc_if(Relation const *node, uint32_t level) {
+        if (me(node) == sym_preproc_else || is_last_child(node)) {
+                return level;
+        }
+        level += 1;
+        return level;
+}
+#endif
 
+static uint32_t preproc_else(Relation const *node, uint32_t level) {
+        (void)node;
+        level += 1;
+        return level;
+}
 
 static uint32_t compound_statement(Relation const *node, uint32_t level) {
         if (grand(node) == sym_switch_statement
@@ -230,6 +304,15 @@ static uint32_t dispatcher(Relation *node, uint32_t level) {
                 return preproc_params(node, level);
         case sym_preproc_arg: 
                 return preproc_arg(node, level);
+
+
+
+        case sym_preproc_ifdef: 
+                return preproc_ifdef(node, level); 
+        case sym_preproc_if: 
+                return preproc_if(node, level); 
+        case sym_preproc_else:
+                return preproc_else(node, level);
 
         case sym_compound_statement: 
                 return compound_statement(node, level);

@@ -137,30 +137,30 @@ int main(int argc, char **argv) {
     char const **a = (char const **)A;
     const char **a = (const char **)A;
     #ifdef _WIN32
-    /* comment */
+        /* comment */
 
     #else
 
-    /* comment */
+        /* comment */
 
     #endif
 
     #if
-    /* comment */ 0
-    (void)a;
-    char a = (char)A;
-    char const *a = (char const *)A;
-    const char *a = (const char *)A;
-    char const **a = (char const **)A;
-    const char **a = (const char **)A;
+        /* comment */ 0
+        (void)a;
+        char a = (char)A;
+        char const *a = (char const *)A;
+        const char *a = (const char *)A;
+        char const **a = (char const **)A;
+        const char **a = (const char **)A;
 
     #else
-    (void)a;
-    char a = (char)A;
-    char const *a = (char const *)A;
-    const char *a = (const char *)A;
-    char const **a = (char const **)A;
-    const char **a = (const char **)A;
+        (void)a;
+        char a = (char)A;
+        char const *a = (char const *)A;
+        const char *a = (const char *)A;
+        char const **a = (char const **)A;
+        const char **a = (const char **)A;
 
     #endif
     if (a == b) { return true; }
