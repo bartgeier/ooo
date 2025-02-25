@@ -108,17 +108,20 @@ void last_iteration(OJob *job) {
                                 if (A->at[i] == '\n' | A->at[i] == 0) {
                                         uint32_t begin = B->size - (i - reg.begin);
                                         B->at[begin] = '/';
-                                        B->size -= reg.id_size;
+                                        //B->size -= reg.id_size;
+                                        OStr_shorten(B, reg.id_size);
                                         replace_A_with_B(B, begin, '\t', '*'); 
                                 } else {
                                         uint32_t begin = B->size - (i - reg.begin);
-                                        B->size -= reg.id_size;
+                                        //B->size -= reg.id_size;
+                                        OStr_shorten(B, reg.id_size);
                                         replace_A_with_B(B, begin, '\t', '/'); 
                                         OStr_append_chr(B, ' ');
                                         OStr_append_chr(B, '*');
                                         OStr_append_chr(B, '/');
                                 }
                         }
+
 
                         if (A->at[i] == '\n') {
                                 // replace line feed
@@ -145,6 +148,25 @@ void last_iteration(OJob *job) {
                                 }
                         }
                 }
+                OJob_set_final_truncate(job);
+                switch (NEW_LINE) {
+                case 'r':
+                        OStr_append_chr(B, '\r');
+                        break;
+                case 'n':
+                        OStr_append_chr(B, '\n');
+                        break;
+                case 'R':
+                        OStr_append_chr(B, '\r');
+                        OStr_append_chr(B, '\n');
+                        break;
+                case 'N':
+                        /* this is not normal */
+                        OStr_append_chr(B, '\n');
+                        OStr_append_chr(B, '\r');
+                        break;
+                }
         }
+        //OJob_set_final_LF(&job);
 }
 

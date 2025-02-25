@@ -47,4 +47,4 @@ main() {
         );
         usleep(100 * 1000);
     }
-}   // (c) Tsoding|VB5FNX7iQCFJBz2Ka0mUzYGYgCvtEQ1SNmXPZ54e|*/
+}   // (c) Tsoding

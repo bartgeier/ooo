@@ -220,3 +220,40 @@ TEST(OStr, OStr_final_truncate) {
         OStr_final_truncate(&str);
         EXPECT_EQ(str.size, (uint32_t)0);
 }
+
+TEST(OStr, OStr_setSize) {
+        char *src = (char*)malloc(MEM_SIZE);
+        char const *a = "Hello World   \n";
+        uint32_t a_size = strlen(a);
+        char const *b = "Hello World";
+        uint32_t b_size = strlen(b);
+
+        for (size_t i = 0; i <= a_size; i++) {
+                src[i] = a[i];
+        } 
+        OStr str = {
+                .capacity = MEM_SIZE,
+                .size = a_size,
+                .at = src
+        };
+        bool ok = true;
+        for (size_t i = 0; i <= str.size; i++) {
+                ok &= str.at[i] == a[i];
+        }
+        EXPECT_TRUE(ok);
+        EXPECT_EQ(str.size, a_size);
+        uint32_t minus_length = a_size - b_size;
+        OStr_shorten(&str, minus_length);
+
+        EXPECT_EQ(str.size, b_size);
+        ok = true;
+        for (size_t i = 0; i <= str.size; i++) {
+                ok &= str.at[i] == b[i];
+        }
+        EXPECT_TRUE(ok);
+
+
+        str.size = 0;
+        OStr_final_truncate(&str);
+        EXPECT_EQ(str.size, (uint32_t)0);
+}

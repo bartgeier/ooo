@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <inttypes.h>
 #include <errno.h>
 #include <getopt.h>
 #define OSTR_IMPLEMENTAION
@@ -105,7 +106,6 @@ int main(int argc, char **argv) {
                         return 0;
                 }
                 ooo_truncate_spaces(root.node, &job); 
-                OJob_set_final_LF(&job);
                 Pars_freeTree(root);
                 OJob_swap(&job);
         }
@@ -138,6 +138,6 @@ int main(int argc, char **argv) {
         OJob_swap(&job);
 
         write_txt_file(&job.source, oarg.output_path);
-        printf("%lu ms\n", (nob_millis() - t_start));
+        printf("%" PRIu64 " ms\n", (nob_millis() - t_start));
         return 0;
 }
