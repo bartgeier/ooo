@@ -1,5 +1,5 @@
-#ifndef REGEX_COMMENT_OPEN_H
-#define REGEX_COMMENT_OPEN_H
+#ifndef REGEX_SIGNED_COMMENT_H
+#define REGEX_SIGNED_COMMENT_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -90,20 +90,20 @@ static bool rsc_asterisk(Regex_signedComment_t *self, uint32_t const idx) {
 }
 
 static void rsc_condition(Regex_signedComment_t *self, char const chr) {
-                if (self->id_size >= (sizeof(ID) - 1)) {
-                        self->id_size = 0;
-                }
-                if (chr == ID[self->id_size]) {
-                        self->state = RSC_ID_OK;
-                        self->id_size++;
-                        self->found = self->id_size == (sizeof(ID) - 1);
-                        // sizeOf(ID)-1 == strlen(ID)
-                        return;
-                }
-                self->state = RSC_ASTERISK_0;
+        if (self->id_size >= (sizeof(ID) - 1)) {
                 self->id_size = 0;
-                self->found = false;
+        }
+        if (chr == ID[self->id_size]) {
+                self->state = RSC_ID_OK;
+                self->id_size++;
+                self->found = self->id_size == (sizeof(ID) - 1);
+                // sizeOf(ID)-1 == strlen(ID)
                 return;
+        }
+        self->state = RSC_ASTERISK_0;
+        self->id_size = 0;
+        self->found = false;
+        return;
 }
 
 static bool rsc_slash(Regex_signedComment_t *self) {

@@ -19,7 +19,6 @@ void OJob_1_or_2LF(OJob *m, Slice const slice);
 bool OJob_max_2LF(OJob *m, Slice const slice);
 void OJob_LF_or_space(OJob *m, Slice const slice);
 void OJob_set_final_truncate(OJob *m);
-void OJob_set_final_LF(OJob *m);
 
 void OJob_reset_lineContinuation(OJob *m);
 void OJob_set_lineContinuation(OJob *m);
@@ -124,9 +123,5 @@ void OJob_set_final_truncate(OJob *m) {
         OStr_final_truncate(&m->sink);
 }
 
-void OJob_set_final_LF(OJob *m) {
-        OStr_final_truncate(&m->sink);
-        OStr_append_chr(&m->sink, '\n');
-}
 #endif
 #undef OJOB_IMPLEMENTATION

@@ -167,6 +167,5 @@ void last_iteration(OJob *job) {
                         break;
                 }
         }
-        //OJob_set_final_LF(&job);
 }
 
