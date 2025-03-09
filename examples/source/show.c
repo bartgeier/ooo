@@ -395,7 +395,7 @@ if ( ( Tc ) a  == (Tc)b) {                       \
 
 ////////////////////////////////////////////////////////////////////////////////
 //             Conditional preprocessor directive
-//             todo childs of #else are always indented
+//                 - first level of indentation
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifdef   BOB
@@ -410,7 +410,34 @@ if ( ( Tc ) a  == (Tc)b) {                       \
 #undef ALICE
 #endif
 
-//------------------------------------------------------------------------------
+////////////////////////////////////////////////////////////////////////////////
+//             Conditional preprocessor directive
+//                 - like in a typical header file
+//                 - second level of indentation 
+////////////////////////////////////////////////////////////////////////////////
+
+#ifndef FOO_H
+#define FOO_H
+
+#ifdef   BOB
+#undef          BOB
+#else
+#define     BOB
+#endif
+
+#if ! defined  (ALICE)
+#define ALICE  ( ( uint32_t ) 16000000 ) 
+#else
+#undef ALICE
+#endif
+
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
+//             Conditional preprocessor directive
+//                 - C++ list_specifier
+////////////////////////////////////////////////////////////////////////////////
+
 #ifndef FOO_H
 #define FOO_H
 
@@ -420,25 +447,9 @@ extern "C" {
 
 #endif
 
-#ifndef     HSE
-#define    HSE  ((uint32_t)13)
-#else
-#define     HSE_FAILED
-#endif
+void foo(int x);
+int bar(int x);
 
-#ifdef  NUMBER
-#define X 
-#define HSE ((uint32_t)13)   
-uint32_t numbere;
-#endif  
-
-#if ! defined  (ALICE)
-#define ALICE  ( ( uint32_t ) 16000000 ) 
-#endif
-
-#if ! defined( A )   &&    defined(  B )
-#define   BOB   ( ( uint32_t ) 11 ) 
-#endif
 
 #ifdef __cplusplus
 

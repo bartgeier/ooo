@@ -20,6 +20,7 @@ typedef struct {
 } Track;
 
 typedef struct {
+        TSNode ggrand; // great-grand parent
         TSNode grand; // grand parent
         TSNode parent;
         uint32_t child_idx;
@@ -30,7 +31,7 @@ typedef struct {
 Relation Relation_make(uint32_t const SIZE);
 void Relation_clear(Relation *r);
 void Relation_track(Relation *r, TSNode const node, uint32_t const child_idx);
-void Relation_parent_push(Relation *r, TSNode const parent, uint32_t const num_of_childs, TSNode const grand);
+void Relation_parent_push(Relation *r, TSNode const parent, uint32_t const num_of_childs, TSNode const grand, TSNode const ggrand);
 TSNode Relation_track_node(Relation const *r, uint32_t const idx);
 
 TSNode child(Relation const *r, unsigned int const i);
@@ -39,6 +40,7 @@ TSSymbol me(Relation const *r);
 uint32_t me_size(Relation const *r);
 TSSymbol parent(Relation const *r);
 TSSymbol grand(Relation const *r);
+TSSymbol ggrand(Relation const *r);
 bool is_error(Relation const *r);
 bool is_first_child(Relation const *r);
 bool is_second_child(Relation const *r);

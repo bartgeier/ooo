@@ -72,57 +72,6 @@ static uint32_t preproc_arg(Relation const *node, uint32_t level) {
         return level;
 }
 
-#if 0
-static uint32_t preproc_ifdef(Relation const *node, uint32_t level) {
-        // if (grand(node) == sym_translation_unit
-        if (me(node) == sym_preproc_else 
-        || is_last_child(node)
-        || me(node) == sym_linkage_specification) {
-                return level;
-        }
-        if (grand(node) == sym_translation_unit) {
-                uint32_t const num_of_uncles = ts_node_child_count(node->grand);
-                for (uint32_t i = 0; i < num_of_uncles; i++) {
-                        TSNode const uncle = ts_node_child(node->grand, i);
-                        if (uncle.id == node->parent.id) {
-                                return level;        
-                        }
-                        if (sym(uncle) != sym_comment) {
-                                level += 1;
-                                return level;
-                        }
-                }
-                assert(false);
-        }
-        level += 1;
-        return level;
-}
-
-static uint32_t preproc_if(Relation const *node, uint32_t level) {
-        // if (grand(node) == sym_translation_unit
-        if (me(node) == sym_preproc_else 
-        || is_last_child(node)
-        || me(node) == sym_linkage_specification) {
-                return level;
-        }
-        if (grand(node) == sym_translation_unit) {
-                uint32_t const num_of_uncles = ts_node_child_count(node->grand);
-                for (uint32_t i = 0; i < num_of_uncles; i++) {
-                        TSNode const uncle = ts_node_child(node->grand, i);
-                        if (uncle.id == node->parent.id) {
-                                return level;        
-                        }
-                        if (sym(uncle) != sym_comment) {
-                                level += 1;
-                                return level;
-                        }
-                }
-                assert(false);
-        }
-        level += 1;
-        return level;
-}
-#else
 static uint32_t preproc_ifdef(Relation const *node, uint32_t level) {
         if (grand(node) == sym_translation_unit
         || me(node) == sym_preproc_else 
@@ -141,10 +90,12 @@ static uint32_t preproc_if(Relation const *node, uint32_t level) {
         level += 1;
         return level;
 }
-#endif
 
 static uint32_t preproc_else(Relation const *node, uint32_t level) {
-        (void)node;
+        if (ggrand(node) == sym_translation_unit 
+        && grand(node) == sym_preproc_ifdef) {
+                return level;
+        }
         level += 1;
         return level;
 }
@@ -304,16 +255,12 @@ static uint32_t dispatcher(Relation *node, uint32_t level) {
                 return preproc_params(node, level);
         case sym_preproc_arg: 
                 return preproc_arg(node, level);
-
-
-
         case sym_preproc_ifdef: 
                 return preproc_ifdef(node, level); 
         case sym_preproc_if: 
                 return preproc_if(node, level); 
         case sym_preproc_else:
                 return preproc_else(node, level);
-
         case sym_compound_statement: 
                 return compound_statement(node, level);
         case sym_field_declaration_list: 
@@ -373,11 +320,12 @@ void ooo_set_indentation(
                 }
         }
 
+        TSNode const grand = relation->grand;
         TSNode const parent = relation->parent;
         uint32_t num_of_childs = ts_node_child_count(node);
         for (uint32_t it = 0; it < num_of_childs; it++) {
                 TSNode const child = ts_node_child(node, it);
-                Relation_parent_push(relation, node, num_of_childs, parent);
+                Relation_parent_push(relation, node, num_of_childs, parent, grand);
                 Relation_track(relation, child, it);
                 ooo_set_indentation(
                         job,
@@ -412,7 +360,7 @@ void ooo_set_indentation(
                 uint32_t const o = job->offset;
                 job->idx = job->offset = slice.begin;
                 RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
-                Relation_parent_push(relation, node, 0, parent);
+                Relation_parent_push(relation, node, 0, parent, grand);
                 Relation_track(relation, root.node, 0);
                 ooo_set_indentation(job, relation, indentation_level);
                 Pars_freeTree(root);

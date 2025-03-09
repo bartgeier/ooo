@@ -57,6 +57,7 @@ TSNode Relation_track_node(Relation const *r, uint32_t const idx) {
 
 Relation Relation_make(uint32_t const SIZE) {
         Relation r = { 
+                .ggrand = node_null(),
                 .grand = node_null(),
                 .parent = node_null(),
                 .child_idx = 0,
@@ -75,6 +76,7 @@ Relation Relation_make(uint32_t const SIZE) {
 }
 
 void Relation_clear(Relation *r) {
+        r->ggrand = node_null(),
         r->grand = node_null(),
         r->parent = node_null(),
         r->child_idx = 0;
@@ -92,9 +94,10 @@ void Relation_track(Relation *r, TSNode const node, uint32_t const child_idx) {
         r->child_idx = child_idx;
 }
 
-void Relation_parent_push(Relation *r, TSNode const parent, uint32_t const num_of_childs, TSNode const grand) {
-        r->parent = parent;
+void Relation_parent_push(Relation *r, TSNode const parent, uint32_t const num_of_childs, TSNode const grand, TSNode const ggrand) {
+        r->ggrand = ggrand;
         r->grand = grand;
+        r->parent = parent;
         r->num_of_childs = num_of_childs;
 }
 
@@ -119,6 +122,10 @@ TSSymbol parent(Relation const *r) {
 
 TSSymbol grand(Relation const *r) {
         return sym(r->grand);
+}
+
+TSSymbol ggrand(Relation const *r) {
+        return sym(r->ggrand);
 }
 
 bool is_error(Relation const *r) {

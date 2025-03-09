@@ -1830,11 +1830,12 @@ void ooo_ruler(
                 OJob_set_lineContinuation(job);
         }
 
+        TSNode const grand = relation->grand;
         TSNode const parent = relation->parent;
         uint32_t num_of_childs = ts_node_child_count(node);
         for (uint32_t it = 0; it < num_of_childs; it++) {
                TSNode child = ts_node_child(node, it);
-               Relation_parent_push(relation, node, num_of_childs, parent);
+               Relation_parent_push(relation, node, num_of_childs, parent, grand);
                Relation_track(relation, child, it);
                ooo_ruler(relation, job);
         }
@@ -1856,7 +1857,7 @@ void ooo_ruler(
                 uint32_t const o = job->offset;
                 job->idx = job->offset = slice.begin;
                 RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
-                Relation_parent_push(relation, node, 0, parent);
+                Relation_parent_push(relation, node, num_of_childs, parent, grand);
                 Relation_track(relation, root.node, 0);
                 ooo_ruler(relation, job);
                 Pars_freeTree(root);
