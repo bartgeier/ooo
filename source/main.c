@@ -5,7 +5,8 @@
 #include "ruler.h"
 #include "truncate.h"
 #include "node_printer.h"
-#include "OArg.h"
+// #include "OArg.h"
+#include "OArq.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
@@ -65,9 +66,12 @@ Track serial_nodes;
 
 int main(int argc, char **argv) {
         uint64_t t_start = nob_millis();
-        OArg_t oarg = {0};
-        if (OArg_init(&oarg, argc, argv)) {
+        OArq_t oarg = {0};
+        if (OArq_init(&oarg, argc, argv)) {
                 return 1;
+        }
+        if (oarg.action == OARQ_NO_ACTION) {
+                return 0;
         }
 
         char *snk = (char*)malloc(MEM_SIZE);
@@ -96,7 +100,7 @@ int main(int argc, char **argv) {
         Pars_init();
         {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
-                if (oarg.action == OARG_PRINT) { 
+                if (oarg.action == OARQ_PRINT) { 
                         ooo_print_nodes(
                                 root.node,
                                 oarg.print.row_begin,

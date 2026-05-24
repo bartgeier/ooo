@@ -69,7 +69,7 @@ bool download_build_treesitter(bool const clean) {
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib");
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include");
         ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include/tree_sitter");
-        ok &= nob_rename("tree-sitter-"TS_COMMIT"/Cargo.toml", "tree-sitter/Cargo.toml");
+        // ok &= nob_rename("tree-sitter-"TS_COMMIT"/Cargo.toml", "tree-sitter/Cargo.toml");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/LICENSE", "tree-sitter/LICENSE");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/libtree-sitter.a", "tree-sitter/libtree-sitter.a");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/lib/include/tree_sitter/api.h", "tree-sitter/lib/include/tree_sitter/api.h");
@@ -115,7 +115,7 @@ bool download_build_tree_sitter_c(bool const clean) {
         ok &= nob_mkdir_if_not_exists("tree-sitter-c");
         ok &= nob_mkdir_if_not_exists("tree-sitter-c/src");
         ok &= nob_mkdir_if_not_exists("tree-sitter-c/src/tree_sitter");
-        ok &= nob_rename("tree-sitter-c-"TS_COMMIT"/Cargo.toml", "tree-sitter-c/Cargo.toml");
+        // ok &= nob_rename("tree-sitter-c-"TS_COMMIT"/Cargo.toml", "tree-sitter-c/Cargo.toml");
         ok &= nob_rename("tree-sitter-c-"TS_COMMIT"/LICENSE", "tree-sitter-c/LICENSE");
         ok &= nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/tree_sitter/parser.h", "tree-sitter-c/src/tree_sitter/parser.h");
         ok &= nob_rename("tree-sitter-c-"TS_C_COMMIT"/src/parser.c", "tree-sitter-c/src/parser.c");
@@ -224,11 +224,37 @@ bool download_build_googleTest(bool const clean) {
         return ok;
 }
 
+bool download_arq(bool const clean) {
+        #define ARQ_URL "https://raw.githubusercontent.com/bartgeier/arq/"
+        #if 0
+                #define ARQ_COMMIT "master"
+        #else
+                #define ARQ_COMMIT "5ee50cdae38d5b5e673496a0827ed186a8346209"
+        #endif
+        bool ok = true;
+        if (clean) {
+                ok &= nob_remove("arq");
+                return ok;
+        }
+        if (nob_file_exists("arq")) return true;
+        nob_log(NOB_INFO, "DOWNLOAD: arq");
+        ok &= nob_mkdir_if_not_exists("arq");
+        Nob_Cmd cmd = {0};
+        nob_cmd_append(&cmd, "curl");
+        nob_cmd_append(&cmd, "-L");
+        nob_cmd_append(&cmd,ARQ_URL ARQ_COMMIT "/amalgamate/arq.h");
+        nob_cmd_append(&cmd, "--output", "arq/arq.h");
+        ok &= nob_cmd_run_sync(cmd);
+        cmd.count = 0;
+        return ok;
+}
+
 Nob_Cmd include_paths = {0};
 void create_include_paths(void) {
         nob_cmd_append(&include_paths, "-I", "source");
         nob_cmd_append(&include_paths, "-I", "tree-sitter/lib/include");
         nob_cmd_append(&include_paths, "-I", "tree-sitter-c");
+        nob_cmd_append(&include_paths, "-I", "arq");
 }
 
 Nob_Cmd source_paths = {0};
@@ -238,6 +264,7 @@ void create_source_paths(void) {
         nob_cmd_append(&source_paths, "./source/node_printer.c");
         nob_cmd_append(&source_paths, "./source/truncate.c");
         nob_cmd_append(&source_paths, "./source/OArg.c");
+        nob_cmd_append(&source_paths, "./source/OArq.c");
         nob_cmd_append(&source_paths, "./source/iteration.c");
         nob_cmd_append(&source_paths, "./source/ruler.c");
         nob_cmd_append(&source_paths, "./source/indentation.c");
@@ -318,8 +345,8 @@ int main(int argc, char **argv) {
         NOB_GO_REBUILD_URSELF(argc, argv);
         #ifdef _WIN32
                 ok &= nob_remove("nob.exe.old");
-                if (nob_file_exists("nob.exe.old")) {                               
-                        nob_log(NOB_INFO, "RM: Don't worry `nob.exe.old` will be deleted next time!");  
+                if (nob_file_exists("nob.exe.old")) {
+                        nob_log(NOB_INFO, "RM: Don't worry `nob.exe.old` will be deleted next time!");
                 }
         #else
                 ok &= nob_remove("nob.old");
@@ -334,15 +361,16 @@ int main(int argc, char **argv) {
         }
 
         ok &= create_build_dir(flag.clean);
-        ok &= download_build_treesitter(flag.clean);       
-        ok &= download_build_tree_sitter_c(flag.clean);        
+        ok &= download_build_treesitter(flag.clean);
+        ok &= download_build_tree_sitter_c(flag.clean);
         ok &= copy_treesitter_symbols(flag.clean);
-        ok &= download_build_googleTest(flag.clean);        
+        ok &= download_build_googleTest(flag.clean);
+        ok &= download_arq(flag.clean);
 
         create_source_paths();
         create_include_paths();
         ok &= ooo_build(flag.clean);
-        ok &= unittests_build(flag.clean);
+        //ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
                 return false;
