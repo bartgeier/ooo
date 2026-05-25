@@ -298,6 +298,7 @@ static uint32_t dispatcher(Relation *node, uint32_t level) {
 void ooo_set_indentation(
         OJob *job,
         Relation *relation,
+        uint32_t const indent,
         uint32_t indentation_level
 ) {
         TSNode const node = Relation_track_node(relation, 0);
@@ -313,7 +314,7 @@ void ooo_set_indentation(
                         OStr_append_chr(&job->sink, job->source.at[i]);
                         if (job->source.at[i+1] != '\n'
                         & job->source.at[i+1] != 0) {
-                                OStr_append_spaces(&job->sink, 4 * indentation_level); // <-- her plays the magic
+                                OStr_append_spaces(&job->sink, indent * indentation_level); // <-- her plays the magic
                         }
                 } else {
                         OStr_append_chr(&job->sink, job->source.at[i]);
@@ -330,6 +331,7 @@ void ooo_set_indentation(
                 ooo_set_indentation(
                         job,
                         relation,
+                        indent,
                         indentation_level
                 );
         }
@@ -362,7 +364,7 @@ void ooo_set_indentation(
                 RootNode_t root = Pars_getTree(&job->source.at[slice.begin], slice.end - slice.begin);
                 Relation_parent_push(relation, node, 0, parent, grand);
                 Relation_track(relation, root.node, 0);
-                ooo_set_indentation(job, relation, indentation_level);
+                ooo_set_indentation(job, relation, indent, indentation_level);
                 Pars_freeTree(root);
                 job->offset = o;
         } else {

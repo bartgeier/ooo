@@ -5,13 +5,12 @@
 #include "ruler.h"
 #include "truncate.h"
 #include "node_printer.h"
-// #include "OArg.h"
-#include "OArq.h"
+#include "OArg.h"
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
+// #include <assert.h>
 #include <inttypes.h>
 #include <errno.h>
 #include <getopt.h>
@@ -66,11 +65,11 @@ Track serial_nodes;
 
 int main(int argc, char **argv) {
         uint64_t t_start = nob_millis();
-        OArq_t oarg = {0};
-        if (OArq_init(&oarg, argc, argv)) {
+        OArg_t const oarg = OArg_init(argc, argv);
+        if (oarg.action == OARG_ERROR) {
                 return 1;
         }
-        if (oarg.action == OARQ_NO_ACTION) {
+        if (oarg.action == OARG_NO_ACTION) {
                 return 0;
         }
 
@@ -100,7 +99,7 @@ int main(int argc, char **argv) {
         Pars_init();
         {
                 RootNode_t root = Pars_getTree(job.source.at, job.source.size);
-                if (oarg.action == OARQ_PRINT) { 
+                if (oarg.action == OARG_PRINT) { 
                         ooo_print_nodes(
                                 root.node,
                                 oarg.print.row_begin,
@@ -118,6 +117,7 @@ int main(int argc, char **argv) {
                 relation = Relation_make(20);
                 Relation_track(&relation, root.node, 0);
 
+                ooo_set_ruler_KR(oarg.flag.KR);
                 ooo_ruler(
                         &relation,
                         &job
@@ -133,6 +133,7 @@ int main(int argc, char **argv) {
                 ooo_set_indentation(
                         &job,
                         &relation,
+                        oarg.indent,
                         0
                 );
                 Pars_freeTree(root);

@@ -6,6 +6,14 @@
 #include "Pars.h"
 #include <string.h>
 
+static bool Kerninghan_and_Richi = false;
+// If Kernighan and Ritchie style is enabled,
+// the opening brace of a function is placed
+// on a new line.
+void ooo_set_ruler_KR(bool const KR) {
+        Kerninghan_and_Richi = KR;
+}
+
 static bool preproc_include(Relation const *node, Slice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
@@ -345,8 +353,12 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
         if (me(node) == sym_compound_statement) {
                 /* workaround for issue => (google test) TEST(hello, init) { */
                 /* TEST(int a, int b) { */
-                /*                   ^  */ // todo K&R option
-                OJob_space(job);
+                /*                   ^  */
+                if (Kerninghan_and_Richi) {
+                        OJob_LF(job);
+                } else {
+                        OJob_space(job);
+                }
                 return true;
         }
         if (me(node) == anon_sym_SEMI) {
@@ -461,8 +473,12 @@ static bool function_definition(Relation const *node, Slice const slice, OJob *j
         }
         if (me(node) == sym_compound_statement) {
                 /* extern static void foo(int a, int b) { */
-                /*                                     ^  */ // todo K&R option
-                OJob_space(job);
+                /*                                     ^  */
+                if (Kerninghan_and_Richi) {
+                        OJob_LF(job);
+                } else {
+                        OJob_space(job);
+                }
                 return true;
         }
         return false;

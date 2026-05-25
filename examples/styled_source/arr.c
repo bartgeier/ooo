@@ -55,18 +55,21 @@ int a = 5; // a equal five
 int a, b, c;
 
 // comment
-void foo(int a, int b) { x = a + b; }
+void foo(int a, int b)
+{ x = a + b; }
 // comment
 int bar(
     int a,
     int b, int c,
     int d
-) {
+)
+{
     return a * b
     + /* comment */ c * d;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     // declaration, init_declarator
     int a = 11;
     int const b = 13;

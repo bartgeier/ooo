@@ -103,7 +103,8 @@ char const *hello = {
 //                           binary expression
 ////////////////////////////////////////////////////////////////////////////////
 
-void binary_expression(void) {
+void binary_expression(void)
+{
     int a = 1, b = 2, c = 3, d = 4, e = 5, x = 6, y = 7;
     x = b * c + d * e;
 
@@ -117,7 +118,8 @@ void binary_expression(void) {
 //                          type cast
 ////////////////////////////////////////////////////////////////////////////////
 
-void baar(void) {
+void baar(void)
+{
     uint16_t *a = *(__IO uint16_t *)(0x1FFFF7BA);
     int b = (int)Foo;
 }
@@ -126,7 +128,8 @@ void baar(void) {
 //                     if statement without curly braces
 ////////////////////////////////////////////////////////////////////////////////
 
-void if_statement(void) {
+void if_statement(void)
+{
     int a = 1, b = 2, c = 3;
     if (a > b) c = a; else c = b;
 
@@ -140,7 +143,8 @@ void if_statement(void) {
 //                      if statement with curly braces
 ////////////////////////////////////////////////////////////////////////////////
 
-void if_statement_with_curly_braces(void) {
+void if_statement_with_curly_braces(void)
+{
     int a = 1, b = 2, c = 3;
     if (a > b) { c = a; } else { c = b; }
 
@@ -155,7 +159,8 @@ void if_statement_with_curly_braces(void) {
 //                         conditional expression
 ////////////////////////////////////////////////////////////////////////////////
 
-void conditional_expression(void) {
+void conditional_expression(void)
+{
     int a = 1, b = 2, c = 3;
     c = (a > b) ? a : b;
 
@@ -171,7 +176,8 @@ void conditional_expression(void) {
 //                            switch statement
 ////////////////////////////////////////////////////////////////////////////////
 
-void switch_statement(void) {
+void switch_statement(void)
+{
     int a = 1, b = 2, c = 3, x;
     switch (a) {
         int y;
@@ -198,7 +204,8 @@ void switch_statement(void) {
 //                 switch statement and curly braces
 ////////////////////////////////////////////////////////////////////////////////
 
-void switch_statement_with_curly_brace(void) {
+void switch_statement_with_curly_brace(void)
+{
     int a = 1, b = 2, c = 3, x;
     switch (a) {
         int y;
@@ -227,13 +234,15 @@ void switch_statement_with_curly_brace(void) {
 //               c block comment inside a c++ comment
 ////////////////////////////////////////////////////////////////////////////////
 
-void comment_indentation(void) {
+void comment_indentation(void)
+{
     /* abcd
            abcd
     */
 }
 
-void comment_from_c_style_to_Cpp_style(void) {
+void comment_from_c_style_to_Cpp_style(void)
+{
     // nested /* comment */ Foo
 
     y = b * c
@@ -362,12 +371,13 @@ char *thing_strings[] = {
 //             but it displays what the author has written.
 ////////////////////////////////////////////////////////////////////////////////
 
-#define template_add(Ta, Tb, Tc)     \
-    Tc add_##Ta##_##Tb(Ta a, Tb b) { \
-        if ((Tc)a == (Tc)b) {        \
-            return (Tc)a;            \
-        }                            \
-        return (Tc)(a + b);          \
+#define template_add(Ta, Tb, Tc)   \
+    Tc add_##Ta##_##Tb(Ta a, Tb b) \
+    {                              \
+        if ((Tc)a == (Tc)b) {      \
+            return (Tc)a;          \
+        }                          \
+        return (Tc)(a + b);        \
     }
 
 ////////////////////////////////////////////////////////////////////////////////

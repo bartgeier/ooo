@@ -5,7 +5,7 @@
 #include "OJob.h"
 #include <stdbool.h>
 
-//void ooo_ruler(Nodes *nodes, OJob *job);
+void ooo_set_ruler_KR(bool const KR);
 void ooo_ruler(Relation *relation, OJob *job);
 
 #endif

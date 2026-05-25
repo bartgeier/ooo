@@ -1,232 +1,174 @@
-/* https://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Option-Example.html */
 #include "OArg.h"
-#include <getopt.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <assert.h>
-#include <errno.h>
-#include <stdbool.h>
-#include <string.h>
 
-#define OARG_ASSERT(x, msg) assert((x && msg))
+#define ARQ_IMPLEMENTATION
+#include "arq.h"
 
-static void swap_size_t(size_t *x, size_t *y) {
-        if (x != y) {
-                *x = *x + *y;
-                *y = *x - *y;
-                *x = *x - *y;
-        }
+static OArg_t *global_m;
+
+static void fn_version(Arq_Queue *queue) { 
+        (void)queue;
+        global_m->flag.version = true;
 }
 
-static int str_to_num(char *s, size_t *result) {
-        errno = 0;
-        char *endptr;
-        size_t n = strtol(s, &endptr, 10); 
-        if (endptr == s) {
-                return 1; //failure
-        }
-        *result = n;
-        return 0; // successful
+static void fn_help(Arq_Queue *queue) {
+        (void) queue;
+        global_m->flag.help = true;
 }
 
-typedef struct {
-        char split;
-        bool is_changed;
-        char* at;
-} OArgSplit;
+static void fn_print(Arq_Queue *queue) {
+        global_m->flag.print = true;
+        uint32_t begin = arq_uint(queue);
+        uint32_t end = arq_uint(queue);
+        if (begin > end) {
+                global_m->print.row_begin = end;
+                global_m->print.row_end = begin;
+                return;
+        }
+        global_m->print.row_begin = begin;
+        global_m->print.row_end = end;
+}
 
-static OArgSplit create_split(char *vstr, char const split) {
-        OArgSplit m = {
-                .split = split,
-                .is_changed = false,
-                .at = vstr,
+static void fn_input(Arq_Queue *queue) {
+        global_m->input_path = arq_cstr_t(queue);
+}
+
+static void fn_output(Arq_Queue *queue) { 
+        global_m->output_path = arq_cstr_t(queue);
+}
+
+static void fn_indent(Arq_Queue *queue) {
+        global_m->flag.indent = true;
+        global_m->indent = arq_uint(queue);
+}
+
+static void fn_Kernighan_and_Ritchie(Arq_Queue *queue) {
+        (void) queue;
+        // If K&R style is enabled,
+        // the opening brace of a function is placed
+        // on a new line.
+        global_m->flag.KR = true;
+}
+
+OArg_t OArg_init(int argc, char **argv) {
+        OArg_t m = {0};
+        m.input_path = NULL;
+        m.output_path = NULL;
+        m.indent = 4;
+        global_m = &m;
+
+        char arena_buffer[1000];
+        Arq_Option options[] = {
+                {'v', "version", fn_version, "()"},
+                {'h', "help",    fn_help, "()"},
+                {'p', "print",   fn_print, "(uint row_begin = 0, uint row_end = 0xFFFFFFFF)"},
+                {'i', "input",   fn_input, "(cstr_t file_path)"},
+                {'o', "output",  fn_output, "(cstr_t file_path)"},
+                {'t', "indent",  fn_indent, "(uint indent)"},
+                {'k', "kr",      fn_Kernighan_and_Ritchie, "()"},
         };
+        if (0 < arq_verify(arena_buffer, sizeof(arena_buffer), options, sizeof(options)/sizeof(Arq_Option))) {
+                printf("%s\n", arena_buffer);
+                m.action = OARG_ERROR;
+                return m;
+        }
+        if (0 < arq_fn(argc, argv, arena_buffer, sizeof(arena_buffer), options, sizeof(options)/sizeof(Arq_Option))) {
+                printf("%s\n", arena_buffer);
+                m.action = OARG_ERROR;
+                return m;
+        }
+
+        if (m.flag.version) {
+                printf("1\n");
+                printf("\n");
+        }
+        if (m.flag.help) {
+                printf("./ooo -i ./example/hello.c -o ./example/hello.c   Apply code style: input -> output file\n");
+                printf("\n");
+                printf("./ooo -i ./example/hello.c -o *                   Apply code style in-place (overwrite input file)\n");
+                printf("\n");
+                printf("./ooo -i ./example/hello.c -o -                   Print styled code to stdout\n");
+                printf("\n");
+                printf("./ooo --kr -t8 -i./example/hello.c -o*            -t8 8 spaces indentation,\n");
+                printf("                                                  --kr places function opening braces on a new line (Kernighan & Ritchie style variant)\n");
+                printf("\n");
+                printf("./ooo -p=42=56 -i./example/hello.c                Print Tree-sitter output for a range of source lines to stdout\n");
+                printf("                                                  (row_end is not included in the output)\n");
+                printf("\n");
+                for (size_t i = 0; i < sizeof(options)/sizeof(Arq_Option); i++) {
+                        printf("-%c --%s%s\n", options[i].chr, options[i].name, options[i].arguments);
+                }
+                printf("\n");
+                printf("https://github.com/bartgeier/ooo \n");
+                printf("Command line parser => https://github.com/bartgeier/arq \n");
+                printf("\n");
+        }
+        if (m.input_path == NULL && m.output_path == NULL && !m.flag.print 
+        && (m.flag.version || m.flag.help)) {
+                m.action = OARG_NO_ACTION;
+                return m;
+        }
+        if (m.input_path == NULL) {
+                fprintf(stderr, "no input file path\n");
+                m.action = OARG_ERROR;
+                return m;
+        }
+        if (m.flag.print) {
+                if (m.print.row_begin == m.print.row_end) {
+                        uint32_t const i = 2;
+                        assert(options[i].chr == 'p');
+                        fprintf(stderr, "Input error:\n");
+                        fprintf(stderr, "    row_begin == row_end\n");
+                        fprintf(stderr, "    -%c --%s%s\n", options[i].chr, options[i].name, options[i].arguments);
+                        m.action = OARG_ERROR;
+                        return m;
+                }
+                if (m.output_path != NULL) {
+                        uint32_t const i = 2;
+                        uint32_t const n = 4;
+                        assert(options[i].chr == 'p');
+                        assert(options[n].chr == 'o');
+                        fprintf(stderr, "Input error:\n");
+                        fprintf(stderr, "    The following options cannot be used together:\n");
+                        fprintf(stderr, "    -%c --%s%s\n", options[i].chr, options[i].name, options[i].arguments);
+                        fprintf(stderr, "    -%c --%s%s\n", options[n].chr, options[n].name, options[n].arguments);
+                        m.action = OARG_ERROR;
+                        return m;
+                }
+                if (m.flag.KR) {
+                        uint32_t const i = 2;
+                        uint32_t const n = 6;
+                        assert(options[i].chr == 'p');
+                        assert(options[n].chr == 'k');
+                        fprintf(stderr, "Input error:\n");
+                        fprintf(stderr, "    The following options cannot be used together:\n");
+                        fprintf(stderr, "    -%c --%s%s\n", options[i].chr, options[i].name, options[i].arguments);
+                        fprintf(stderr, "    -%c --%s%s\n", options[n].chr, options[n].name, options[n].arguments);
+                        m.action = OARG_ERROR;
+                        return m;
+                }
+                if (m.flag.indent) {
+                        uint32_t const i = 2;
+                        uint32_t const n = 5;
+                        assert(options[i].chr == 'p');
+                        assert(options[n].chr == 't');
+                        fprintf(stderr, "Input error:\n");
+                        fprintf(stderr, "    The following options cannot be used together:\n");
+                        fprintf(stderr, "    -%c --%s%s\n", options[i].chr, options[i].name, options[i].arguments);
+                        fprintf(stderr, "    -%c --%s%s\n", options[n].chr, options[n].name, options[n].arguments);
+                        m.action = OARG_ERROR;
+                        return m;
+                }
+                m.action = OARG_PRINT;
+                return m;
+        }
+        if (m.output_path == NULL) {
+                fprintf(stderr, "no output file path\n");
+                m.action = OARG_ERROR;
+                return m;
+        }
+        if (0 == strcmp(m.output_path, "*")) {
+                m.output_path = m.input_path;
+        }
+        m.action = OARG_STYLE;
         return m;
 }
-
-/* repairs the last split */
-static char *unsplit(OArgSplit *m) {
-        if (m->is_changed) {
-                m->at[-1] = m->split;
-                m->is_changed = false;
-        }
-        return m->at; // returns tail
-}
-
-static char *next_split(OArgSplit *m) {
-        unsplit(m);
-        if (m->at[0] == 0) {
-                return m->at;
-        }
-        char *result = m->at;
-        size_t i = 0;
-        while (m->at[i] != m->split & m->at[i] != 0) {
-                i++;
-        }
-        if (m->at[i] == m->split) {
-                m->is_changed = true;
-                m->at[i] = 0;
-                i++;
-        }
-        m->at = &m->at[i];
-        return result;
-}
-
-static char* next_argument(OArgSplit *split, char *optarg) {
-        (void) optarg;
-        char *result = NULL;
-        do {
-                result = next_split(split);
-        } while ((result[0] == 0) & split->is_changed);
-        return result;
-}
-
-static int set_print(OArg_t *m, char *optarg) {
-        int error;
-        OArgSplit split = create_split(optarg, ' ');
-        {
-                error = str_to_num(
-                        next_argument(&split, optarg),
-                        &m->print.row_begin
-                ); 
-                error |= str_to_num(
-                        next_argument(&split, optarg),
-                        &m->print.row_end
-                );
-        }
-        unsplit(&split);
-
-        if (error | (m->print.row_begin == m->print.row_end)) {
-                m->print.failure = 1;
-                return 1;
-        }
-        if (m->print.row_begin > m->print.row_end) {
-                swap_size_t(&m->print.row_begin, &m->print.row_end);
-        }
-        return 0;
-}
-
-static void print_help() {
-        fprintf(stderr, "./ooo -i./example/hello.c -o./example/hello.c              Apply code style -i input to -o output\n");
-        fprintf(stderr, "./ooo -i./example/hello.c -o*                              Apply code style -i input to input => output file is the input file\n");
-        fprintf(stderr, "./ooo -i./example/hello.c -o-                              Print code style to terminal\n");
-        fprintf(stderr, "./ooo -p \"42 56\" -i./example/hello.c -o./tree_output       Print tree-sitter lines -p \"firstLine numOfLine\"\n");
-        fprintf(stderr, "./ooo -p \"42 56\" -i./example/hello.c -o-                   Print tree-sitter to terminal\n");
-}
-
-static int parse(OArg_t *m, int argc, char **argv) {
-        while (1) {
-                static struct option options[] = {
-                        // {"verbose", required_argument, &verbose_flag, 1},
-                        {"help", no_argument, 0, 'h'},
-                        {"print", required_argument, NULL, 'p'},
-                        {"input", required_argument, NULL, 'i'},
-                        {"output", required_argument, NULL, 'o'},
-                        {0, 0, 0, 0}
-                };
-
-                int index = 0;
-                int const c = getopt_long (
-                        argc, 
-                        argv, 
-                        "h?p:i:o:",
-                        options,
-                        &index
-                );
-
-                switch (c) { 
-                case -1:
-                        if (optind < argc) {
-                                /* Print any remaining                   */ 
-                                /* command line arguments (not options). */
-                                fprintf(stderr, "non-option argv-elements: ");
-                                while (optind < argc) {
-                                        fprintf(stderr, "%s ", argv[optind++]);
-                                }
-                                fprintf(stderr, "\n");
-                        }
-                        return 0;
-                case 0:
-                        // fprintf(stderr, "option=%s flag=%d", options[index].name, verbose_flag);
-                        if (optarg) fprintf(stderr, " arg=%s", optarg);
-                        fprintf(stderr, "\n");
-                        break;
-                 case 'h':
-                        m->action = OARG_HELP;
-                        print_help();
-                        break;
-                case '?':
-                        /* if parse error this is called automatically */
-                        // print_help();
-                        break;
-                case 'p':
-                        m->action = OARG_PRINT;
-                        set_print(m, optarg);
-                        break;
-                case 'i':
-                        m->input_path = (optarg[0] == 0) ? NULL : optarg;
-                        break;
-                case 'o':
-                        m->output_path = (optarg[0] == 0) ? NULL : optarg;
-                        break;
-                default:
-                        m = NULL;
-                        fprintf(stderr, "default");
-                        return 1;
-                }
-        }
-}
-
-static int verify_style(OArg_t *m) {
-        int error = 0;
-        switch (m->action) {
-        case OARG_HELP:
-                return 0;
-        case OARG_STYLE:
-                if (m->input_path == NULL) {
-                        fprintf(stderr, "-i Missing input path.\n");
-                        error = 1;
-                }
-                if (m->output_path == NULL) {
-                        fprintf(stderr, "-o Missing output path.\n");
-                        error = 1;
-                } 
-                if (error) {
-                        print_help();
-                        return error; 
-                }
-                return 0;
-        case OARG_PRINT:
-                if (m->print.failure == 1) {
-                        fprintf(stderr, "-p Row range failure.\n");
-                        error = 1;
-                }
-                if (m->input_path == NULL) {
-                        fprintf(stderr, "-i Input path failure.\n");
-                        error = 1;
-                }
-                if (m->output_path == NULL) {
-                        fprintf(stderr, "-o Output path failure.\n");
-                        error = 1;
-                } 
-                if (error) {
-                        print_help();
-                        return error;
-                }
-                return 0;
-        default:
-                return 0;
-        }
-}
-
-int OArg_init(OArg_t *m, int argc, char **argv) {
-        int error = 0;
-        error |= parse(m, argc, argv);
-        error |= verify_style(m); 
-        if (m->output_path != 0
-        && strcmp(m->output_path, "*") == 0) {
-                m->output_path = m->input_path;
-        }
-        return error;
-}
-

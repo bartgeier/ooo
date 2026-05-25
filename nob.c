@@ -264,7 +264,6 @@ void create_source_paths(void) {
         nob_cmd_append(&source_paths, "./source/node_printer.c");
         nob_cmd_append(&source_paths, "./source/truncate.c");
         nob_cmd_append(&source_paths, "./source/OArg.c");
-        nob_cmd_append(&source_paths, "./source/OArq.c");
         nob_cmd_append(&source_paths, "./source/iteration.c");
         nob_cmd_append(&source_paths, "./source/ruler.c");
         nob_cmd_append(&source_paths, "./source/indentation.c");
