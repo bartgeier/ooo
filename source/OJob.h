@@ -15,9 +15,9 @@ void OJob_swap(OJob *m);
 void OJob_LF(OJob *m);
 void OJob_2LF(OJob *m);
 void OJob_space(OJob *m);
-void OJob_1_or_2LF(OJob *m, Slice const slice);
-bool OJob_max_2LF(OJob *m, Slice const slice);
-void OJob_LF_or_space(OJob *m, Slice const slice);
+void OJob_1_or_2LF(OJob *m, OSlice const slice);
+bool OJob_max_2LF(OJob *m, OSlice const slice);
+void OJob_LF_or_space(OJob *m, OSlice const slice);
 void OJob_set_final_truncate(OJob *m);
 
 void OJob_reset_lineContinuation(OJob *m);
@@ -80,7 +80,7 @@ void OJob_space(OJob *m) {
         OStr_append_chr(&m->sink, ' ');
 }
 
-void OJob_1_or_2LF(OJob *m, Slice const slice) {
+void OJob_1_or_2LF(OJob *m, OSlice const slice) {
         uint32_t const num_of_LF = OStr_need_1_or_2LF(&m->source, slice);
         assert(num_of_LF == 1 | num_of_LF == 2);
         if (m->lineContinuation) {
@@ -97,7 +97,7 @@ void OJob_1_or_2LF(OJob *m, Slice const slice) {
 }
 
 /* return true => job->sink has changed */
-bool OJob_max_2LF(OJob *m, Slice const slice) {
+bool OJob_max_2LF(OJob *m, OSlice const slice) {
         uint32_t const n = OStr_number_of_chr(&m->source, slice, '\n');
         uint32_t const num_of_LF = (n > 2) ? 2 : n;
         if (num_of_LF > 0) {
@@ -107,7 +107,7 @@ bool OJob_max_2LF(OJob *m, Slice const slice) {
         return false;
 }
 
-void OJob_LF_or_space(OJob *m, Slice const slice) {
+void OJob_LF_or_space(OJob *m, OSlice const slice) {
         if (OStr_last_has_LF(&m->source, slice)) {
                 return;
         }

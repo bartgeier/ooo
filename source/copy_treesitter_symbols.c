@@ -1,12 +1,19 @@
 #include <stdio.h>
 #include <string.h>
+
+#if 1
 #include "tree_sitter/api.h"
+TSLanguage *tree_sitter_c();
+#else
+#define TREE_SITTER_IMPLEMENTATION
+#include "tree_sitter_api.h"
+#endif
+
 #define OSTR_IMPLEMENTAION
 #include "OStr.h"
 #define REGEX_SIGNED_COMMENT_IMPLEMENTATION
 #include "Regex_signedComment.h"
 
-TSLanguage *tree_sitter_c();
 
 typedef struct {
         OStr sink;

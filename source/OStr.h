@@ -8,7 +8,7 @@
 typedef struct {
         uint32_t begin;
         uint32_t end;
-} Slice;
+} OSlice;
 
 typedef struct {
         uint32_t capacity;
@@ -23,10 +23,10 @@ void OStr_append_spaces(OStr *m, uint32_t n);
 void OStr_append_cstring(OStr *m, char const * str);
 void OStr_final_truncate(OStr *str);
 void OStr_shorten(OStr *m, uint32_t const size);
-uint32_t OStr_need_1_or_2LF(OStr const *m, Slice const s);
-bool OStr_last_has_LF(OStr const *m, Slice const s);
-char OStr_need_LF_or_space(OStr const *m, Slice const s);
-uint32_t OStr_number_of_chr( OStr const *m, Slice const s, char const chr);
+uint32_t OStr_need_1_or_2LF(OStr const *m, OSlice const s);
+bool OStr_last_has_LF(OStr const *m, OSlice const s);
+char OStr_need_LF_or_space(OStr const *m, OSlice const s);
+uint32_t OStr_number_of_chr( OStr const *m, OSlice const s, char const chr);
 #endif
 
 #ifdef OSTR_IMPLEMENTAION
@@ -79,7 +79,7 @@ void OStr_shorten(OStr *m, uint32_t const minus) {
         m->at[m->size] = 0;
 }
 
-uint32_t OStr_need_1_or_2LF(OStr const *m, Slice const s) {
+uint32_t OStr_need_1_or_2LF(OStr const *m, OSlice const s) {
         uint32_t count = 0;
         for (uint32_t i = s.begin; i < s.end; i++) {
                 if (m->at[i] == '\n') count++;
@@ -87,7 +87,7 @@ uint32_t OStr_need_1_or_2LF(OStr const *m, Slice const s) {
         return (count < 2) ? 1 : 2;
 }
 
-uint32_t OStr_number_of_chr( OStr const *m, Slice const s, char const chr) {
+uint32_t OStr_number_of_chr( OStr const *m, OSlice const s, char const chr) {
         assert(s.end <= m->size);
         uint32_t count = 0;
         for (uint32_t i = s.begin; i < s.end; i++) {
@@ -96,13 +96,13 @@ uint32_t OStr_number_of_chr( OStr const *m, Slice const s, char const chr) {
         return count;
 }
 
-bool OStr_last_has_LF(OStr const *m, Slice const s) {
+bool OStr_last_has_LF(OStr const *m, OSlice const s) {
         uint32_t const begin = s.begin;
         bool const b = (begin > 0) ? (m->at[begin -1] == '\n')  : false;
         return b;
 }
 
-char OStr_need_LF_or_space(OStr const *m, Slice const s) {
+char OStr_need_LF_or_space(OStr const *m, OSlice const s) {
         uint32_t count = 0;
         for (uint32_t i = s.begin; i < s.end; i++) {
                 if (m->at[i] == '\n') count++;

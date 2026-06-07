@@ -43,7 +43,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_ONE) {
                 .size = (uint32_t)strlen(a),
                 .at = src
         };
-        Slice s = {.begin = 3, .end = 3};
+        OSlice s = {.begin = 3, .end = 3};
         size_t x = OStr_need_1_or_2LF(&source_str, s);
         EXPECT_EQ(x, (size_t)1);
 }
@@ -62,7 +62,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_NONE) {
                 .size = (uint32_t)strlen(a),
                 .at = src
         };
-        Slice s = {.begin = 3, .end = 4};
+        OSlice s = {.begin = 3, .end = 4};
         size_t x = OStr_need_1_or_2LF(&source_str, s);
         EXPECT_EQ(x, (size_t)1);
 }
@@ -81,7 +81,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_TWO) {
                 .size = (uint32_t)strlen(a),
                 .at = src
         };
-        Slice s = {.begin = 3, .end = 6};
+        OSlice s = {.begin = 3, .end = 6};
         size_t x = OStr_need_1_or_2LF(&source_str, s);
         EXPECT_EQ(x, (size_t)2);
 }
@@ -100,7 +100,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_ANOTHER_ONE) {
                 .size = (uint32_t)strlen(a),
                 .at = src
         };
-        Slice s = {.begin = 3, .end = 5};
+        OSlice s = {.begin = 3, .end = 5};
         size_t x = OStr_need_1_or_2LF(&source_str, s);
         EXPECT_EQ(x, (size_t)1);
 }
@@ -119,7 +119,7 @@ TEST(OStr, OStr_need_1_or_2LF_GOT_ANOTHER_ONE_) {
                 .size = (uint32_t)strlen(a),
                 .at = src
         };
-        Slice s = {.begin = 3, .end = 8};
+        OSlice s = {.begin = 3, .end = 8};
         size_t x = OStr_need_1_or_2LF(&source_str, s);
         EXPECT_EQ(x, (size_t)2);
 }
@@ -138,7 +138,7 @@ TEST(OStr, OStr_need_LF_or_space_GOT_LF) {
                 .size = (uint32_t)strlen(a),
                 .at = src
         };
-        Slice s = {.begin = 3, .end = 6};
+        OSlice s = {.begin = 3, .end = 6};
         EXPECT_FALSE(OStr_last_has_LF(&source_str, s));
         char chr = OStr_need_LF_or_space(&source_str, s);
         EXPECT_EQ(chr, (char)'\n');
@@ -158,7 +158,7 @@ TEST(OStr, OStr_need_LF_or_space_GOT_SPACE) {
                 .size = (uint32_t)strlen(a),
                 .at = src
         };
-        Slice s = {.begin = 4, .end = 5};
+        OSlice s = {.begin = 4, .end = 5};
         EXPECT_FALSE(OStr_last_has_LF(&source_str, s));
         char chr = OStr_need_LF_or_space(&source_str, s);
         EXPECT_EQ(chr, (char)' ');
@@ -178,7 +178,7 @@ TEST(OStr, OStr_need_LF_or_space_GOT_SPACE_) {
                 .size = (uint32_t)strlen(a),
                 .at = src
         };
-        Slice s = {.begin = 3, .end = 3};
+        OSlice s = {.begin = 3, .end = 3};
         EXPECT_FALSE(OStr_last_has_LF(&source_str, s));
         char chr = OStr_need_LF_or_space(&source_str, s);
         EXPECT_EQ(chr, (char)' ');

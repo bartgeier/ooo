@@ -15,6 +15,7 @@ bool create_build_dir(bool const clean) {
         return nob_mkdir_if_not_exists(OOO_BUILD_DIR);
 }
 
+#if 0
 bool download_build_treesitter(bool const clean) {
         #if 1
                 #define TS_URL "https://github.com/tree-sitter/tree-sitter/archive/refs/heads/"
@@ -77,6 +78,69 @@ bool download_build_treesitter(bool const clean) {
         nob_cmd_free(cmd);
         return ok;
 }
+#else
+bool download_build_treesitter(bool const clean) {
+        #if 1
+                #define TS_URL "https://github.com/tree-sitter/tree-sitter/archive/refs/heads/"
+                #define TS_COMMIT "master"
+        #else
+                #define TS_URL "https://github.com/tree-sitter/tree-sitter/archive/"
+                #define TS_COMMIT "0ff28346be3d27f935d7cde8bbdf6b621c268e1a"
+        #endif
+        bool ok = true;
+        if (clean) {
+                ok &= nob_remove("tree-sitter.zip");
+                ok &= nob_remove("tree-sitter-"TS_COMMIT);
+                ok &= nob_remove("tree-sitter");
+                return ok;
+        }
+        if (nob_file_exists("tree-sitter")) return true;
+        nob_log(NOB_INFO,"DOWNLOAD BUILD: tree-sitter -> tree-sitter.a");
+
+        Nob_Cmd cmd = {0};
+        nob_cmd_append(&cmd, "curl");
+        nob_cmd_append(&cmd, "-L");
+        nob_cmd_append(&cmd, TS_URL TS_COMMIT".zip");
+        nob_cmd_append(&cmd, "--output", "tree-sitter.zip");
+        ok &= nob_cmd_run_sync(cmd);
+
+        cmd.count = 0;               
+        #ifdef _WIN32
+                nob_log(NOB_INFO,"xxxxx unzip with tar xxxxx");
+                nob_cmd_append(&cmd, "tar", "-xvzf", "tree-sitter.zip");
+        #else
+                nob_cmd_append(&cmd, "unzip", "tree-sitter.zip");                
+        #endif                
+        ok &= nob_cmd_run_sync(cmd);
+        cmd.count = 0;
+        ok &= nob_remove("tree-sitter.zip");
+        ok &= nob_mkdir_if_not_exists("tree-sitter");
+        ok &= nob_mkdir_if_not_exists("tree-sitter/lib");
+        ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include");
+        ok &= nob_mkdir_if_not_exists("tree-sitter/lib/include/tree_sitter");
+        ok &= nob_rename("tree-sitter-"TS_COMMIT"/LICENSE", "tree-sitter/LICENSE");
+        ok &= nob_rename("tree-sitter-"TS_COMMIT"/lib/include/tree_sitter/api.h", "tree-sitter/lib/include/tree_sitter/api.h");
+        ok &= nob_rename("tree-sitter-"TS_COMMIT"/lib/src", "tree-sitter/lib/src");
+        // ok &= nob_remove("tree-sitter/lib/src/portable");
+        ok &= nob_remove("tree-sitter/lib/src/unicode");
+        ok &= nob_remove("tree-sitter/lib/src/wasm");
+        ok &= nob_remove("tree-sitter-"TS_COMMIT);
+
+        nob_cmd_append(&cmd, "gcc", "-O3");
+        nob_cmd_append(&cmd, "-I", "tree-sitter/lib/src", "-I", "tree-sitter/lib/include");
+        nob_cmd_append(&cmd, "-c","-o","tree-sitter/lib.o", "tree-sitter/lib/src/lib.c");
+        ok &= nob_cmd_run_sync(cmd);
+        cmd.count = 0;
+
+        nob_cmd_append(&cmd,"ar", "rcs", "tree-sitter/libtree-sitter.a", "tree-sitter/lib.o");
+        ok &= nob_cmd_run_sync(cmd);
+        cmd.count = 0;
+
+        nob_cmd_free(cmd);
+        return ok;
+}
+
+#endif
 
 bool download_build_tree_sitter_c(bool const clean) {
 #if 1
@@ -123,6 +187,24 @@ bool download_build_tree_sitter_c(bool const clean) {
         return ok;
 }
 
+#if 0
+bool tree_sitter_amalgamate(void) {
+        bool ok = true;
+        // https://github.com/rindeal/Amalgamate/releases/tag/v0.99.0
+        // whereis amalgamate /usr/local/bin
+        Nob_Cmd cmd = {0};
+        nob_cmd_append(&cmd, "amalgamate", "amalgamate.c", 
+                "tree-sitter/tree_sitter_api.h",
+                "-i", "tree-sitter/lib/include",
+                "-i", "tree-sitter/lib/include/tree_sitter",
+                "-i", "tree-sitter/lib/src",
+                "-i", "tree-sitter/lib/src/portable",
+        );
+        ok &= nob_cmd_run_sync(cmd);
+        return ok;
+}
+#endif
+
 bool copy_treesitter_symbols(bool const clean) {
         if (clean) {
                 return true;
@@ -130,6 +212,7 @@ bool copy_treesitter_symbols(bool const clean) {
         if (nob_file_exists("tree-sitter-c/ooo_treesitter_symbol_ids.h")) return true;
         nob_log(NOB_INFO, "BUILD: copy_treesitter_symbols ----> copy enumerator");
         Nob_Cmd cmd = {0};
+#if 1
         nob_cmd_append(&cmd, "gcc");
         nob_cmd_append(&cmd, "-ggdb", "-pedantic");
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
@@ -137,6 +220,15 @@ bool copy_treesitter_symbols(bool const clean) {
         nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
         nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a",  "tree-sitter-c/src/parser.c");;
+#else
+        // amalgamate single header tree_sitter_api.h
+        nob_cmd_append(&cmd, "gcc");
+        nob_cmd_append(&cmd, "-ggdb", "-pedantic");
+        nob_cmd_append(&cmd, "-I", "tree-sitter/");
+        nob_cmd_append(&cmd, "-I", "source/");
+        nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
+        nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
+#endif
         bool ok = nob_cmd_run_sync(cmd);
         cmd.count = 0;
         #ifdef _WIN32
@@ -338,6 +430,7 @@ bool unittests_build(bool const clean) {
         return ok;
 }
 
+
 int main(int argc, char **argv) {
         uint64_t t_start = nob_millis();
         bool ok = true;
@@ -362,12 +455,14 @@ int main(int argc, char **argv) {
         ok &= create_build_dir(flag.clean);
         ok &= download_build_treesitter(flag.clean);
         ok &= download_build_tree_sitter_c(flag.clean);
+        //ok &= tree_sitter_amalgamate();
         ok &= copy_treesitter_symbols(flag.clean);
         ok &= download_build_googleTest(flag.clean);
         ok &= download_arq(flag.clean);
 
         create_source_paths();
         create_include_paths();
+
         ok &= ooo_build(flag.clean);
         //ok &= unittests_build(flag.clean);
         if (!ok) {

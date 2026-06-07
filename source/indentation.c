@@ -304,7 +304,7 @@ void ooo_set_indentation(
         TSNode const node = Relation_track_node(relation, 0);
         TSSymbol const me = sym(node);
 
-        Slice slice = {
+        OSlice slice = {
                 .begin = job->idx,
                 .end = job->idx = (ts_node_start_byte(node) + job->offset)
         };

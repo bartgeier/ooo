@@ -95,7 +95,7 @@ void ooo_truncate_spaces(
 ) {
         TSSymbol me = sym(node);
 
-        Slice slice = {
+        OSlice slice = {
                 .begin = job->idx,
                 .end = job->idx = (ts_node_start_byte(node) + job->offset),
         };

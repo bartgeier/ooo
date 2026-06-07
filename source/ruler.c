@@ -14,7 +14,7 @@ void ooo_set_ruler_KR(bool const KR) {
         Kerninghan_and_Richi = KR;
 }
 
-static bool preproc_include(Relation const *node, Slice const slice, OJob *job) {
+static bool preproc_include(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 return true;
@@ -38,7 +38,7 @@ static bool preproc_include(Relation const *node, Slice const slice, OJob *job) 
         return false;
 }
 
-static bool preproc_def(Relation const *node, Slice const slice, OJob *job) {
+static bool preproc_def(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* #define */
                 return true;
@@ -61,7 +61,7 @@ static bool preproc_def(Relation const *node, Slice const slice, OJob *job) {
         return false;
 }
 
-static bool preproc_call(Relation const *node, Slice const slice, OJob *job) {
+static bool preproc_call(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* #pragma */
@@ -79,7 +79,7 @@ static bool preproc_call(Relation const *node, Slice const slice, OJob *job) {
         return false;
 }
 
-static bool preproc_function_def(Relation const *node, Slice const slice, OJob *job) {
+static bool preproc_function_def(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* #define */
                 return true;
@@ -107,7 +107,7 @@ static bool preproc_function_def(Relation const *node, Slice const slice, OJob *
         return false;
 }
 
-static bool preproc_params(Relation const *node, Slice const slice, OJob *job) {
+static bool preproc_params(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 return true;
         }
@@ -165,7 +165,7 @@ static bool preproc_params(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-static bool macro_type_specifier(Relation const *node, Slice const slice, OJob *job) {
+static bool macro_type_specifier(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -248,7 +248,7 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 #else
-static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
+static bool preproc_ifdef(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* #ifndef or #ifdef */
                 return true;
@@ -292,7 +292,7 @@ static bool preproc_ifdef(Relation const *node, Slice const slice, OJob *job) {
 }
 #endif
 
-static bool preproc_if(Relation const *node, Slice const slice, OJob *job) {
+static bool preproc_if(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* #if */
                 return true;
@@ -325,7 +325,7 @@ static bool preproc_if(Relation const *node, Slice const slice, OJob *job) {
 // do_something...
 // #endif
 // functionally equivalent to => #ifdef ALICE
-static bool preproc_defined(Relation const *node, Slice const slice, OJob *job) {
+static bool preproc_defined(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -339,7 +339,7 @@ static bool preproc_defined(Relation const *node, Slice const slice, OJob *job) 
         return true;
 }
 
-static bool translation_unit(Relation const *node, Slice const slice, OJob *job) {
+static bool translation_unit(Relation const *node, OSlice const slice, OJob *job) {
         /* root of an file */
         if (is_first_child(node)) {
                 return true;
@@ -370,7 +370,7 @@ static bool translation_unit(Relation const *node, Slice const slice, OJob *job)
         return true;
 }
 
-static bool linkage_specification(Relation const *node, Slice const slice, OJob *job) {
+static bool linkage_specification(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* extern */
                 return true;
@@ -399,7 +399,7 @@ static bool linkage_specification(Relation const *node, Slice const slice, OJob 
         return true;
 }
 
-static bool declaration_list(Relation const *node, Slice const slice, OJob *job) {
+static bool declaration_list(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 return true;
         }
@@ -443,7 +443,7 @@ static bool declaration_list(Relation const *node, Slice const slice, OJob *job)
         return true;
 }
 
-static bool function_definition(Relation const *node, Slice const slice, OJob *job) {
+static bool function_definition(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* static void foo(int a, int b) */
@@ -484,7 +484,7 @@ static bool function_definition(Relation const *node, Slice const slice, OJob *j
         return false;
 }
 
-static bool function_declarator(Relation const *node, Slice const slice, OJob *job) {
+static bool function_declarator(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -503,7 +503,7 @@ static bool function_declarator(Relation const *node, Slice const slice, OJob *j
         return false;
 }
 
-static bool parameter_list(Relation const *node, Slice const slice, OJob *job) {
+static bool parameter_list(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* void foo(int a, int b) */
                 /*         (              */
@@ -551,7 +551,7 @@ static bool parameter_list(Relation const *node, Slice const slice, OJob *job) {
         return false;
 }
 
-static bool parameter_declaration(Relation const *node, Slice const slice, OJob *job) {
+static bool parameter_declaration(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* void foo(int a, int b) */
@@ -567,7 +567,7 @@ static bool parameter_declaration(Relation const *node, Slice const slice, OJob 
         return true;
 }
 
-static bool enum_specifier(Relation const *node, Slice slice, OJob *job) {
+static bool enum_specifier(Relation const *node, OSlice slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* enum alice */
@@ -583,7 +583,7 @@ static bool enum_specifier(Relation const *node, Slice slice, OJob *job) {
         return true;
 }
 
-static bool union_specifier(Relation const *node, Slice const slice, OJob *job) {
+static bool union_specifier(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* union alice */
@@ -599,7 +599,7 @@ static bool union_specifier(Relation const *node, Slice const slice, OJob *job) 
         return true;
 }
 
-static bool compound_statement(Relation const *node, Slice const slice, OJob *job) {
+static bool compound_statement(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* { */
                 return true;
@@ -649,7 +649,7 @@ static bool compound_statement(Relation const *node, Slice const slice, OJob *jo
         return true;
 }
 
-static bool pointer_declarator(Relation const *node, Slice const slice, OJob *job) {
+static bool pointer_declarator(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* *alice */
@@ -671,7 +671,7 @@ static bool pointer_declarator(Relation const *node, Slice const slice, OJob *jo
         return true;
 }
 
-static bool pointer_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool pointer_expression(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* &alice */
@@ -691,7 +691,7 @@ static bool pointer_expression(Relation const *node, Slice const slice, OJob *jo
         return true;
 }
 
-static bool sizeof_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool sizeof_expression(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -709,7 +709,7 @@ static bool sizeof_expression(Relation const *node, Slice const slice, OJob *job
         return false;
 }
 
-static bool cast_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool cast_expression(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* ( */
@@ -737,7 +737,7 @@ static bool cast_expression(Relation const *node, Slice const slice, OJob *job) 
         return true;
 }
 
-static bool type_descriptor(Relation const *node, Slice const slice, OJob *job) {
+static bool type_descriptor(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 return true;
@@ -764,7 +764,7 @@ static bool type_descriptor(Relation const *node, Slice const slice, OJob *job) 
         return true;
 }
 
-static bool abstract_pointer_declarator(Relation const *node, Slice const slice, OJob *job) {
+static bool abstract_pointer_declarator(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -779,7 +779,7 @@ static bool abstract_pointer_declarator(Relation const *node, Slice const slice,
         return false;
 }
 
-static bool abstract_array_declarator(Relation const *node, Slice const slice, OJob *job) {
+static bool abstract_array_declarator(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -794,7 +794,7 @@ static bool abstract_array_declarator(Relation const *node, Slice const slice, O
         return true;
 }
 
-static bool declaration(Relation const *node, Slice const slice, OJob *job) {
+static bool declaration(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* bool alice */
@@ -820,7 +820,7 @@ static bool declaration(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-static bool init_declarator(Relation const *node, Slice const slice, OJob *job) {
+static bool init_declarator(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 return true;
@@ -840,7 +840,7 @@ static bool init_declarator(Relation const *node, Slice const slice, OJob *job) 
         return true;
 }
 
-static bool struct_specifier(Relation const *node, Slice const slice, OJob *job) {
+static bool struct_specifier(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 return true;
@@ -854,7 +854,7 @@ static bool struct_specifier(Relation const *node, Slice const slice, OJob *job)
         return true;
 }
 
-static bool field_declaration_list(Relation const *node, Slice const slice, OJob *job) {
+static bool field_declaration_list(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 return true;
@@ -868,7 +868,7 @@ static bool field_declaration_list(Relation const *node, Slice const slice, OJob
         return true;
 }
 
-static bool field_declaration(Relation const *node, Slice const slice, OJob *job) {
+static bool field_declaration(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 return true;
@@ -887,7 +887,7 @@ static bool field_declaration(Relation const *node, Slice const slice, OJob *job
         return true;
 }
 
-static bool initializer_list(Relation const *node, Slice const slice, OJob *job) {
+static bool initializer_list(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 return true;
         }
@@ -937,7 +937,7 @@ static bool initializer_list(Relation const *node, Slice const slice, OJob *job)
         return false;
 }
 
-static bool initializer_pair(Relation const *node, Slice const slice, OJob *job) {
+static bool initializer_pair(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 return true;
@@ -951,7 +951,7 @@ static bool initializer_pair(Relation const *node, Slice const slice, OJob *job)
         return true;
 }
 
-static bool array_declarator(Relation const *node, Slice const slice, OJob *job) {
+static bool array_declarator(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -967,7 +967,7 @@ static bool array_declarator(Relation const *node, Slice const slice, OJob *job)
         return true;
 }
 
-static bool subscript_designator(Relation const *node, Slice const slice, OJob *job) {
+static bool subscript_designator(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -982,7 +982,7 @@ static bool subscript_designator(Relation const *node, Slice const slice, OJob *
         return true;
 }
 
-static bool subscript_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool subscript_expression(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -998,7 +998,7 @@ static bool subscript_expression(Relation const *node, Slice const slice, OJob *
         return true;
 }
 
-static bool type_definition(Relation const *node, Slice const slice, OJob *job) {
+static bool type_definition(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* typedef enum { A, B, C } ABC; */
@@ -1026,7 +1026,7 @@ static bool type_definition(Relation const *node, Slice const slice, OJob *job) 
         return true;
 }
 
-static bool enumerator_list(Relation const *node, Slice const slice, OJob *job) {
+static bool enumerator_list(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* enum { */
@@ -1055,7 +1055,7 @@ static bool enumerator_list(Relation const *node, Slice const slice, OJob *job) 
         return false;
 }
 
-static bool enumerator(Relation const *node, Slice const slice, OJob *job) {
+static bool enumerator(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* FlashState_READY = 0 */
@@ -1071,7 +1071,7 @@ static bool enumerator(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-static bool expression_statement(Relation const *node, Slice const slice, OJob *job) {
+static bool expression_statement(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -1090,7 +1090,7 @@ static bool expression_statement(Relation const *node, Slice const slice, OJob *
         return false;
 }
 
-static bool return_statement(Relation const *node, Slice const slice, OJob *job) {
+static bool return_statement(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* return */
@@ -1108,7 +1108,7 @@ static bool return_statement(Relation const *node, Slice const slice, OJob *job)
         return true;
 }
 
-static bool assignment_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool assignment_expression(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* foo = false; */
                 /* foo          */
@@ -1135,7 +1135,7 @@ static bool assignment_expression(Relation const *node, Slice const slice, OJob 
         return true;
 }
 
-static bool call_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool call_expression(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -1154,7 +1154,7 @@ static bool call_expression(Relation const *node, Slice const slice, OJob *job) 
         return false;
 }
 
-static bool update_expression(Relation const *node, Slice const slice, OJob *job) { 
+static bool update_expression(Relation const *node, OSlice const slice, OJob *job) { 
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -1173,7 +1173,7 @@ static bool update_expression(Relation const *node, Slice const slice, OJob *job
         return true;
 }
 
-static bool conditional_expression(Relation const *node,Slice const slice,OJob *job) {
+static bool conditional_expression(Relation const *node,OSlice const slice,OJob *job) {
         if (is_first_child(node)) {
                 /* (a > b) ? a : b; */
                 /* ^                */
@@ -1206,7 +1206,7 @@ static bool conditional_expression(Relation const *node,Slice const slice,OJob *
         return true;
 }
 
-static bool argument_list(Relation const *node, Slice const slice, OJob *job) {
+static bool argument_list(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* function(alice */
                 /*         (      */
@@ -1252,7 +1252,7 @@ static bool argument_list(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
+static bool for_statement(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* for */
                 return true;
@@ -1325,7 +1325,7 @@ static bool for_statement(Relation const *node, Slice const slice, OJob *job) {
         return false;
 }
 
-static bool while_statement(Relation const *node, Slice const slice, OJob *job) {
+static bool while_statement(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* while */
                 return true;
@@ -1361,7 +1361,7 @@ static bool while_statement(Relation const *node, Slice const slice, OJob *job) 
         return false;
 }
 
-static bool do_statement(Relation const *node, Slice const slice, OJob *job) {
+static bool do_statement(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* do */
@@ -1396,7 +1396,7 @@ static bool do_statement(Relation const *node, Slice const slice, OJob *job) {
         return false;
 }
 
-static bool if_statement(Relation const *node, Slice slice, OJob *job) {
+static bool if_statement(Relation const *node, OSlice slice, OJob *job) {
         if (is_first_child(node)) {
                 return true;
         }
@@ -1464,7 +1464,7 @@ static bool if_statement(Relation const *node, Slice slice, OJob *job) {
         return false;
 }
 
-static bool else_clause(Relation const *node, Slice slice, OJob *job)  {
+static bool else_clause(Relation const *node, OSlice slice, OJob *job)  {
         (void) slice;
         if (is_first_child(node)) {
                 /* else */
@@ -1494,7 +1494,7 @@ static bool else_clause(Relation const *node, Slice slice, OJob *job)  {
 }
 
 
-static bool parenthesized_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool parenthesized_expression(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -1518,7 +1518,7 @@ static bool parenthesized_expression(Relation const *node, Slice const slice, OJ
         return false;
 }
 
-static bool binary_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool binary_expression(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* a + b */
@@ -1555,7 +1555,7 @@ static bool binary_expression(Relation const *node, Slice const slice, OJob *job
         return true;
 }
 
-static bool switch_statement(Relation const *node, Slice const slice, OJob *job) {
+static bool switch_statement(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         if (is_first_child(node)) {
                 /* switch */
@@ -1579,7 +1579,7 @@ static bool switch_statement(Relation const *node, Slice const slice, OJob *job)
         return false;
 }
 
-static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
+static bool case_statement(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* case */
                 return true;
@@ -1646,7 +1646,7 @@ static bool case_statement(Relation const *node, Slice const slice, OJob *job) {
         return true;
 }
 
-static bool unary_expression(Relation const *node, Slice const slice, OJob *job) {
+static bool unary_expression(Relation const *node, OSlice const slice, OJob *job) {
         (void) slice;
         (void) job;
         if (is_first_child(node)) {
@@ -1656,7 +1656,7 @@ static bool unary_expression(Relation const *node, Slice const slice, OJob *job)
         return true;
 }
 
-static bool concatenated_string(Relation const *node, Slice const slice, OJob *job) {
+static bool concatenated_string(Relation const *node, OSlice const slice, OJob *job) {
         if (is_first_child(node)) {
                 /* " */
                 return true;
@@ -1696,7 +1696,7 @@ static bool concatenated_string(Relation const *node, Slice const slice, OJob *j
 
 bool dispatcher(
         Relation const *relation,
-        Slice slice,
+        OSlice slice,
         OJob *job
 ) {
         switch(parent(relation)) {
@@ -1831,7 +1831,7 @@ void ooo_ruler(
         TSNode node = Relation_track_node(relation, 0);
         TSSymbol symbol = ts_node_symbol(node);
 
-        Slice slice = {
+        OSlice slice = {
                 .begin = job->idx,
                 .end = job->idx = (ts_node_start_byte(node) + job->offset)
         };
