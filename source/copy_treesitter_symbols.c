@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#if 1
-#include "tree_sitter/api.h"
-TSLanguage *tree_sitter_c();
+#if AMALGAMATE_TREE_SITTER_API_H
+        #define TREE_SITTER_API_IMPLEMENTATION
+        #include "tree_sitter_api.h"
 #else
-#define TREE_SITTER_IMPLEMENTATION
-#include "tree_sitter_api.h"
+        #include "tree_sitter/api.h"
+        TSLanguage *tree_sitter_c();
 #endif
 
 #define OSTR_IMPLEMENTAION
@@ -164,6 +164,7 @@ void tree_runner(
                         OStr_append_cstring(&job->sink, "/* This is an automatically generated file! */\n");
                         OStr_append_cstring(&job->sink, "/* Copyed from treesitter-c/src/parser.c    */\n");
                         OStr_append_cstring(&job->sink, "/* with source/copy_treesitter_symbols.c    */\n\n");
+                        OStr_append_cstring(&job->sink, "#ifndef OOO_AMALGAMATE\n");
                         start_idx = ts_node_start_byte(parent_node);
                         end_idx = ts_node_end_byte(parent_node);
                         append_slice(
@@ -173,15 +174,17 @@ void tree_runner(
                                 ts_node_end_byte(parent_node)    // -> end idx
                         );
                         OStr_append_cstring(&job->sink, ";\n");
+                        OStr_append_cstring(&job->sink, "#endif /* OOO_AMALGAMATE */\n\n");
                 }
         }
 
         generate_sym_unknown(node, job);
-
+        // OStr_append_cstring(&job->sink, "#ifndef OOO_AMALGAMATE*/\n\n");
         if (true & me == TYPE_IDENTIFIER & parent == ENUM_SPECIFIER) {
                 uint32_t start_idx = ts_node_start_byte(node);
                 uint32_t end_idx = ts_node_end_byte(node);
                 if (equal_slice("ts_field_identifiers", &job->source, start_idx, end_idx)) {
+                        OStr_append_cstring(&job->sink, "#ifndef OOO_AMALGAMATE\n");
                         start_idx = ts_node_start_byte(parent_node);
                         end_idx = ts_node_end_byte(parent_node);
                         append_slice(
@@ -191,7 +194,7 @@ void tree_runner(
                                 ts_node_end_byte(parent_node)    // -> end idx
                         );
                         OStr_append_cstring(&job->sink, ";\n");
-                        OStr_append_cstring(&job->sink, "\n");
+                        OStr_append_cstring(&job->sink, "#endif /* OOO_AMALGAMATE */\n\n");
                         OStr_append_cstring(&job->sink, "#endif\n");
                 }
         }

@@ -187,7 +187,7 @@ bool download_build_tree_sitter_c(bool const clean) {
         return ok;
 }
 
-#if 0
+#if 1
 bool tree_sitter_amalgamate(void) {
         bool ok = true;
         // https://github.com/rindeal/Amalgamate/releases/tag/v0.99.0
@@ -199,6 +199,7 @@ bool tree_sitter_amalgamate(void) {
                 "-i", "tree-sitter/lib/include/tree_sitter",
                 "-i", "tree-sitter/lib/src",
                 "-i", "tree-sitter/lib/src/portable",
+                "-i", "tree-sitter-c/src/parser.c",
         );
         ok &= nob_cmd_run_sync(cmd);
         return ok;
@@ -213,17 +214,19 @@ bool copy_treesitter_symbols(bool const clean) {
         nob_log(NOB_INFO, "BUILD: copy_treesitter_symbols ----> copy enumerator");
         Nob_Cmd cmd = {0};
 #if 1
+        // uses precompiled archive libtree-sitter.a
         nob_cmd_append(&cmd, "gcc");
-        nob_cmd_append(&cmd, "-ggdb", "-pedantic");
+        nob_cmd_append(&cmd, "-O3", "-ggdb", "-pedantic");
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
         nob_cmd_append(&cmd, "-I", "source/");
         nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
         nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a",  "tree-sitter-c/src/parser.c");;
 #else
-        // amalgamate single header tree_sitter_api.h
+        // uses amalgamate single header tree_sitter_api.h
         nob_cmd_append(&cmd, "gcc");
-        nob_cmd_append(&cmd, "-ggdb", "-pedantic");
+        nob_cmd_append(&cmd, "-O3", "-ggdb", "-pedantic");
+        nob_cmd_append(&cmd, "-DAMALGAMATE_TREE_SITTER_API_H");
         nob_cmd_append(&cmd, "-I", "tree-sitter/");
         nob_cmd_append(&cmd, "-I", "source/");
         nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
@@ -364,6 +367,7 @@ void create_source_paths(void) {
         nob_cmd_append(&source_paths, "./tree-sitter/libtree-sitter.a");
 }
 
+
 bool ooo_build(bool const clean) {
         if (clean) {
                 return true;
@@ -386,6 +390,51 @@ bool ooo_build(bool const clean) {
         nob_cmd_append_cmd(&cmd, &include_paths);
         // Language server
         generate_compile_commands("/home/berni/projects/ooo", &cmd, &source_paths);
+
+        nob_cmd_free(c_ompiler);
+        nob_cmd_free(cmd);
+        return ok;
+}
+
+Nob_Cmd source_paths2 = {0};
+void create_source_paths_2(void) {
+        nob_cmd_append(&source_paths2, "./source/unitbuild.c");
+        //nob_cmd_append(&source_paths2, "./tree-sitter-c/src/parser.c");
+        nob_cmd_append(&source_paths2, "./source/node_printer.c");
+        nob_cmd_append(&source_paths2, "./source/truncate.c");
+        nob_cmd_append(&source_paths2, "./source/OArg.c");
+        nob_cmd_append(&source_paths2, "./source/iteration.c");
+        nob_cmd_append(&source_paths2, "./source/ruler.c");
+        nob_cmd_append(&source_paths2, "./source/indentation.c");
+        nob_cmd_append(&source_paths2, "./source/tree_navigator.c");
+        nob_cmd_append(&source_paths2, "./source/Pars.c");
+        nob_cmd_append(&source_paths2, "./tree-sitter/lib/src/lib.c");
+}
+
+bool ooo_unit_build(bool const clean) {
+        if (clean) {
+                return true;
+        }
+        nob_log(NOB_INFO, "BUILD: ooo ----> code styler");
+        Nob_Cmd c_ompiler = {0};
+        //nob_cmd_append(&cmd, "gcc", "-O0", "-ggdb", "-pedantic");
+        nob_cmd_append(&c_ompiler, "gcc", "-O3", "-Wall", "-Wextra", "-Wno-Wbitwise-instead-of-logical", "-pedantic", "-Wno-parentheses"); 
+
+        Nob_Cmd cmd = {0};
+        nob_cmd_append_cmd(&cmd, &c_ompiler);
+        nob_cmd_append_cmd(&cmd, &include_paths);
+        nob_cmd_append(&cmd, "-o", "build/ooo2");
+        nob_cmd_append_cmd(&cmd, &source_paths2);
+        bool ok = nob_cmd_run_sync(cmd);
+
+#if 0
+        cmd.count = 0;
+        nob_cmd_append_cmd(&cmd, &c_ompiler);
+        nob_cmd_append(&cmd, "-o", "build/ooo");
+        nob_cmd_append_cmd(&cmd, &include_paths);
+        // Language server
+        generate_compile_commands("/home/berni/projects/ooo", &cmd, &source_paths);
+#endif
 
         nob_cmd_free(c_ompiler);
         nob_cmd_free(cmd);
@@ -453,17 +502,21 @@ int main(int argc, char **argv) {
         }
 
         ok &= create_build_dir(flag.clean);
+
         ok &= download_build_treesitter(flag.clean);
         ok &= download_build_tree_sitter_c(flag.clean);
-        //ok &= tree_sitter_amalgamate();
+        ok &= tree_sitter_amalgamate();
         ok &= copy_treesitter_symbols(flag.clean);
+
         ok &= download_build_googleTest(flag.clean);
         ok &= download_arq(flag.clean);
 
         create_source_paths();
+        //create_source_paths_2();
         create_include_paths();
 
         ok &= ooo_build(flag.clean);
+        //ok &= ooo_unit_build(flag.clean);
         ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
