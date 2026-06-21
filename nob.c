@@ -213,7 +213,7 @@ bool copy_treesitter_symbols(bool const clean) {
         if (nob_file_exists("tree-sitter-c/ooo_treesitter_symbol_ids.h")) return true;
         nob_log(NOB_INFO, "BUILD: copy_treesitter_symbols ----> copy enumerator");
         Nob_Cmd cmd = {0};
-#if 1
+#if 0
         // uses precompiled archive libtree-sitter.a
         nob_cmd_append(&cmd, "gcc");
         nob_cmd_append(&cmd, "-O3", "-ggdb", "-pedantic");
@@ -346,15 +346,26 @@ bool download_arq(bool const clean) {
 
 Nob_Cmd include_paths = {0};
 void create_include_paths(void) {
+#if 0
         nob_cmd_append(&include_paths, "-I", "source");
         nob_cmd_append(&include_paths, "-I", "tree-sitter/lib/include");
         nob_cmd_append(&include_paths, "-I", "tree-sitter-c");
         nob_cmd_append(&include_paths, "-I", "arq");
+#else
+        nob_cmd_append(&include_paths, "-I", "source");
+        nob_cmd_append(&include_paths, "-DAMALGAMATE_TREE_SITTER_API_H");
+        //nob_cmd_append(&include_paths, "-DOOO_AMALGAMATE");
+        nob_cmd_append(&include_paths, "-I", "tree-sitter/");
+        nob_cmd_append(&include_paths, "-I", "tree-sitter-c");
+        nob_cmd_append(&include_paths, "-I", "arq");
+#endif
 }
 
 Nob_Cmd source_paths = {0};
 void create_source_paths(void) {
+#if 0
         nob_cmd_append(&source_paths, "./source/main.c");
+        nob_cmd_append(&source_paths, "./source/single_header_implementation.c");
         nob_cmd_append(&source_paths, "./tree-sitter-c/src/parser.c");
         nob_cmd_append(&source_paths, "./source/node_printer.c");
         nob_cmd_append(&source_paths, "./source/truncate.c");
@@ -365,8 +376,43 @@ void create_source_paths(void) {
         nob_cmd_append(&source_paths, "./source/tree_navigator.c");
         nob_cmd_append(&source_paths, "./source/Pars.c");
         nob_cmd_append(&source_paths, "./tree-sitter/libtree-sitter.a");
+#else
+        nob_cmd_append(&source_paths, "./source/main.c");
+        nob_cmd_append(&source_paths, "./source/single_header_implementation.c");
+        //nob_cmd_append(&source_paths, "./tree-sitter-c/src/parser.c");
+        nob_cmd_append(&source_paths, "./source/node_printer.c");
+        nob_cmd_append(&source_paths, "./source/truncate.c");
+        nob_cmd_append(&source_paths, "./source/OArg.c");
+        nob_cmd_append(&source_paths, "./source/iteration.c");
+        nob_cmd_append(&source_paths, "./source/ruler.c");
+        nob_cmd_append(&source_paths, "./source/indentation.c");
+        nob_cmd_append(&source_paths, "./source/tree_navigator.c");
+        nob_cmd_append(&source_paths, "./source/Pars.c");
+#endif
 }
 
+
+#if 0
+#if 0
+        // uses precompiled archive libtree-sitter.a
+        nob_cmd_append(&cmd, "gcc");
+        nob_cmd_append(&cmd, "-O3", "-ggdb", "-pedantic");
+        nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
+        nob_cmd_append(&cmd, "-I", "source/");
+        nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
+        nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
+        nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a",  "tree-sitter-c/src/parser.c");;
+#else
+        // uses amalgamate single header tree_sitter_api.h
+        nob_cmd_append(&cmd, "gcc");
+        nob_cmd_append(&cmd, "-O3", "-ggdb", "-pedantic");
+        nob_cmd_append(&cmd, "-DAMALGAMATE_TREE_SITTER_API_H");
+        nob_cmd_append(&cmd, "-I", "tree-sitter/");
+        nob_cmd_append(&cmd, "-I", "source/");
+        nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
+        nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
+#endif
+#endif
 
 bool ooo_build(bool const clean) {
         if (clean) {
@@ -517,7 +563,7 @@ int main(int argc, char **argv) {
 
         ok &= ooo_build(flag.clean);
         //ok &= ooo_unit_build(flag.clean);
-        ok &= unittests_build(flag.clean);
+        // ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
                 return false;

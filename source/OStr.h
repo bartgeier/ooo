@@ -30,6 +30,7 @@ uint32_t OStr_number_of_chr( OStr const *m, OSlice const s, char const chr);
 #endif
 
 #ifdef OSTR_IMPLEMENTAION
+#include <string.h>
 
 void OStr_clear(OStr *m) {
         m->size = 0;

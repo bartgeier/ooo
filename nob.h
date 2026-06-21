@@ -228,6 +228,8 @@ int nob_needs_rebuild1(const char *output_path, const char *input_path);
 int nob_file_exists(const char *file_path);
 bool nob_has_exe(int argc, char **argv);      // "foo.exe" extension bartgeier 03.02.2024
 
+uint64_t nob_millis();
+
 // TODO: add MinGW support for Go Rebuild Urself™ Technology
 #ifndef NOB_REBUILD_URSELF
 #  ifdef _WIN32
@@ -422,6 +424,7 @@ int closedir(DIR *dirp);
 // minirent.h HEADER END ////////////////////////////////////////
 
 #endif // NOB_H_
+
 
 #ifdef NOB_IMPLEMENTATION
 

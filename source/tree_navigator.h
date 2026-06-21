@@ -5,7 +5,13 @@
 extern "C" {
 #endif
 
-#include "tree_sitter/api.h"
+
+#if AMALGAMATE_TREE_SITTER_API_H
+        #include "tree_sitter_api.h"
+#else
+        #include "tree_sitter/api.h"
+#endif
+
 #include "ooo_treesitter_symbol_ids.h"
 
 TSSymbol sym(TSNode n);

@@ -14,11 +14,11 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <getopt.h>
-#define OSTR_IMPLEMENTAION
+//#define OSTR_IMPLEMENTAION
 #include "OStr.h"
-#define OJOB_IMPLEMENTATION
+//#define OJOB_IMPLEMENTATION
 #include "OJob.h"
-#define NOB_IMPLEMENTATION
+//#define NOB_IMPLEMENTATION
 #include "../nob.h"
 
 /* return true => success */ 
@@ -146,3 +146,4 @@ int main(int argc, char **argv) {
         printf("%" PRIu64 " ms\n", (nob_millis() - t_start));
         return 0;
 }
+

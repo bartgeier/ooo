@@ -1,5 +1,4 @@
 #include "Pars.h"
-#include "tree_sitter/api.h"
 #include <assert.h>
 #define OARENA_IMPLEMENTATION
 #include "OArena.h"
