@@ -2,6 +2,7 @@
 
 #define ARQ_IMPLEMENTATION
 #include "arq.h"
+#include "../build/license.c"
 
 static OArg_t *global_m;
 
@@ -13,6 +14,11 @@ static void fn_version(Arq_Queue *queue) {
 static void fn_help(Arq_Queue *queue) {
         (void) queue;
         global_m->flag.help = true;
+}
+
+static void fn_license(Arq_Queue *queue) {
+        (void) queue;
+        global_m->flag.license = true;
 }
 
 static void fn_print(Arq_Queue *queue) {
@@ -60,6 +66,7 @@ OArg_t OArg_init(int argc, char **argv) {
         Arq_Option options[] = {
                 {'v', "version", fn_version, "()"},
                 {'h', "help",    fn_help, "()"},
+                {'l', "license", fn_license, "()"},
                 {'p', "print",   fn_print, "(uint row_begin = 0, uint row_end = 0xFFFFFFFF)"},
                 {'i', "input",   fn_input, "(cstr_t file_path)"},
                 {'o', "output",  fn_output, "(cstr_t file_path)"},
@@ -102,8 +109,11 @@ OArg_t OArg_init(int argc, char **argv) {
                 printf("Command line parser => https://github.com/bartgeier/arq \n");
                 printf("\n");
         }
+        if (m.flag.license) {
+                printf("%s\n", license);
+        }
         if (m.input_path == NULL && m.output_path == NULL && !m.flag.print 
-        && (m.flag.version || m.flag.help)) {
+        && (m.flag.version || m.flag.help || m.flag.license)) {
                 m.action = OARG_NO_ACTION;
                 return m;
         }

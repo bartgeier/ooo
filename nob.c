@@ -420,20 +420,107 @@ bool ooo_build(bool const clean) {
         return ok;
 }
 
+size_t print(FILE *f, size_t len, const char *s) {
+        putc('"', f);
+        size_t counter = 0;
+        for (size_t i = 0; i < len; i++) {
+                if (s[i] == '"') {
+                        putc('\\', f);
+                        counter++;
+                }
+                putc(s[i], f);
+        }
+        return len + counter;
+}
+
 bool amalgamate_ooo(void) {
         bool ok = true;
+        {
+                #define LINE_WIDTH 85 
+                char line[1024];
+
+                FILE *file_r = fopen("LICENSE", "r");
+                if (!file_r) {
+                        perror("Failed to open LICENSE");
+                        return false;
+                }
+                FILE *file_tree_r = fopen("tree-sitter/LICENSE", "r");
+                if (!file_r) {
+                        perror("Failed to open tree-sitter/LICENSE");
+                        return false;
+                }
+                FILE *file_w = fopen("build/license.c", "w");
+                if (!file_w) {
+                        perror("Failed to open file");
+                        return false;
+                }
+                fprintf(file_w, "#if 1\n\n");
+                fprintf(file_w, "const char *license =\n");
+
+                strcpy(line,"OOO and arq"); 
+                size_t len = strlen(line);
+                fprintf(file_w, "\"%.*s", (int)len, line);
+                for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+                fprintf(file_w, "\\n\"\n");
+
+                while (fgets(line, sizeof(line), file_r)) {
+                        size_t len = strcspn(line, "\n");  // remove real newline
+                        len = print(file_w, len, line);
+                        //fprintf(file_w, "\"%.*s", (int)len, line);
+                        // pad with spaces so \n aligns
+                        for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+                        fprintf(file_w, "\\n\"\n");
+                }
+
+                fputc('"', file_w);
+                for (size_t i = 0; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+                fprintf(file_w, "\\n\"\n");
+
+                fputc('"', file_w);
+                for (size_t i = 0; i < LINE_WIDTH; i++) { fputc('-', file_w); }
+                fprintf(file_w, "\\n\"\n");
+
+                fputc('"', file_w);
+                for (size_t i = 0; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+                fprintf(file_w, "\\n\"\n");
+
+                strcpy(line,"https://github.com/tree-sitter/tree-sitter"); 
+                len = strlen(line);
+                fprintf(file_w, "\"%.*s", (int)len, line);
+                for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+                fprintf(file_w, "\\n\"\n");
+
+                while (fgets(line, sizeof(line), file_tree_r)) {
+                        size_t len = strcspn(line, "\n");  // remove real newline
+                        len = print(file_w, len, line);
+                        // fprintf(file_w, "\"%.*s", (int)len, line);
+                        // pad with spaces so \n aligns
+                        for (size_t i = len; i < LINE_WIDTH; i++) {
+                                fputc(' ', file_w);
+                        }
+                        fprintf(file_w, "\\n\"\n");
+                }
+                fprintf(file_w, "\"\";\n");
+                fprintf(file_w, "\n#endif");
+                fclose(file_r);
+                fclose(file_w);
+                fflush(stdout);
+        }
+        {
         // https://github.com/rindeal/Amalgamate/releases/tag/v0.99.0
         // whereis amalgamate /usr/local/bin
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "amalgamate", "3_amalgamate_ooo.c", 
                 "ooo.c",
                 // "-v", // verbose
+                "-i", "build",
                 "-i", "arq",
                 "-i", "tree-sitter",
                 "-i", "tree-sitter-c",
                 "-i", "source",
         );
         ok &= nob_cmd_run_sync(cmd);
+        }
         return ok;
 }
 

@@ -16,6 +16,7 @@ typedef struct {
         struct {
                 bool help;
                 bool version;
+                bool license;
                 bool print;
                 bool KR;
                 bool indent;
