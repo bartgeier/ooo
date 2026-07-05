@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include <stdlib.h>
-#define OSTR_IMPLEMENTAION
+#define OSTR_IMPLEMENTATION
 #include "OStr.h"
 
 

@@ -5,13 +5,13 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define REGEX_TRUNC_NODE_SPACE_IMPLEMENTATION
+//#define REGEX_TRUNC_NODE_SPACE_IMPLEMENTATION
 #include "Regex_truncNodeSpace.h"
 
-#define REGEX_LINE_CONT_IMPLEMENTATION
+//#define REGEX_LINE_CONT_IMPLEMENTATION
 #include "Regex_lineCont.h"
 
-#define REGEX_TRUNC_COMMENT_SPACE_IMPLEMENTATION
+//#define REGEX_TRUNC_COMMENT_SPACE_IMPLEMENTATION
 #include "Regex_truncCommentSpace.h"
 
 /* \n is the last character in a row */

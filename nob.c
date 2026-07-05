@@ -136,6 +136,8 @@ bool download_build_treesitter(bool const clean) {
         ok &= nob_cmd_run_sync(cmd);
         cmd.count = 0;
 
+        ok &= nob_remove("tree-sitter/lib.o");
+
         nob_cmd_free(cmd);
         return ok;
 }
@@ -188,12 +190,12 @@ bool download_build_tree_sitter_c(bool const clean) {
 }
 
 #if 1
-bool tree_sitter_amalgamate(void) {
+bool amalgamate_tree_sitter(void) {
         bool ok = true;
         // https://github.com/rindeal/Amalgamate/releases/tag/v0.99.0
         // whereis amalgamate /usr/local/bin
         Nob_Cmd cmd = {0};
-        nob_cmd_append(&cmd, "amalgamate", "amalgamate.c", 
+        nob_cmd_append(&cmd, "amalgamate", "0_amalgamate-tree-sitter.c", 
                 "tree-sitter/tree_sitter_api.h",
                 "-i", "tree-sitter/lib/include",
                 "-i", "tree-sitter/lib/include/tree_sitter",
@@ -219,7 +221,7 @@ bool copy_treesitter_symbols(bool const clean) {
         nob_cmd_append(&cmd, "-O3", "-ggdb", "-pedantic");
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
         nob_cmd_append(&cmd, "-I", "source/");
-        nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
+        nob_cmd_append(&cmd, "2_copy_treesitter_symbols.c"); 
         nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
         nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a",  "tree-sitter-c/src/parser.c");;
 #else
@@ -229,7 +231,7 @@ bool copy_treesitter_symbols(bool const clean) {
         nob_cmd_append(&cmd, "-DAMALGAMATE_TREE_SITTER_API_H");
         nob_cmd_append(&cmd, "-I", "tree-sitter/");
         nob_cmd_append(&cmd, "-I", "source/");
-        nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
+        nob_cmd_append(&cmd, "2_copy_treesitter_symbols.c"); 
         nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
 #endif
         bool ok = nob_cmd_run_sync(cmd);
@@ -345,25 +347,16 @@ bool download_arq(bool const clean) {
 }
 
 Nob_Cmd include_paths = {0};
-void create_include_paths(void) {
-#if 0
+Nob_Cmd source_paths = {0};
+void create_include_source_paths(void) {
+#if 1
+        // uses precompiled archive libtree-sitter.a
         nob_cmd_append(&include_paths, "-I", "source");
         nob_cmd_append(&include_paths, "-I", "tree-sitter/lib/include");
+        nob_cmd_append(&include_paths, "-DEXTERN_TS_INDENTIFIERS");
         nob_cmd_append(&include_paths, "-I", "tree-sitter-c");
         nob_cmd_append(&include_paths, "-I", "arq");
-#else
-        nob_cmd_append(&include_paths, "-I", "source");
-        nob_cmd_append(&include_paths, "-DAMALGAMATE_TREE_SITTER_API_H");
-        //nob_cmd_append(&include_paths, "-DOOO_AMALGAMATE");
-        nob_cmd_append(&include_paths, "-I", "tree-sitter/");
-        nob_cmd_append(&include_paths, "-I", "tree-sitter-c");
-        nob_cmd_append(&include_paths, "-I", "arq");
-#endif
-}
-
-Nob_Cmd source_paths = {0};
-void create_source_paths(void) {
-#if 0
+        
         nob_cmd_append(&source_paths, "./source/main.c");
         nob_cmd_append(&source_paths, "./source/single_header_implementation.c");
         nob_cmd_append(&source_paths, "./tree-sitter-c/src/parser.c");
@@ -377,9 +370,16 @@ void create_source_paths(void) {
         nob_cmd_append(&source_paths, "./source/Pars.c");
         nob_cmd_append(&source_paths, "./tree-sitter/libtree-sitter.a");
 #else
+        // uses single header tree_sitter_api.h
+        nob_cmd_append(&include_paths, "-I", "source");
+        nob_cmd_append(&include_paths, "-DAMALGAMATE_TREE_SITTER_API_H");
+        nob_cmd_append(&include_paths, "-DEXTERN_TS_INDENTIFIERS");
+        nob_cmd_append(&include_paths, "-I", "tree-sitter/");
+        nob_cmd_append(&include_paths, "-I", "tree-sitter-c");
+        nob_cmd_append(&include_paths, "-I", "arq");
+
         nob_cmd_append(&source_paths, "./source/main.c");
         nob_cmd_append(&source_paths, "./source/single_header_implementation.c");
-        //nob_cmd_append(&source_paths, "./tree-sitter-c/src/parser.c");
         nob_cmd_append(&source_paths, "./source/node_printer.c");
         nob_cmd_append(&source_paths, "./source/truncate.c");
         nob_cmd_append(&source_paths, "./source/OArg.c");
@@ -391,28 +391,6 @@ void create_source_paths(void) {
 #endif
 }
 
-
-#if 0
-#if 0
-        // uses precompiled archive libtree-sitter.a
-        nob_cmd_append(&cmd, "gcc");
-        nob_cmd_append(&cmd, "-O3", "-ggdb", "-pedantic");
-        nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/");
-        nob_cmd_append(&cmd, "-I", "source/");
-        nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
-        nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
-        nob_cmd_append(&cmd, "tree-sitter/libtree-sitter.a",  "tree-sitter-c/src/parser.c");;
-#else
-        // uses amalgamate single header tree_sitter_api.h
-        nob_cmd_append(&cmd, "gcc");
-        nob_cmd_append(&cmd, "-O3", "-ggdb", "-pedantic");
-        nob_cmd_append(&cmd, "-DAMALGAMATE_TREE_SITTER_API_H");
-        nob_cmd_append(&cmd, "-I", "tree-sitter/");
-        nob_cmd_append(&cmd, "-I", "source/");
-        nob_cmd_append(&cmd, "source/copy_treesitter_symbols.c"); 
-        nob_cmd_append(&cmd, "-o", "copy_treesitter_symbols");
-#endif
-#endif
 
 bool ooo_build(bool const clean) {
         if (clean) {
@@ -442,48 +420,20 @@ bool ooo_build(bool const clean) {
         return ok;
 }
 
-Nob_Cmd source_paths2 = {0};
-void create_source_paths_2(void) {
-        nob_cmd_append(&source_paths2, "./source/unitbuild.c");
-        //nob_cmd_append(&source_paths2, "./tree-sitter-c/src/parser.c");
-        nob_cmd_append(&source_paths2, "./source/node_printer.c");
-        nob_cmd_append(&source_paths2, "./source/truncate.c");
-        nob_cmd_append(&source_paths2, "./source/OArg.c");
-        nob_cmd_append(&source_paths2, "./source/iteration.c");
-        nob_cmd_append(&source_paths2, "./source/ruler.c");
-        nob_cmd_append(&source_paths2, "./source/indentation.c");
-        nob_cmd_append(&source_paths2, "./source/tree_navigator.c");
-        nob_cmd_append(&source_paths2, "./source/Pars.c");
-        nob_cmd_append(&source_paths2, "./tree-sitter/lib/src/lib.c");
-}
-
-bool ooo_unit_build(bool const clean) {
-        if (clean) {
-                return true;
-        }
-        nob_log(NOB_INFO, "BUILD: ooo ----> code styler");
-        Nob_Cmd c_ompiler = {0};
-        //nob_cmd_append(&cmd, "gcc", "-O0", "-ggdb", "-pedantic");
-        nob_cmd_append(&c_ompiler, "gcc", "-O3", "-Wall", "-Wextra", "-Wno-Wbitwise-instead-of-logical", "-pedantic", "-Wno-parentheses"); 
-
+bool amalgamate_ooo(void) {
+        bool ok = true;
+        // https://github.com/rindeal/Amalgamate/releases/tag/v0.99.0
+        // whereis amalgamate /usr/local/bin
         Nob_Cmd cmd = {0};
-        nob_cmd_append_cmd(&cmd, &c_ompiler);
-        nob_cmd_append_cmd(&cmd, &include_paths);
-        nob_cmd_append(&cmd, "-o", "build/ooo2");
-        nob_cmd_append_cmd(&cmd, &source_paths2);
-        bool ok = nob_cmd_run_sync(cmd);
-
-#if 0
-        cmd.count = 0;
-        nob_cmd_append_cmd(&cmd, &c_ompiler);
-        nob_cmd_append(&cmd, "-o", "build/ooo");
-        nob_cmd_append_cmd(&cmd, &include_paths);
-        // Language server
-        generate_compile_commands("/home/berni/projects/ooo", &cmd, &source_paths);
-#endif
-
-        nob_cmd_free(c_ompiler);
-        nob_cmd_free(cmd);
+        nob_cmd_append(&cmd, "amalgamate", "3_amalgamate_ooo.c", 
+                "ooo.c",
+                // "-v", // verbose
+                "-i", "arq",
+                "-i", "tree-sitter",
+                "-i", "tree-sitter-c",
+                "-i", "source",
+        );
+        ok &= nob_cmd_run_sync(cmd);
         return ok;
 }
 
@@ -500,6 +450,7 @@ bool unittests_build(bool const clean) {
                 "-Wall", "-Wextra", "-pedantic",
                 "-Wno-parentheses", "-Wno-missing-field-initializers"
         );
+        nob_cmd_append(&cmd, "-DEXTERN_TS_INDENTIFIERS");
         nob_cmd_append(&cmd, "-I", "googletest/include/"); 
         nob_cmd_append(&cmd, "-I", "source/"); 
         nob_cmd_append(&cmd, "-I", "tree-sitter/lib/include/"); 
@@ -551,19 +502,17 @@ int main(int argc, char **argv) {
 
         ok &= download_build_treesitter(flag.clean);
         ok &= download_build_tree_sitter_c(flag.clean);
-        ok &= tree_sitter_amalgamate();
+        ok &= amalgamate_tree_sitter();
         ok &= copy_treesitter_symbols(flag.clean);
 
         ok &= download_build_googleTest(flag.clean);
         ok &= download_arq(flag.clean);
 
-        create_source_paths();
-        //create_source_paths_2();
-        create_include_paths();
+        create_include_source_paths();
 
         ok &= ooo_build(flag.clean);
-        //ok &= ooo_unit_build(flag.clean);
-        // ok &= unittests_build(flag.clean);
+        ok &= amalgamate_ooo();
+        ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
                 return false;

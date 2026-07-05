@@ -1,12 +1,12 @@
 #include "iteration.h"
 #include "OStr.h"
-#define REGEX_SIGNED_COMMENT_IMPLEMENTATION
+// #define REGEX_SIGNED_COMMENT_IMPLEMENTATION
 #include "Regex_signedComment.h"
-#define REGEX_LINE_FEED_IMPLEMENATATION
+// #define REGEX_LINE_FEED_IMPLEMENATATION
 #include "Regex_lineFeed.h"
-#define REGEX_TAB_FILTER_IMPLEMENTATION
+// #define REGEX_TAB_FILTER_IMPLEMENTATION
 #include "Regex_tabFilter.h"
-#define REGEX_LINE_UP_IMPLEMENTATION
+// #define REGEX_LINE_UP_IMPLEMENTATION
 #include "Regex_lineUp.h"
 
 char NEW_LINE = 0;

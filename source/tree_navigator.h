@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 
-#if AMALGAMATE_TREE_SITTER_API_H
+#ifdef AMALGAMATE_TREE_SITTER_API_H
         #include "tree_sitter_api.h"
 #else
         #include "tree_sitter/api.h"

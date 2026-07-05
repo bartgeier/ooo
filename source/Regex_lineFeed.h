@@ -23,7 +23,7 @@ char Regex_lineFeed_last(Regex_lineFeed_t *self);
 
 #endif
 
-#ifdef REGEX_LINE_FEED_IMPLEMENATATION
+#ifdef REGEX_LINE_FEED_IMPLEMENTATION
 
 #ifndef __cplusplus
         #define RLF_RETURN_TYPE (OptionalChar_t)

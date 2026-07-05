@@ -29,7 +29,7 @@ char OStr_need_LF_or_space(OStr const *m, OSlice const s);
 uint32_t OStr_number_of_chr( OStr const *m, OSlice const s, char const chr);
 #endif
 
-#ifdef OSTR_IMPLEMENTAION
+#ifdef OSTR_IMPLEMENTATION
 #include <string.h>
 
 void OStr_clear(OStr *m) {

@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "OStr.h"
-#define REGEX_LINE_FEED_IMPLEMENATATION
+#define REGEX_LINE_FEED_IMPLEMENTATION
 #include "Regex_lineFeed.h"
 
 #define MEM_SIZE 1000*1024

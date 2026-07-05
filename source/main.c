@@ -14,11 +14,9 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <getopt.h>
-//#define OSTR_IMPLEMENTAION
+
 #include "OStr.h"
-//#define OJOB_IMPLEMENTATION
 #include "OJob.h"
-//#define NOB_IMPLEMENTATION
 #include "../nob.h"
 
 /* return true => success */ 

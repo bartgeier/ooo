@@ -1,7 +1,7 @@
 #include "Pars.h"
 #include <assert.h>
-#define OARENA_IMPLEMENTATION
-#include "OArena.h"
+//#define OARENA_IMPLEMENTATION
+//#include "OArena.h"
 
 OArena *arena = NULL;
 
@@ -24,9 +24,11 @@ void arena_free(void *buffer) {
         OArena_free(arena, buffer);
 }
 
+#ifdef EXTERN_TS_INDENTIFIERS
 // Declare the `tree_sitter_json` function, which is
 // implemented by the `tree-sitter-c` library.
 TSLanguage *tree_sitter_c(void);
+#endif
 
 void Pars_init(void) {
         arena = OArena_make(10 * 1024 * 1024);
