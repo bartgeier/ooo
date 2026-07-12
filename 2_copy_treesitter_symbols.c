@@ -9,7 +9,7 @@
         TSLanguage *tree_sitter_c();
 #endif
 
-#define OSTR_IMPLEMENTAION
+#define OSTR_IMPLEMENTATION
 #include "OStr.h"
 #define REGEX_SIGNED_COMMENT_IMPLEMENTATION
 #include "Regex_signedComment.h"

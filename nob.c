@@ -122,8 +122,8 @@ bool download_build_treesitter(bool const clean) {
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/lib/include/tree_sitter/api.h", "tree-sitter/lib/include/tree_sitter/api.h");
         ok &= nob_rename("tree-sitter-"TS_COMMIT"/lib/src", "tree-sitter/lib/src");
         // ok &= nob_remove("tree-sitter/lib/src/portable");
-        ok &= nob_remove("tree-sitter/lib/src/unicode");
-        ok &= nob_remove("tree-sitter/lib/src/wasm");
+        // ok &= nob_remove("tree-sitter/lib/src/unicode");
+        // ok &= nob_remove("tree-sitter/lib/src/wasm");
         ok &= nob_remove("tree-sitter-"TS_COMMIT);
 
         nob_cmd_append(&cmd, "gcc", "-O3");
@@ -189,24 +189,105 @@ bool download_build_tree_sitter_c(bool const clean) {
         return ok;
 }
 
-#if 1
-bool amalgamate_tree_sitter(void) {
+// 
+// This is necessary because amalgamate can't expand an *txt file
+// 1.
+//     rename stdlib-symbols.txt to stdlib-symbols.h
+// 2.
+//     refactor wasm_store.c
+//     tree-sitter/lib/src/wasm_store.c:
+//     before:  
+//     const char *STDLIB_SYMBOLS[] = {
+//       #include "./stdlib-symbols.txt"
+//     };
+//     after:
+//     const char *STDLIB_SYMBOLS[] = {
+//       #include "./stdlib-symbols.h"
+//     };
+//
+bool stdlib_symbols_txt_to_h(bool const clean) {
+        if (clean) {
+                return true;
+        }
+        {
+                bool const ok = nob_rename("tree-sitter/lib/src/wasm/stdlib-symbols.txt", "tree-sitter/lib/src/wasm/stdlib-symbols.h");
+                if (!ok) {
+                        return false;
+                }
+        }
+        {
+                const char *filename ="tree-sitter/lib/src/wasm_store.c";
+                const char *old_include = "#include \"./stdlib-symbols.txt\"";
+                const char *new_include = "#include \"./stdlib-symbols.h\"";
+
+                FILE *f = fopen(filename, "rb");
+                if (!f) {
+                        perror(filename);
+                        return false;
+                }
+
+                fseek(f, 0, SEEK_END);
+                long size = ftell(f);
+                rewind(f);
+
+                char *buffer = malloc(size + 1);
+                if (!buffer) {
+                        fclose(f);
+                        return false;
+                }
+
+                fread(buffer, 1, size, f);
+                fclose(f);
+
+                buffer[size] = '\0';
+
+                char *pos = strstr(buffer, old_include);
+
+                if (!pos) {
+                        free(buffer);
+                        return true;   // bereits geändert oder nicht vorhanden
+                }
+
+                FILE *out = fopen(filename, "wb");
+                if (!out) {
+                        free(buffer);
+                        return false;
+                }
+
+                fwrite(buffer, 1, pos - buffer, out);
+                fwrite(new_include, 1, strlen(new_include), out);
+                fwrite(pos + strlen(old_include), 1,
+                strlen(pos + strlen(old_include)), out);
+
+                fclose(out);
+                free(buffer);
+        }
+
+        return true;
+}
+
+bool amalgamate_tree_sitter(bool const clean) {
         bool ok = true;
+        if (clean) {
+                return true;
+        }
         // https://github.com/rindeal/Amalgamate/releases/tag/v0.99.0
         // whereis amalgamate /usr/local/bin
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "amalgamate", "0_amalgamate-tree-sitter.c", 
                 "tree-sitter/tree_sitter_api.h",
+                // "-v", // verbose
                 "-i", "tree-sitter/lib/include",
                 "-i", "tree-sitter/lib/include/tree_sitter",
                 "-i", "tree-sitter/lib/src",
                 "-i", "tree-sitter/lib/src/portable",
+                "-i", "tree-sitter/lib/src/unicode",
+                "-i", "tree-sitter/lib/src/wasm",
                 "-i", "tree-sitter-c/src/parser.c",
         );
         ok &= nob_cmd_run_sync(cmd);
         return ok;
 }
-#endif
 
 bool copy_treesitter_symbols(bool const clean) {
         if (clean) {
@@ -346,6 +427,95 @@ bool download_arq(bool const clean) {
         return ok;
 }
 
+size_t print(FILE *f, size_t len, const char *s) {
+        putc('"', f);
+        size_t counter = 0;
+        for (size_t i = 0; i < len; i++) {
+                if (s[i] == '"') {
+                        putc('\\', f);
+                        counter++;
+                }
+                putc(s[i], f);
+        }
+        return len + counter;
+}
+bool license_c(bool const clean) {
+        if (clean) {
+                bool ok = nob_remove("build/license.c");
+                return ok;
+        }
+        #define LINE_WIDTH 85 
+        char line[1024];
+
+        FILE *file_r = fopen("LICENSE", "r");
+        if (!file_r) {
+                perror("Failed to open LICENSE");
+                return false;
+        }
+        FILE *file_tree_r = fopen("tree-sitter/LICENSE", "r");
+        if (!file_r) {
+                perror("Failed to open tree-sitter/LICENSE");
+                return false;
+        }
+        FILE *file_w = fopen("build/license.c", "w");
+        if (!file_w) {
+                perror("Failed to open file");
+                return false;
+        }
+        fprintf(file_w, "#if 1\n\n");
+        fprintf(file_w, "const char *license =\n");
+
+        strcpy(line,"OOO and arq"); 
+        size_t len = strlen(line);
+        fprintf(file_w, "\"%.*s", (int)len, line);
+        for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+        fprintf(file_w, "\\n\"\n");
+
+        while (fgets(line, sizeof(line), file_r)) {
+                size_t len = strcspn(line, "\n");  // remove real newline
+                len = print(file_w, len, line);
+                //fprintf(file_w, "\"%.*s", (int)len, line);
+                // pad with spaces so \n aligns
+                for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+                fprintf(file_w, "\\n\"\n");
+        }
+
+        fputc('"', file_w);
+        for (size_t i = 0; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+        fprintf(file_w, "\\n\"\n");
+
+        fputc('"', file_w);
+        for (size_t i = 0; i < LINE_WIDTH; i++) { fputc('-', file_w); }
+        fprintf(file_w, "\\n\"\n");
+
+        fputc('"', file_w);
+        for (size_t i = 0; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+        fprintf(file_w, "\\n\"\n");
+
+        strcpy(line,"https://github.com/tree-sitter/tree-sitter"); 
+        len = strlen(line);
+        fprintf(file_w, "\"%.*s", (int)len, line);
+        for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
+        fprintf(file_w, "\\n\"\n");
+
+        while (fgets(line, sizeof(line), file_tree_r)) {
+                size_t len = strcspn(line, "\n");  // remove real newline
+                len = print(file_w, len, line);
+                // fprintf(file_w, "\"%.*s", (int)len, line);
+                // pad with spaces so \n aligns
+                for (size_t i = len; i < LINE_WIDTH; i++) {
+                        fputc(' ', file_w);
+                }
+                fprintf(file_w, "\\n\"\n");
+        }
+        fprintf(file_w, "\"\";\n");
+        fprintf(file_w, "\n#endif");
+        fclose(file_r);
+        fclose(file_w);
+        fflush(stdout);
+        return true;
+}
+
 Nob_Cmd include_paths = {0};
 Nob_Cmd source_paths = {0};
 void create_include_source_paths(void) {
@@ -420,108 +590,24 @@ bool ooo_build(bool const clean) {
         return ok;
 }
 
-size_t print(FILE *f, size_t len, const char *s) {
-        putc('"', f);
-        size_t counter = 0;
-        for (size_t i = 0; i < len; i++) {
-                if (s[i] == '"') {
-                        putc('\\', f);
-                        counter++;
-                }
-                putc(s[i], f);
+
+bool amalgamate_ooo(bool const clean) {
+        if (clean) {
+                return nob_remove("ooo.c");
         }
-        return len + counter;
-}
-
-bool amalgamate_ooo(void) {
-        bool ok = true;
-        {
-                #define LINE_WIDTH 85 
-                char line[1024];
-
-                FILE *file_r = fopen("LICENSE", "r");
-                if (!file_r) {
-                        perror("Failed to open LICENSE");
-                        return false;
-                }
-                FILE *file_tree_r = fopen("tree-sitter/LICENSE", "r");
-                if (!file_r) {
-                        perror("Failed to open tree-sitter/LICENSE");
-                        return false;
-                }
-                FILE *file_w = fopen("build/license.c", "w");
-                if (!file_w) {
-                        perror("Failed to open file");
-                        return false;
-                }
-                fprintf(file_w, "#if 1\n\n");
-                fprintf(file_w, "const char *license =\n");
-
-                strcpy(line,"OOO and arq"); 
-                size_t len = strlen(line);
-                fprintf(file_w, "\"%.*s", (int)len, line);
-                for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
-                fprintf(file_w, "\\n\"\n");
-
-                while (fgets(line, sizeof(line), file_r)) {
-                        size_t len = strcspn(line, "\n");  // remove real newline
-                        len = print(file_w, len, line);
-                        //fprintf(file_w, "\"%.*s", (int)len, line);
-                        // pad with spaces so \n aligns
-                        for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
-                        fprintf(file_w, "\\n\"\n");
-                }
-
-                fputc('"', file_w);
-                for (size_t i = 0; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
-                fprintf(file_w, "\\n\"\n");
-
-                fputc('"', file_w);
-                for (size_t i = 0; i < LINE_WIDTH; i++) { fputc('-', file_w); }
-                fprintf(file_w, "\\n\"\n");
-
-                fputc('"', file_w);
-                for (size_t i = 0; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
-                fprintf(file_w, "\\n\"\n");
-
-                strcpy(line,"https://github.com/tree-sitter/tree-sitter"); 
-                len = strlen(line);
-                fprintf(file_w, "\"%.*s", (int)len, line);
-                for (size_t i = len; i < LINE_WIDTH; i++) { fputc(' ', file_w); }
-                fprintf(file_w, "\\n\"\n");
-
-                while (fgets(line, sizeof(line), file_tree_r)) {
-                        size_t len = strcspn(line, "\n");  // remove real newline
-                        len = print(file_w, len, line);
-                        // fprintf(file_w, "\"%.*s", (int)len, line);
-                        // pad with spaces so \n aligns
-                        for (size_t i = len; i < LINE_WIDTH; i++) {
-                                fputc(' ', file_w);
-                        }
-                        fprintf(file_w, "\\n\"\n");
-                }
-                fprintf(file_w, "\"\";\n");
-                fprintf(file_w, "\n#endif");
-                fclose(file_r);
-                fclose(file_w);
-                fflush(stdout);
-        }
-        {
         // https://github.com/rindeal/Amalgamate/releases/tag/v0.99.0
         // whereis amalgamate /usr/local/bin
         Nob_Cmd cmd = {0};
         nob_cmd_append(&cmd, "amalgamate", "3_amalgamate_ooo.c", 
                 "ooo.c",
-                // "-v", // verbose
+                //"-v", // verbose
                 "-i", "build",
                 "-i", "arq",
                 "-i", "tree-sitter",
                 "-i", "tree-sitter-c",
                 "-i", "source",
         );
-        ok &= nob_cmd_run_sync(cmd);
-        }
-        return ok;
+        return nob_cmd_run_sync(cmd);
 }
 
 bool unittests_build(bool const clean) {
@@ -589,16 +675,18 @@ int main(int argc, char **argv) {
 
         ok &= download_build_treesitter(flag.clean);
         ok &= download_build_tree_sitter_c(flag.clean);
-        ok &= amalgamate_tree_sitter();
+        ok &= stdlib_symbols_txt_to_h(flag.clean);
+        ok &= amalgamate_tree_sitter(flag.clean);
         ok &= copy_treesitter_symbols(flag.clean);
 
         ok &= download_build_googleTest(flag.clean);
         ok &= download_arq(flag.clean);
 
+        ok &= license_c(flag.clean);
         create_include_source_paths();
 
         ok &= ooo_build(flag.clean);
-        ok &= amalgamate_ooo();
+        ok &= amalgamate_ooo(flag.clean);
         ok &= unittests_build(flag.clean);
         if (!ok) {
                 nob_log(NOB_ERROR, "Done  => One or more errors occurred! %llu ms", nob_millis() - t_start);
