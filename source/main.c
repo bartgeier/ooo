@@ -13,7 +13,7 @@
 // #include <assert.h>
 #include <inttypes.h>
 #include <errno.h>
-#include <getopt.h>
+//#include <getopt.h>
 
 #include "OStr.h"
 #include "OJob.h"
