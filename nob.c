@@ -404,7 +404,7 @@ bool download_build_googleTest(bool const clean) {
 
 bool download_arq(bool const clean) {
         #define ARQ_URL "https://raw.githubusercontent.com/bartgeier/arq/"
-        #if 0
+        #if 1
                 #define ARQ_COMMIT "master"
         #else
                 #define ARQ_COMMIT "5ee50cdae38d5b5e673496a0827ed186a8346209"
