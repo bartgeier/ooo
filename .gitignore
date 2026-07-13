@@ -8,6 +8,9 @@ tree-sitter-c/ooo_treesitter_symbol_ids.h
 **/.cache
 **/googletest
 **/trash
+*.lib
+*.obj
+*.exp
 
 nob
 nob.old
