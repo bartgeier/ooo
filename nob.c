@@ -210,9 +210,11 @@ bool stdlib_symbols_txt_to_h(bool const clean) {
                 return true;
         }
         {
-                bool const ok = nob_rename("tree-sitter/lib/src/wasm/stdlib-symbols.txt", "tree-sitter/lib/src/wasm/stdlib-symbols.h");
-                if (!ok) {
-                        return false;
+                if (!nob_file_exists("tree-sitter/lib/src/wasm/stdlib-symbols.h")) {
+                        bool const ok = nob_rename("tree-sitter/lib/src/wasm/stdlib-symbols.txt", "tree-sitter/lib/src/wasm/stdlib-symbols.h");
+                        if (!ok) {
+                                return false;
+                        }
                 }
         }
         {
