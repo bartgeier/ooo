@@ -6,7 +6,7 @@ tree-sitter/libtree-sitter.a
 tree-sitter-c/src/tree_sitter/
 tree-sitter-c/ooo_treesitter_symbol_ids.h
 **/.cache
-googletest/build/
+**/googletest
 **/trash
 *.lib
 *.obj
