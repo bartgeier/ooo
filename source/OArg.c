@@ -85,7 +85,7 @@ OArg_t OArg_init(int argc, char **argv) {
         }
 
         if (m.flag.version) {
-                printf("1\n");
+                printf("2\n");
                 printf("\n");
         }
         if (m.flag.help) {
